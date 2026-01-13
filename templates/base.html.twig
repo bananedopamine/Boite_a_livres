@@ -35,22 +35,41 @@
         </nav>
     </header>
 
+    
+
+
+        
 
         <main>
-            {# Affichage des messages flash (succès/erreur) #}
+            
             {% for label, messages in app.flashes %}
                 {% for message in messages %}
-                    <div class="notice">
-                        {{ message }} 
+                    <div class="alert alert-{{ label }} flash-message alert-dismissible fade show" role="alert">
+                        {{ message }}
                     </div>
                 {% endfor %}
             {% endfor %}
 
-
-
             {% block body %}{% endblock %}
 
-            
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    const notices = document.querySelectorAll('.flash-message');
+    
+                    notices.forEach((notice) => {
+                        setTimeout(() => {
+                            notice.style.transition = "opacity 0.8s ease-out, transform 0.8s ease-out";
+                            notice.style.opacity = "0";
+                            notice.style.transform = "translateY(-20px)"; 
+    
+                            setTimeout(() => {
+                                notice.remove();
+                            }, 800);
+                        }, 5000);
+                    });
+                });
+            </script>
+
         </main>
 
         <footer>
