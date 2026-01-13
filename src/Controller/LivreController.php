@@ -37,6 +37,11 @@ class LivreController extends AbstractController
     #[Route('/new', name: 'app_livre_new')]
     public function new(Request $requete, EntityManagerInterface $gestionnaireEntite): Response
     {
+        if (!$requete->getSession()->get('admin_authenticated')) {
+            $this->addFlash('error', 'Accès réservé. Veuillez vous connecter.');
+            return $this->redirectToRoute('app_admin_login');
+        }
+        
         $livre = new Livre();
         
         $isbnPreRempli = $requete->query->get('isbn_pre_rempli');

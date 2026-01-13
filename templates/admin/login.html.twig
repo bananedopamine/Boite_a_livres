@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Connexion Admin{% endblock %}
+
+{% block body %}
+<main style="max-width: 400px; margin: auto; text-align: center;">
+    <h1>Accès Administration</h1>
+    
+    <form method="post">
+        <label for="pin">Entrez le code PIN à 6 chiffres :</label>
+        <input type="password" name="_pin" id="pin" 
+               pattern="[0-9]{6}" maxlength="6" inputmode="numeric" 
+               required autofocus style="text-align: center; font-size: 2rem;">
+        
+        <button type="submit" style="margin-top: 1rem; width: 100%;">Valider</button>
+    </form>
+</main>
+{% endblock %} 
