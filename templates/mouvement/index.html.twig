@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mouvement index{% endblock %}
+
+{% block body %}
+    <h1>Mouvement index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th><a href="{{ path('app_livre_show', {id: livre.id}) }}">Livre (ISBN)</a></th>
+                <th>Type</th>
+                <th>DateHeure</th>
+                <th>NomPrenom</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for mouvement in mouvements %}
+            <tr>
+                <td>{{ mouvement.id }}</td>
+                <td>{{ mouvement.livre.isbn }}</td>
+                <td>{{ mouvement.Type ? 'Yes' : 'No' }}</td>
+                <td>{{ mouvement.dateHeure ? mouvement.dateHeure|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ mouvement.nomPrenom }}</td>
+                <td>
+                    <a href="{{ path('app_mouvement_show', {'id': mouvement.id}) }}">show</a>
+                    <a href="{{ path('app_mouvement_edit', {'id': mouvement.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_mouvement_new') }}">Create new</a>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div class="container">
+    <h1>Confirmation de {{ estSortie ? 'Sortie' : 'Entrée' }}</h1>
+
+    <div class="alert alert-info">
+        <strong>Livre :</strong> {{ livre.nom }} <br>
+        <strong>Auteur :</strong> {{ livre.auteur }} <br>
+        <strong>ISBN :</strong> {{ livre.isbn }} <br>
+        <strong>Stock actuel :</strong> {{ livre.NbStock }}
+    </div>
+
+    <form action="{{ path('app_mouvement_finaliser', {'id': livre.id}) }}" method="post">
+        
+        {# CHANGEMENT 1 : On utilise 'true' ou 'false' en texte pour correspondre à la vérification du contrôleur #}
+        <input type="hidden" name="type_action" value="{{ estSortie ? 'true' : 'false' }}">
+
+        <div class="mb-3">
+            <label for="nom" class="form-label">Nom et Prénom de la personne :</label>
+            <input type="text" id="nom" name="nomPrenom" class="form-control" required autofocus>
+        </div>
+
+        <button type="submit" class="btn btn-success">
+            Valider {{ estSortie ? 'la sortie' : 'l\'entrée' }}
+        </button>
+        <a href="{{ path('home_index') }}" class="btn btn-secondary">Annuler</a>
+    </form>
+</div>
+{% endblock %}

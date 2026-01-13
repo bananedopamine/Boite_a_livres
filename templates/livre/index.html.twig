@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des livres{% endblock %}
+
+{% block body %}
+    <h1>Liste des livres en stock</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ISBN</th>
+                <th>Nom</th>
+                <th>Auteur</th>
+                <th>Stock</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for livre in livres %}
+            <tr>
+                <td>{{ livre.isbn }}</td> 
+                <td>{{ livre.nom }}</td>
+                <td>{{ livre.auteur }}</td>
+                <td>{{ livre.NbStock }}</td>
+                <td>
+                    {# On utilise l'ID pour les liens de détails/modification #}
+                    <a href="{{ path('app_livre_show', {'id': livre.id}) }}">Voir</a>
+                    <a href="{{ path('app_livre_edit', {'id': livre.id}) }}">Modifier</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

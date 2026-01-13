@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div class="container">
+    <form action="{{ path('app_mouvement_verification') }}" method="post">
+        <div class="mb-3">
+            <label class="form-label">Type de mouvement :</label>
+            <select name="type_action" class="form-select">
+                <option value="false" {{ selection_defaut == 'false' ? 'selected' : '' }} > ENTRÉE (Retour de livre)</option>
+                <option value="true"  {{ selection_defaut == 'true'  ? 'selected' : '' }} > SORTIE (Emprunt de livre)</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Scanner ou entrer l'ISBN :</label>
+            <input type="text" name="isbn" class="form-control" required autofocus>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Vérifier</button>
+    </form>
+</div>
+{% endblock %}
