@@ -1,5 +1,9 @@
-{# _delete_form.html.twig #}
-{# On utilise 'id' au lieu de 'ISBN' pour la route et le token #}
+{# @author : Dufour Marc (marc.dufour@stjosup.com)
+ # @version : 1
+ # @dateCreate : 12/01/2026
+ # @lastUpdate : 12/01/2026
+ #}
+
 <form method="post" action="{{ path('app_livre_delete', {'id': livre.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce livre ?');">
     <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ livre.id) }}">
     <button class="btn btn-danger">Supprimer</button>

@@ -1,5 +1,11 @@
 <?php
 
+/* @author : Dufour Marc (marc.dufour@stjosup.com)
+ * @version : 1
+ * @dateCreate : 12/01/2026
+ * @lastUpdate : 12/01/2026
+ */
+
 namespace App\Entity;
 
 use App\Repository\LivreRepository;
@@ -13,9 +19,9 @@ class Livre
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id = null; // Nouvelle clé primaire
+    private ?int $id = null;
 
-    #[ORM\Column(type: "string", unique: true)] // L'ISBN est maintenant une donnée unique
+    #[ORM\Column(type: "string", unique: true)]
     private ?string $isbn = null;
 
     #[ORM\Column(length: 255)]
@@ -139,7 +145,6 @@ class Livre
     public function removeMouvement(Mouvement $mouvement): static
     {
         if ($this->mouvements->removeElement($mouvement)) {
-            // set the owning side to null (unless already changed)
             if ($mouvement->getISBN() === $this) {
                 $mouvement->setISBN(null);
             }

@@ -1,5 +1,11 @@
 <?php
 
+/* @author : Dufour Marc (marc.dufour@stjosup.com)
+ * @version : 1
+ * @dateCreate : 12/01/2026
+ * @lastUpdate : 12/01/2026
+ */
+
 namespace App\Form;
 
 use App\Entity\Livre;
@@ -16,12 +22,12 @@ class MouvementType extends AbstractType
         $builder
             ->add('Type')
             ->add('dateHeure', null, [
-                'widget' => 'single_text', // Plus simple pour l'utilisateur
+                'widget' => 'single_text', 
             ])
             ->add('nomPrenom')
             ->add('livre', EntityType::class, [
                 'class' => Livre::class,
-                'choice_label' => 'isbn', // Utilise le getter getIsbn() qui est maintenant un string
+                'choice_label' => 'isbn',
                 'label' => 'Livre sélectionné',
             ])
         ;

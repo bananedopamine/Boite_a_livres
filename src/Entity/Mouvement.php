@@ -1,5 +1,11 @@
 <?php
 
+/* @author : Dufour Marc (marc.dufour@stjosup.com)
+ * @version : 1
+ * @dateCreate : 12/01/2026
+ * @lastUpdate : 12/01/2026
+ */
+
 namespace App\Entity;
 
 use App\Repository\MouvementRepository;
@@ -23,7 +29,7 @@ class Mouvement
     private ?string $nomPrenom = null;
 
     #[ORM\ManyToOne(targetEntity: Livre::class, inversedBy: 'mouvements')]
-    #[ORM\JoinColumn(nullable: false)] // Doctrine utilisera livre_id par défaut
+    #[ORM\JoinColumn(nullable: false)]
     private ?Livre $livre = null;
 
     public function getLivre(): ?Livre { return $this->livre; }

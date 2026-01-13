@@ -1,5 +1,11 @@
 <?php
 
+/* @author : Dufour Marc (marc.dufour@stjosup.com)
+ * @version : 1
+ * @dateCreate : 12/01/2026
+ * @lastUpdate : 12/01/2026
+ */
+
 namespace App\Controller;
 
 use App\Entity\Livre;
@@ -27,10 +33,8 @@ class MouvementController extends AbstractController
     public function verificationIsbn(Request $requete, LivreRepository $depotLivre): Response
     {
         $isbnRecu = $requete->request->get('isbn'); 
-        // On récupère la valeur. Si c'est vide, on met 'false' par défaut
         $typeAction = $requete->request->get('type_action'); 
 
-        // On cherche le livre par son ISBN
         $livre = $depotLivre->findOneBy(['isbn' => $isbnRecu]);
 
         /// Cas SORTIE (true)
@@ -53,7 +57,6 @@ class MouvementController extends AbstractController
                     'type' => 'false' 
                 ]);
             } else {
-                // Si le livre n'existe pas encore, on doit le créer avant de faire l'entrée
                 return $this->redirectToRoute('app_livre_new', [
                     'isbn_pre_rempli' => $isbnRecu,
                     'origine' => 'mouvement_entree'
@@ -63,11 +66,10 @@ class MouvementController extends AbstractController
     }
 
     #[Route('/confirmation/{id}/{type}', name: 'app_mouvement_confirmation', methods: ['GET'])]
-    public function confirmation(Livre $livre, string $type): Response // On force le type string
+    public function confirmation(Livre $livre, string $type): Response 
     {
         return $this->render('mouvement/confirmation.html.twig', [
             'livre' => $livre,
-            // On crée un vrai booléen pour Twig en comparant la chaîne
             'estSortie' => ($type === 'true') 
         ]);
     }
@@ -80,20 +82,19 @@ class MouvementController extends AbstractController
     ): Response {
         $nomPrenom = $requete->request->get('nomPrenom');
         
-        // On récupère la valeur et on s'assure de tester la chaîne 'true'
         $typeRaw = $requete->request->get('type_action'); 
         $estUneSortie = ($typeRaw === 'true' || $typeRaw === 1);
 
         $mouvement = new Mouvement();
         $mouvement->setLivre($livre); 
         $mouvement->setNomPrenom($nomPrenom);
-        $mouvement->setType($estUneSortie); // Stocke true pour sortie, false pour entrée
+        $mouvement->setType($estUneSortie); 
         $mouvement->setDateHeure(new \DateTime());
 
         $stockActuel = $livre->getNbStock();
 
         if ($estUneSortie) { 
-            // CAS SORTIE (Emprunt)
+            // CAS SORTIE (Retrait)
             if ($stockActuel > 0) {
                 $livre->setNbStock($stockActuel - 1);
             } else {
@@ -101,7 +102,7 @@ class MouvementController extends AbstractController
                 $this->addFlash('warning', 'Le stock était déjà à 0.');
             }
         } else {
-            // CAS ENTRÉE (Retour)
+            // CAS ENTRÉE (Depot)
             $livre->setNbStock($stockActuel + 1);
         }
 

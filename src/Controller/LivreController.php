@@ -1,5 +1,11 @@
 <?php
 
+/* @author : Dufour Marc (marc.dufour@stjosup.com)
+ * @version : 1
+ * @dateCreate : 12/01/2026
+ * @lastUpdate : 12/01/2026
+ */
+
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -51,11 +57,10 @@ class LivreController extends AbstractController
         
             $origine = $requete->query->get('origine');
         
-            // Si on vient du tunnel de mouvement, on va vers la confirmation
             if ($origine === 'mouvement_entree') {
                 return $this->redirectToRoute('app_mouvement_confirmation', [
                     'id' => $livre->getId(),
-                    'type' => 'false' // C'est forcément une entrée puisqu'on crée le livre
+                    'type' => 'false' 
                 ]);
             }
 
@@ -98,7 +103,6 @@ class LivreController extends AbstractController
     #[Route('/{id}', name: 'app_livre_delete', methods: ['POST'])]
     public function delete(Request $request, Livre $livre, EntityManagerInterface $entityManager): Response
     {
-        // Vérification du jeton CSRF pour la sécurité
         if ($this->isCsrfTokenValid('delete'.$livre->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($livre);
             $entityManager->flush();

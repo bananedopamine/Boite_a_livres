@@ -1,3 +1,9 @@
+{# @author : Dufour Marc (marc.dufour@stjosup.com)
+ # @version : 1
+ # @dateCreate : 12/01/2026
+ # @lastUpdate : 12/01/2026
+ #}
+
 {% extends 'base.html.twig' %}
 
 {% block body %}
@@ -13,7 +19,6 @@
 
     <form action="{{ path('app_mouvement_finaliser', {'id': livre.id}) }}" method="post">
         
-        {# CHANGEMENT 1 : On utilise 'true' ou 'false' en texte pour correspondre à la vérification du contrôleur #}
         <input type="hidden" name="type_action" value="{{ estSortie ? 'true' : 'false' }}">
 
         <div class="mb-3">

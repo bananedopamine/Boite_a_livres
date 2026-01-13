@@ -1,3 +1,9 @@
+{# @author : Dufour Marc (marc.dufour@stjosup.com)
+ # @version : 1
+ # @dateCreate : 12/01/2026
+ # @lastUpdate : 12/01/2026
+ #}
+
 {% extends 'base.html.twig' %}
 
 {% block title %}Liste des livres{% endblock %}
@@ -23,7 +29,6 @@
                 <td>{{ livre.auteur }}</td>
                 <td>{{ livre.NbStock }}</td>
                 <td>
-                    {# On utilise l'ID pour les liens de détails/modification #}
                     <a href="{{ path('app_livre_show', {'id': livre.id}) }}">Voir</a>
                     <a href="{{ path('app_livre_edit', {'id': livre.id}) }}">Modifier</a>
                 </td>
