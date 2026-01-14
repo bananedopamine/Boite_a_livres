@@ -60,6 +60,11 @@
             {% else %}
                 Aucun livre n'est actuellement disponible en stock.
             {% endif %}
+            <div>
+                <a href="{{ path('app_livre_index') }}" class="btn btn-sm btn-outline-secondary">
+                    Voir toute la bibliothèque
+                </a>
+            </div>
         </div>
     {% endif %}
 {% endblock %}
