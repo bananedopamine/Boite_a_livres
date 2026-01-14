@@ -41,7 +41,9 @@
     </table>
 
     <a href="{{ path('app_livre_index') }}">Revenir à la liste</a>
-
-    <a href="{{ path('app_livre_edit', {'id': livre.id}) }}">Modifier</a>
-    {{ include('livre/_delete_form.html.twig') }}
+    
+    {% if app.session.get('admin_authenticated') %}
+        <a href="{{ path('app_livre_edit', {'id': livre.id}) }}">Modifier</a>
+        {{ include('livre/_delete_form.html.twig') }}
+    {% endif %}
 {% endblock %}

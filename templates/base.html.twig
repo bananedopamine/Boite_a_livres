@@ -32,17 +32,17 @@
                 </div>
 
                 <h1>Ma Boîte à Livres</h1>
-{#} 
+ 
                 <div>
                     {% if app.session.get('admin_authenticated') %}
                         <a href="{{ path('app_admin_logout') }}">Déconnexion Admin</a>
                     {% else %}
-#}
+
                         <a href="{{ path('app_admin_login') }}">Admin</a>
-{#} 
+
                     {% endif %}
                 </div>
-#}
+
             </nav>
         </header>
 

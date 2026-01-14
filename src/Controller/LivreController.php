@@ -11,7 +11,6 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Attribute\Route;
 
-
 use App\Repository\LivreRepository;
 use App\Entity\Livre;
 use App\Entity\Category;
@@ -22,15 +21,32 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 #[Route('/livre')]
 class LivreController extends AbstractController
 {
+    private $session;
+
+    public function __construct(RequestStack $requestStack)
+    {
+        $this->session = $requestStack->getSession();
+    }
+
+
     #[Route('/', name: 'app_livre_index', methods: ['GET'])]
     public function index(LivreRepository $livreRepository): Response
     {
         return $this->render('livre/index.html.twig', [
             'livres' => $livreRepository->findAll(),
+        ]);
+    }
+
+    #[Route('/{id}', name: 'app_livre_show', methods: ['GET'])]
+    public function show(Livre $livre): Response
+    {
+        return $this->render('livre/show.html.twig', [
+            'livre' => $livre,
         ]);
     }
 
@@ -41,7 +57,7 @@ class LivreController extends AbstractController
             $this->addFlash('error', 'Accès réservé. Veuillez vous connecter.');
             return $this->redirectToRoute('app_admin_login');
         }
-        
+
         $livre = new Livre();
         
         $isbnPreRempli = $requete->query->get('isbn_pre_rempli');
@@ -78,17 +94,13 @@ class LivreController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_livre_show', methods: ['GET'])]
-    public function show(Livre $livre): Response
-    {
-        return $this->render('livre/show.html.twig', [
-            'livre' => $livre,
-        ]);
-    }
-
     #[Route('/{id}/edit', name: 'app_livre_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Livre $livre, EntityManagerInterface $entityManager): Response
     {
+        if (!$this->session->get('admin_authenticated')) {
+            return $this->redirectToRoute('app_admin_login');
+        }
+
         $form = $this->createForm(LivreType::class, $livre);
         $form->handleRequest($request);
 
@@ -105,9 +117,13 @@ class LivreController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_livre_delete', methods: ['POST'])]
+    #[Route('/{id}/delete', name: 'app_livre_delete', methods: ['POST'])]
     public function delete(Request $request, Livre $livre, EntityManagerInterface $entityManager): Response
     {
+        if (!$this->session->get('admin_authenticated')) {
+            return $this->redirectToRoute('app_admin_login');
+        }
+
         if ($this->isCsrfTokenValid('delete'.$livre->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($livre);
             $entityManager->flush();
