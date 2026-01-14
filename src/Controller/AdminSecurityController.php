@@ -24,21 +24,30 @@ class AdminSecurityController extends AbstractController
             return $this->redirectToRoute('home_index');
         }
 
-        if ($request->getSession()->get('admin_authenticated')) {
-            return $this->redirectToRoute('home_index');
-        }
-
         if ($request->isMethod('POST')) {
             $pinSaisi = $request->request->get('_pin');
             $pinAttendu = $_ENV['PIN_ADMIN'];
 
             if ($pinSaisi === $pinAttendu) {
-                $request->getSession()->set('admin_authenticated', true);
+                $this->session->remove('login_attempts');
+                $this->session->set('admin_authenticated', true);
+                
                 $this->addFlash('success', 'Connexion admin réussie.');
+                return $this->redirectToRoute('app_livre_index');
+            }
+
+            $tentatives = $this->session->get('login_attempts', 0) + 1;
+            $this->session->set('login_attempts', $tentatives);
+
+            if ($tentatives >= 3) {
+                $this->session->remove('login_attempts');
+                $this->addFlash('error', 'Trop de tentatives infructueuses (3/3). Retour à l\'accueil.');
                 return $this->redirectToRoute('home_index');
             }
 
-            $this->addFlash('error', 'Code PIN incorrect.');
+            // Message d'erreur classique avec décompte
+            $essaisRestants = 3 - $tentatives;
+            $this->addFlash('error', "Code PIN incorrect. Il vous reste $essaisRestants essai(s).");
         }
 
         return $this->render('admin/login.html.twig');
