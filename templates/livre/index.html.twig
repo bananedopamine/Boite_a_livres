@@ -13,34 +13,56 @@
 
     {% include 'livre/_search_form.html.twig' %}
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>ISBN</th>
-                <th>Nom</th>
-                <th>Auteur</th>
-                <th>Stock</th>
-                {% if app.session.get('admin_authenticated') %}
-                <th>Actions</th>
-                {% endif %}
-            </tr>
-        </thead>
-        <tbody>
-        {% for livre in livres %}
-            {% if (not app.session.get('admin_authenticated') and livre.NbStock > 0) or app.session.get('admin_authenticated') %}
+    {# 1. On filtre d'abord la liste pour savoir si on a quelque chose à afficher #}
+    {% set itemsToDisplay = [] %}
+    {% for livre in livres %}
+        {% if (app.session.get('admin_authenticated')) or (livre.NbStock > 0) %}
+            {% set itemsToDisplay = itemsToDisplay|merge([livre]) %}
+        {% endif %}
+    {% endfor %}
+
+    {# 2. Si on a des résultats, on affiche le tableau complet #}
+    {% if itemsToDisplay|length > 0 %}
+        <table class="table">
+            <thead>
                 <tr>
-                    <td><a href="{{ path('app_livre_show', {'id': livre.id}) }}">{{ livre.isbn }}</a></td> 
-                    <td>{{ livre.nom }}</td>
-                    <td>{{ livre.auteur }}</td>
-                    <td>{{ livre.NbStock }}</td>
+                    <th>ISBN</th>
+                    <th>Nom</th>
+                    <th>Auteur</th>
+                    <th>Stock</th>
                     {% if app.session.get('admin_authenticated') %}
-                    <td>
-                        <a href="{{ path('app_livre_edit', {'id': livre.id}) }}">Modifier</a>
-                    </td>
+                        <th>Actions</th>
                     {% endif %}
                 </tr>
+            </thead>
+            <tbody>
+                {% for livre in itemsToDisplay %}
+                    <tr>
+                        <td><a href="{{ path('app_livre_show', {'id': livre.id}) }}">{{ livre.isbn }}</a></td> 
+                        <td>{{ livre.nom }}</td>
+                        <td>{{ livre.auteur }}</td>
+                        <td>{{ livre.NbStock }}</td>
+                        {% if app.session.get('admin_authenticated') %}
+                        <td>
+                            <a href="{{ path('app_livre_edit', {'id': livre.id}) }}">Modifier</a>
+                        </td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {# 3. Sinon, on affiche seulement le message d'alerte (sans tableau) #}
+    {% else %}
+        <div class="alert alert-warning mt-3">
+            {% if last_isbn or last_auteur %}
+                Aucun livre ne correspond à votre recherche (
+                {% if last_isbn %}ISBN: {{ last_isbn }}{% endif %}
+                {% if last_isbn and last_auteur %} - {% endif %}
+                {% if last_auteur %}Auteur: {{ last_auteur }}{% endif %}
+                ).
+            {% else %}
+                Aucun livre n'est actuellement disponible en stock.
             {% endif %}
-        {% endfor %}
-        </tbody>
-    </table>
+        </div>
+    {% endif %}
 {% endblock %}
