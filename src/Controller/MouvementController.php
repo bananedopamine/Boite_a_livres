@@ -130,4 +130,43 @@ class MouvementController extends AbstractController
 
         return $this->redirectToRoute('home_index');
     }
+
+    #[Route('/recherche', name: 'app_mouvement_search', methods: ['GET'])]
+    public function search(Request $request, MouvementRepository $mouvementRepository): Response
+    {
+        $isbn = $request->query->get('isbn');
+        $auteur = $request->query->get('auteur');
+        $user = $request->query->get('user'); // Nouveau paramètre
+
+        $qb = $mouvementRepository->createQueryBuilder('m')
+            ->leftJoin('m.livre', 'l')
+            ->addSelect('l');
+
+        if (!empty($isbn)) {
+            $qb->andWhere('l.isbn LIKE :isbn')
+               ->setParameter('isbn', '%' . $isbn . '%');
+        }
+
+        if (!empty($auteur)) {
+            $qb->andWhere('l.auteur LIKE :auteur')
+               ->setParameter('auteur', '%' . $auteur . '%');
+        }
+
+        // Recherche sur le nom de la personne ayant fait le mouvement
+        if (!empty($user)) {
+            $qb->andWhere('m.nomPrenom LIKE :user')
+               ->setParameter('user', '%' . $user . '%');
+        }
+
+        $mouvements = $qb->orderBy('m.dateHeure', 'DESC')
+                         ->getQuery()
+                         ->getResult();
+
+        return $this->render('mouvement/index.html.twig', [
+            'mouvements' => $mouvements,
+            'last_isbn' => $isbn,
+            'last_auteur' => $auteur,
+            'last_user' => $user, 
+        ]);
+    }
 }

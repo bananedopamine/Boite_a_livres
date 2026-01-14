@@ -1,9 +1,4 @@
-{# @author : Dufour Marc (marc.dufour@stjosup.com)
- # @version : 1
- # @dateCreate : 12/01/2026
- # @lastUpdate : 14/01/2026
- #}
-
+{# templates/mouvement/index.html.twig #}
 {% extends 'base.html.twig' %}
 
 {% block title %}Historique des mouvements{% endblock %}
@@ -11,44 +6,66 @@
 {% block body %}
     <h1>Historique des mouvements</h1>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Livre (ISBN)</th>
-                <th>Type</th>
-                <th>Date / Heure</th>
-                <th>Utilisateur</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for mouvement in mouvements %}
-            <tr>
-                <td>{{ mouvement.id }}</td>
-                <td>
-                    {% if mouvement.livre %}
-                        <a href="{{ path('app_livre_show', {id: mouvement.livre.id}) }}">
-                            {{ mouvement.livre.isbn }}
+    {# Inclusion du formulaire de recherche dédié aux mouvements #}
+    {% include 'mouvement/_search_form.html.twig' %}
+
+    {% if mouvements is not empty %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Livre (ISBN)</th>
+                    <th>Titre</th>
+                    <th>Type</th>
+                    <th>Date / Heure</th>
+                    <th>Utilisateur</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for mouvement in mouvements %}
+                <tr>
+                    <td>{{ mouvement.id }}</td>
+                    <td>
+                        {% if mouvement.livre %}
+                            <a href="{{ path('app_livre_show', {id: mouvement.livre.id}) }}">
+                                {{ mouvement.livre.isbn }}
+                            </a>
+                        {% else %}
+                            <span class="text-danger">Livre supprimé</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ mouvement.livre ? mouvement.livre.nom : '-' }}</td>
+                    <td>
+                        <span class="badge {{ mouvement.Type ? 'bg-danger' : 'bg-success' }}">
+                            {{ mouvement.Type ? 'Sortie (-1)' : 'Entrée (+1)' }}
+                        </span>
+                    </td>
+                    <td>{{ mouvement.dateHeure ? mouvement.dateHeure|date('d/m/Y H:i') : '' }}</td>
+                    <td>{{ mouvement.nomPrenom }}</td>
+                    <td>
+                        <a href="{{ path('app_mouvement_show', {'id': mouvement.id}) }}" class="btn btn-sm btn-outline-info">
+                            Détails
                         </a>
-                    {% else %}
-                        <span class="text-danger">Livre supprimé (ID: {{ mouvement.livre.id|default('?') }})</span>
-                    {% endif %}
-                </td>
-                <td>
-                    <mark>{{ mouvement.Type ? 'Sortie (-1)' : 'Entrée (+1)' }}</mark>
-                </td>
-                <td>{{ mouvement.dateHeure ? mouvement.dateHeure|date('d/m/Y H:i') : '' }}</td>
-                <td>{{ mouvement.nomPrenom }}</td>
-                <td>
-                    <a href="{{ path('app_mouvement_show', {'id': mouvement.id}) }}">Détails</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="6">Aucun mouvement enregistré.</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        {# Message d'erreur si aucun mouvement n'est trouvé #}
+        <div class="alert alert-warning mt-4 shadow-sm">
+            <i class="fas fa-exclamation-triangle"></i> 
+            {% if last_isbn or last_auteur %}
+                Aucun mouvement n'a été trouvé pour les critères suivants : 
+                <strong>
+                    {% if last_isbn %}ISBN "{{ last_isbn }}"{% endif %}
+                    {% if last_isbn and last_auteur %} et {% endif %}
+                    {% if last_auteur %}Auteur "{{ last_auteur }}"{% endif %}
+                </strong>.
+            {% else %}
+                Il n'y a actuellement aucun mouvement enregistré dans l'historique.
+            {% endif %}
+        </div>
+    {% endif %}
 {% endblock %}
