@@ -25,17 +25,19 @@
         </thead>
         <tbody>
         {% for livre in livres %}
-            <tr>
-                <td><a href="{{ path('app_livre_show', {'id': livre.id}) }}">{{ livre.isbn }}</a></td> 
-                <td>{{ livre.nom }}</td>
-                <td>{{ livre.auteur }}</td>
-                <td>{{ livre.NbStock }}</td>
-                {% if app.session.get('admin_authenticated') %}
-                <td>
-                    <a href="{{ path('app_livre_edit', {'id': livre.id}) }}">Modifier</a>
-                </td>
-                {% endif %}
-            </tr>
+            {% if  ((app.session.get('admin_authenticated') == false) and (livre.NbStock > 0)) or app.session.get('admin_authenticated') %}
+                <tr>
+                    <td><a href="{{ path('app_livre_show', {'id': livre.id}) }}">{{ livre.isbn }}</a></td> 
+                    <td>{{ livre.nom }}</td>
+                    <td>{{ livre.auteur }}</td>
+                    <td>{{ livre.NbStock }}</td>
+                    {% if app.session.get('admin_authenticated') %}
+                    <td>
+                        <a href="{{ path('app_livre_edit', {'id': livre.id}) }}">Modifier</a>
+                    </td>
+                    {% endif %}
+                </tr>
+            {% endif %}
         {% endfor %}
         </tbody>
     </table>
