@@ -1,0 +1,48 @@
+{# @author : Dufour Marc (marc.dufour@stjosup.com)
+ # @version : 1
+ # @dateCreate : 14/01/2026
+ # @lastUpdate : 14/01/2026
+ #}
+
+<div class="card bg-light mb-4">
+    <div class="card-body">
+        <h5 class="card-title">Rechercher dans l'inventaire</h5>
+        
+        <form action="{{ path('app_livre_search') }}" method="get" class="row g-3">
+            
+            {# Filtre par ISBN #}
+            <div class="col-md-5">
+                <label for="isbn" class="form-label">Numéro ISBN</label>
+                <input type="text" 
+                       name="isbn" 
+                       id="isbn" 
+                       class="form-control" 
+                       placeholder="Ex: 9782..." 
+                       value="{{ last_isbn|default('') }}">
+            </div>
+
+            {# Filtre par Auteur #}
+            <div class="col-md-5">
+                <label for="auteur" class="form-label">Auteur</label>
+                <input type="text" 
+                       name="auteur" 
+                       id="auteur" 
+                       class="form-control" 
+                       placeholder="Nom de l'auteur..." 
+                       value="{{ last_auteur|default('') }}">
+            </div>
+
+            <div class="col-md-2 d-flex align-items-end">
+                <div class="btn-group w-100">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i> Filtrer
+                    </button>
+                    <a href="{{ path('app_livre_search') }}" class="btn btn-outline-secondary" title="Réinitialiser">
+                        <i class="fas fa-undo"></i>
+                    </a>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>

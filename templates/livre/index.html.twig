@@ -11,6 +11,8 @@
 {% block body %}
     <h1>Liste des livres en stock</h1>
 
+    {% include 'livre/_search_form.html.twig' %}
+
     <table class="table">
         <thead>
             <tr>
@@ -25,7 +27,7 @@
         </thead>
         <tbody>
         {% for livre in livres %}
-            {% if  ((app.session.get('admin_authenticated') == false) and (livre.NbStock > 0)) or app.session.get('admin_authenticated') %}
+            {% if (not app.session.get('admin_authenticated') and livre.NbStock > 0) or app.session.get('admin_authenticated') %}
                 <tr>
                     <td><a href="{{ path('app_livre_show', {'id': livre.id}) }}">{{ livre.isbn }}</a></td> 
                     <td>{{ livre.nom }}</td>

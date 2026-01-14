@@ -21,7 +21,7 @@ class AdminAccessSubscriber implements EventSubscriberInterface
         $request = $event->getRequest();
         $route = $request->attributes->get('_route');
 
-        if ($route === 'app_admin_login' || $route === 'app_livre_index' || $route === 'app_livre_show') {
+        if ($route === 'app_admin_login' || $route === 'app_livre_index' || $route === 'app_livre_show' || $route === 'app_livre_search') {
             return;
         }
 

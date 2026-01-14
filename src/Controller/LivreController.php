@@ -35,14 +35,16 @@ class LivreController extends AbstractController
 
 
     #[Route('/', name: 'app_livre_index', methods: ['GET'])]
-    public function index(LivreRepository $livreRepository): Response
+    public function index(Request $request, LivreRepository $livreRepository): Response
     {
         return $this->render('livre/index.html.twig', [
             'livres' => $livreRepository->findAll(),
+            'last_isbn' => $request->query->get('isbn'),
+            'last_auteur' => $request->query->get('auteur'),
         ]);
     }
 
-    #[Route('/{id}', name: 'app_livre_show', methods: ['GET'])]
+    #[Route('/{id<\d+>}', name: 'app_livre_show', methods: ['GET'])]
     public function show(Livre $livre): Response
     {
         return $this->render('livre/show.html.twig', [
@@ -131,5 +133,33 @@ class LivreController extends AbstractController
         }
 
         return $this->redirectToRoute('app_livre_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    #[Route('/recherche', name: 'app_livre_search', methods: ['GET'])]
+    public function search(Request $request, LivreRepository $livreRepository): Response
+    {
+        $isbn = $request->query->get('isbn'); 
+        $auteur = $request->query->get('auteur'); 
+
+        $qb = $livreRepository->createQueryBuilder('l');
+
+        if (!empty($isbn)) {
+            $qb->andWhere('l.isbn LIKE :isbnVal')
+               ->setParameter('isbnVal', '%' . $isbn . '%');
+        }
+        if (!empty($auteur)) {
+            $qb->andWhere('l.auteur LIKE :auteurVal')
+               ->setParameter('auteurVal', '%' . $auteur . '%');
+        }
+
+        $livres = $qb->orderBy('l.isbn', 'ASC')
+                     ->getQuery()
+                     ->getResult();
+
+        return $this->render('livre/index.html.twig', [
+            'livres' => $livres,
+            'last_isbn' => $isbn,
+            'last_auteur' => $auteur
+        ]);
     }
 }
