@@ -1,0 +1,48 @@
+{# @author : Dufour Marc (marc.dufour@stjosup.com)
+ # @version : 1
+ # @dateCreate : 14/01/2026
+ # @lastUpdate : 14/01/2026
+ #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Mouvement{% endblock %}
+
+{% block body %}
+    <h1>Mouvement</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>id</th>
+                <td>{{ mouvement.id }}</td> 
+            </tr>
+            <tr>
+                <th>Type</th>
+                <td>
+                    {% if mouvement.type %}
+                        <span class="badge bg-danger">Sortie</span>
+                    {% else %}
+                        <span class="badge bg-success">Entrée</span>
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <th>date et heure </th>
+                <td>{{ mouvement.dateHeure ? mouvement.dateHeure|date('d/m/Y H:i') : 'Non renseignée' }}</td>
+            </tr>
+            <tr>
+                <th>Auteur </th>
+                <td>{{ mouvement.nomPrenom }}</td>
+            </tr>
+            <tr>
+                <th>Livre</th>
+                <td>
+                    <a href="{{ path('app_livre_show', {id: mouvement.livre.id}) }}">
+                      {{ mouvement.livre.isbn }}
+                    </a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+{% endblock %}

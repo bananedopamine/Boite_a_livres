@@ -29,6 +29,14 @@ class MouvementController extends AbstractController
         ]);
     }
 
+    #[Route('/show/{id<\d+>}', name: 'app_mouvement_show')]
+    public function show(Mouvement $mouvement): Response
+    {
+        return $this->render('mouvement/show.html.twig', [
+            'mouvement' => $mouvement,
+        ]);
+    }
+
     #[Route('/verification', name: 'app_mouvement_verification', methods: ['POST'])]
     public function verificationIsbn(Request $requete, LivreRepository $depotLivre): Response
     {
