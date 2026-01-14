@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Connexion Admin{% endblock %}
+
+{% block body %}
+<nav style="display: flex; justify-content: center; gap: 20px; margin-top: 30px;">
+    <a href="{{ path('app_mouvement_index') }}">
+        <Button> Afficher l'historique des mouvements </Button>
+    </a>
+    
+    <a href="{{ path('app_livre_index') }}">
+        <Button> Afficher la bibliothèque actuel </Button>
+    </a>
+</nav>
+
+{% endblock %}

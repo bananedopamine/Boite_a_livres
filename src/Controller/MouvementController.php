@@ -11,6 +11,7 @@ namespace App\Controller;
 use App\Entity\Livre;
 use App\Entity\Mouvement;
 use App\Repository\LivreRepository;
+use App\Repository\MouvementRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,6 +21,13 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/mouvement')]
 class MouvementController extends AbstractController
 {
+    #[Route('/', name:'app_mouvement_index')]
+    public function index(MouvementRepository $mouvements) : Response
+    {
+        return $this->render('mouvement/index.html.twig', [
+            'mouvements' => $mouvements->findAll(),
+        ]);
+    }
     #[Route('/debut/{action}', name: 'app_mouvement_debut', defaults: ['action' => null])]
     public function debut(?string $action): Response
     {
