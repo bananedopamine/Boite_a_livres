@@ -184,8 +184,20 @@ class LivreController extends AbstractController
     }
 
     #[Route('/check-google/{isbn}', name: 'app_livre_google_check')]
-    public function checkGoogleBooks(string $isbn, HttpClientInterface $httpClient): Response
+    public function checkGoogleBooks(string $isbn, HttpClientInterface $httpClient, LivreRepository $livreRepository): Response
     {
+        $livreExistant = $livreRepository->findOneBy(['isbn' => $isbn]);
+
+        if ($livreExistant) {
+            $this->addFlash('info', 'Livre déjà présent dans la bibliothèque.');
+            
+            // On redirige vers la confirmation du mouvement (votre flux habituel)
+            return $this->redirectToRoute('app_mouvement_confirmation', [
+                'id' => $livreExistant->getId(),
+                'type' => 'false' // 'false' car on arrive souvent ici pour une Entrée
+            ]);
+        }
+        
         try {
             $response = $httpClient->request(
                 'GET',

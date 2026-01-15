@@ -38,14 +38,17 @@
 
 <script>
 function checkGoogle() {
-    const isbn = document.getElementById('isbnInput').value;
-    if (isbn.trim() === "") {
-        alert("Veuillez saisir un ISBN avant de vérifier sur Google.");
+    const isbnInput = document.getElementById('isbnInput');
+    const isbn = isbnInput.value.trim();
+
+    if (isbn === "") {
+        alert("Veuillez saisir ou scanner un ISBN avant de lancer la vérification.");
+        isbnInput.focus();
         return;
     }
-
-    const baseUrl = "{{ path('app_livre_google_check', {'isbn': 'REPLACE_ME'}) }}";
-    window.location.href = baseUrl.replace('REPLACE_ME', isbn);
+    const baseUrl = "{{ path('app_livre_google_check', {'isbn': 'PLACEHOLDER'}) }}";
+    const finalUrl = baseUrl.replace('PLACEHOLDER', encodeURIComponent(isbn));
+    window.location.href = finalUrl;
 }
 </script>
 {% endblock %}
