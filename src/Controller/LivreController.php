@@ -3,7 +3,7 @@
 /* @author : Dufour Marc (marc.dufour@stjosup.com)
  * @version : 1
  * @dateCreate : 12/01/2026
- * @lastUpdate : 12/01/2026
+ * @lastUpdate : 15/01/2026
  */
 
 namespace App\Controller;
@@ -190,14 +190,14 @@ class LivreController extends AbstractController
 
         if ($livreExistant) {
             $this->addFlash('info', 'Livre déjà présent dans la bibliothèque.');
-            
+
             // On redirige vers la confirmation du mouvement (votre flux habituel)
             return $this->redirectToRoute('app_mouvement_confirmation', [
                 'id' => $livreExistant->getId(),
                 'type' => 'false' // 'false' car on arrive souvent ici pour une Entrée
             ]);
         }
-        
+
         try {
             $response = $httpClient->request(
                 'GET',
