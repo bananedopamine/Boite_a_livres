@@ -14,9 +14,14 @@
             <div class="col-md-3">
                 <input type="text" name="auteur" class="form-control" placeholder="Auteur du livre..." value="{{ last_auteur|default('') }}">
             </div>
-            {# Nouveau champ pour l'utilisateur #}
             <div class="col-md-3">
                 <input type="text" name="user" class="form-control" placeholder="Nom de la personne..." value="{{ last_user|default('') }}">
+            </div>
+            <div class="col-md-2">
+                <select name="sort" class="form-select" onchange="this.form.submit()">
+                    <option value="DESC" {{ current_sort|default('DESC') == 'DESC' ? 'selected' : '' }}>Plus récents</option>
+                    <option value="ASC" {{ current_sort|default('DESC') == 'ASC' ? 'selected' : '' }}>Plus anciens</option>
+                </select>
             </div>
             <div class="col-md-3">
                 <div class="btn-group w-100">

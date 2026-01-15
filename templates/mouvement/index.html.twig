@@ -41,7 +41,7 @@
                             {{ mouvement.Type ? 'Sortie (-1)' : 'Entrée (+1)' }}
                         </span>
                     </td>
-                    <td>{{ mouvement.dateHeure ? mouvement.dateHeure|date('d/m/Y H:i') : '' }}</td>
+                    <td>{{ mouvement.dateHeure ? mouvement.dateHeure|date('d/m/Y H:i:s') : '' }}</td>
                     <td>{{ mouvement.nomPrenom }}</td>
                     <td>
                         <a href="{{ path('app_mouvement_show', {'id': mouvement.id}) }}" class="btn btn-sm btn-outline-info">

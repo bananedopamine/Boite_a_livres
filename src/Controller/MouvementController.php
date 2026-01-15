@@ -25,7 +25,7 @@ class MouvementController extends AbstractController
     public function index(MouvementRepository $mouvements) : Response
     {
         return $this->render('mouvement/index.html.twig', [
-            'mouvements' => $mouvements->findAll(),
+            'mouvements' => $mouvements->findBy([], ['dateHeure' => 'DESC']),
         ]);
     }
     #[Route('/debut/{action}', name: 'app_mouvement_debut', defaults: ['action' => null])]
@@ -136,7 +136,8 @@ class MouvementController extends AbstractController
     {
         $isbn = $request->query->get('isbn');
         $auteur = $request->query->get('auteur');
-        $user = $request->query->get('user'); // Nouveau paramètre
+        $user = $request->query->get('user');
+        $direction = $request->query->get('sort', 'DESC');
 
         $qb = $mouvementRepository->createQueryBuilder('m')
             ->leftJoin('m.livre', 'l')
@@ -158,7 +159,7 @@ class MouvementController extends AbstractController
                ->setParameter('user', '%' . $user . '%');
         }
 
-        $mouvements = $qb->orderBy('m.dateHeure', 'DESC')
+        $mouvements = $qb->orderBy('m.dateHeure', $direction)
                          ->getQuery()
                          ->getResult();
 
@@ -167,6 +168,7 @@ class MouvementController extends AbstractController
             'last_isbn' => $isbn,
             'last_auteur' => $auteur,
             'last_user' => $user, 
+            'current_sort' => $direction,
         ]);
     }
 }
