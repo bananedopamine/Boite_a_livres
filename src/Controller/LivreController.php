@@ -22,6 +22,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 #[Route('/livre')]
 class LivreController extends AbstractController
@@ -57,24 +58,47 @@ class LivreController extends AbstractController
     {
         $livre = new Livre();
         
-        $isbnPreRempli = $requete->query->get('isbn_pre_rempli');
+        // 1. Récupération des paramètres depuis l'URL (envoyés par checkGoogleBooks)
+        $isbnPreRempli        = $requete->query->get('isbn_pre_rempli');
+        $titrePreRempli       = $requete->query->get('titre_pre_rempli');
+        $auteurPreRempli      = $requete->query->get('auteur_pre_rempli');
+        $descriptionPreRemplie = $requete->query->get('description_pre_remplie');
+        $imagePreRemplie      = $requete->query->get('image_pre_remplie');
+
         if ($isbnPreRempli) {
             $livre->setISBN($isbnPreRempli);
+            $livre->setNbStock(1);
         }
+        
+        if ($titrePreRempli) {
+            $livre->setNom($titrePreRempli);
+        }
+        
+        if ($auteurPreRempli) {
+            $livre->setAuteur($auteurPreRempli);
+        }
+
+        if ($descriptionPreRemplie) {
+            $livre->setDescription($descriptionPreRemplie);
+        }
+
+        if ($imagePreRemplie) {
+            $livre->setLienImg($imagePreRemplie); 
+        }
+        
 
         $formulaire = $this->createForm(LivreType::class, $livre);
         $formulaire->handleRequest($requete);
 
         if ($formulaire->isSubmitted() && $formulaire->isValid()) {
-            
             if ($livre->getNbStock() === null) {
-                $livre->setNbStock(0);
+                $livre->setNbStock(1);
             }
+
             $gestionnaireEntite->persist($livre);
             $gestionnaireEntite->flush();
         
             $origine = $requete->query->get('origine');
-        
             if ($origine === 'mouvement_entree') {
                 return $this->redirectToRoute('app_mouvement_confirmation', [
                     'id' => $livre->getId(),
@@ -88,6 +112,7 @@ class LivreController extends AbstractController
         return $this->render('livre/new.html.twig', [
             'livre' => $livre,
             'form' => $formulaire,
+            // 'image_url' => $imagePreRemplie,
         ]);
     }
 
@@ -155,6 +180,39 @@ class LivreController extends AbstractController
             'livres' => $livres,
             'last_isbn' => $isbn,
             'last_auteur' => $auteur
+        ]);
+    }
+
+    #[Route('/check-google/{isbn}', name: 'app_livre_google_check')]
+    public function checkGoogleBooks(string $isbn, HttpClientInterface $httpClient): Response
+    {
+        try {
+            $response = $httpClient->request(
+                'GET',
+                'https://www.googleapis.com/books/v1/volumes?q=isbn:' . $isbn
+            );
+            $data = $response->toArray();
+        } catch (\Exception $e) {
+            $data = [];
+        }
+
+        if (!isset($data['items']) || $data['totalItems'] === 0) {
+            $this->addFlash('warning', 'Livre inconnu sur Google Books. Création manuelle.');
+            return $this->redirectToRoute('app_livre_new', [
+                'isbn_pre_rempli' => $isbn
+            ]);
+        }
+
+        $info = $data['items'][0]['volumeInfo'];
+        $this->addFlash('success', 'Livre trouvé sur Google !');
+
+        return $this->redirectToRoute('app_livre_new', [
+            'isbn_pre_rempli'         => $isbn,
+            'titre_pre_rempli'        => $info['title'] ?? '',
+            'auteur_pre_rempli'       => isset($info['authors']) ? implode(', ', $info['authors']) : '',
+            'description_pre_remplie' => $info['description'] ?? '',
+            'image_pre_remplie'       => $info['imageLinks']['thumbnail'] ?? '',
+            'origine'                 => 'mouvement_entree' 
         ]);
     }
 }

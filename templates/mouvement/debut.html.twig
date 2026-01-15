@@ -19,10 +19,33 @@
 
         <div class="mb-3">
             <label class="form-label">Scanner ou entrer l'ISBN :</label>
-            <input type="text" name="isbn" class="form-control" required autofocus>
+            {# On ajoute un ID à l'input pour le cibler facilement #}
+            <input type="text" name="isbn" id="isbnInput" class="form-control" required autofocus>
         </div>
 
-        <button type="submit" class="btn btn-primary">Vérifier</button>
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary">Vérifier en base</button>
+            
+            {# Le bouton Google avec une fonction au clic #}
+            <button type="button" class="btn btn-info" onclick="checkGoogle()">
+                Vérifier sur Google
+            </button>
+        </div>
+
+        {# <button type="submit" class="btn btn-primary">Vérifier</button> #}
     </form>
 </div>
+
+<script>
+function checkGoogle() {
+    const isbn = document.getElementById('isbnInput').value;
+    if (isbn.trim() === "") {
+        alert("Veuillez saisir un ISBN avant de vérifier sur Google.");
+        return;
+    }
+
+    const baseUrl = "{{ path('app_livre_google_check', {'isbn': 'REPLACE_ME'}) }}";
+    window.location.href = baseUrl.replace('REPLACE_ME', isbn);
+}
+</script>
 {% endblock %}
