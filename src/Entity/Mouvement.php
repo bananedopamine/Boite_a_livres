@@ -29,7 +29,7 @@ class Mouvement
     private ?string $nomPrenom = null;
 
     #[ORM\ManyToOne(targetEntity: Livre::class, inversedBy: 'mouvements')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?Livre $livre = null;
 
     public function getLivre(): ?Livre { return $this->livre; }
