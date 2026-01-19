@@ -1,7 +1,7 @@
 {# @author : Dufour Marc (marc.dufour@stjosup.com)
  # @version : 1
  # @dateCreate : 12/01/2026
- # @lastUpdate : 12/01/2026
+ # @lastUpdate : 19/01/2026
  #}
 
 {% extends 'base.html.twig' %}
@@ -9,11 +9,27 @@
 {% block title %}Edit Livre{% endblock %}
 
 {% block body %}
-    <h1>Edit Livre</h1>
-
-        {{ include('livre/_form.html.twig', {'button_label': 'Update'}) }}
-
-    <a href="{{ path('app_livre_index') }}">back to list</a>
-
-    {{ include('livre/_delete_form.html.twig') }}
+    <div id="edit-form-container">
+        {% if app.request.xmlHttpRequest %}
+            {# MODALE AJAX #}
+            <h2>Modifier {{ livre.nom }}</h2>
+            
+            {{ include('livre/_form.html.twig', {
+                'form': form,
+                'action_url': path('app_livre_edit', {'id': livre.id}) 
+            }) }}
+            
+        {% else %}
+            {# PAGE STANDARD #}
+            <a href="{{ path('app_livre_index') }}">
+                <img src="{{ asset('extras/images/Back_arrow.png') }}" style="width: 50px" alt="Retour"> 
+            </a>
+            <h1> Modifier le produit </h1>
+            
+            {{ include('livre/_form.html.twig', {
+                'form': form,
+                'action_url': path('app_livre_edit', {'id': livre.id})
+            }) }}
+        {% endif %}
+    </div>
 {% endblock %}
