@@ -147,7 +147,7 @@ class LivreController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/delete', name: 'app_livre_delete', methods: ['POST'])]
+    #[Route('/{id}/delete', name: 'app_livre_delete')]
     public function delete(Request $request, Livre $livre, EntityManagerInterface $entityManager): Response
     {
         if (!$this->session->get('admin_authenticated')) {

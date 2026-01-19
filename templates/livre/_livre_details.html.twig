@@ -44,8 +44,29 @@
         <button type="button">Modifier</button>
     </a>
     
-    <a href="{{ path('app_livre_delete', {'id': livre.id}) }}">
-        <button type="button" style="background-color: #d32f2f;">Supprimer</button>
-    </a>
+    {# On remplace le lien direct par un bouton déclenchant la modale de confirmation #}
+    <button type="button" 
+            style="background-color: #d32f2f; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;"
+            onclick="document.getElementById('confirm-delete-modal').showModal()">
+        Supprimer
+    </button>
+
+    {# Modale de confirmation de suppression (imbriquée) #}
+    <dialog id="confirm-delete-modal" style="border-radius: 8px; border: 1px solid #ccc; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        <h3 style="margin-top: 0;">Confirmer la suppression</h3>
+        <p>Êtes-vous sûr de vouloir supprimer le livre <strong>{{ livre.nom }}</strong> ?</p>
+        <p style="color: #d32f2f; font-size: 0.9em;">Cette action est irréversible.</p>
+        
+        <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+            <button type="button" 
+                    onclick="document.getElementById('confirm-delete-modal').close()"
+                    style="background: #ccc; border: none; padding: 5px 15px; border-radius: 4px;">
+                Annuler
+            </button>
+            
+            {# On inclut le formulaire de suppression réel ici #}
+            {{ include('livre/_delete_form.html.twig') }}
+        </div>
+    </dialog>
 {% endif %}
 </div>
