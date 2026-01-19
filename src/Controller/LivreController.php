@@ -3,7 +3,7 @@
 /* @author : Dufour Marc (marc.dufour@stjosup.com)
  * @version : 1
  * @dateCreate : 12/01/2026
- * @lastUpdate : 15/01/2026
+ * @lastUpdate : 19/01/2026
  */
 
 namespace App\Controller;
@@ -46,24 +46,32 @@ class LivreController extends AbstractController
     }
 
     #[Route('/{id<\d+>}', name: 'app_livre_show', methods: ['GET'])]
-    public function show(Livre $livre): Response
+    public function show(Livre $livre, Request $request): Response
     {
+        // Si c'est une requête AJAX, on ne renvoie que le fragment Twig
+        if ($request->isXmlHttpRequest()) {
+            return $this->render('livre/_livre_details.html.twig', [
+                'livre' => $livre
+            ]);
+        }
+
+        // Sinon, on renvoie la page complète habituelle 
         return $this->render('livre/show.html.twig', [
             'livre' => $livre,
         ]);
     }
 
     #[Route('/new', name: 'app_livre_new')]
-    public function new(Request $requete, EntityManagerInterface $gestionnaireEntite): Response
+    public function new(Request $request, EntityManagerInterface $gestionnaireEntite): Response
     {
         $livre = new Livre();
         
         // 1. Récupération des paramètres depuis l'URL (envoyés par checkGoogleBooks)
-        $isbnPreRempli        = $requete->query->get('isbn_pre_rempli');
-        $titrePreRempli       = $requete->query->get('titre_pre_rempli');
-        $auteurPreRempli      = $requete->query->get('auteur_pre_rempli');
-        $descriptionPreRemplie = $requete->query->get('description_pre_remplie');
-        $imagePreRemplie      = $requete->query->get('image_pre_remplie');
+        $isbnPreRempli        = $request->query->get('isbn_pre_rempli');
+        $titrePreRempli       = $request->query->get('titre_pre_rempli');
+        $auteurPreRempli      = $request->query->get('auteur_pre_rempli');
+        $descriptionPreRemplie = $request->query->get('description_pre_remplie');
+        $imagePreRemplie      = $request->query->get('image_pre_remplie');
 
         if ($isbnPreRempli) {
             $livre->setISBN($isbnPreRempli);
@@ -88,7 +96,7 @@ class LivreController extends AbstractController
         
 
         $formulaire = $this->createForm(LivreType::class, $livre);
-        $formulaire->handleRequest($requete);
+        $formulaire->handleRequest($request);
 
         if ($formulaire->isSubmitted() && $formulaire->isValid()) {
             if ($livre->getNbStock() === null) {
@@ -98,7 +106,7 @@ class LivreController extends AbstractController
             $gestionnaireEntite->persist($livre);
             $gestionnaireEntite->flush();
         
-            $origine = $requete->query->get('origine');
+            $origine = $request->query->get('origine');
             if ($origine === 'mouvement_entree') {
                 return $this->redirectToRoute('app_mouvement_confirmation', [
                     'id' => $livre->getId(),

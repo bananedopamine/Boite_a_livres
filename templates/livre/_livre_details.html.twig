@@ -1,0 +1,51 @@
+{# @author : Dufour Marc (marc.dufour@stjosup.com)
+ # @version : 1.1
+ # @lastUpdate : 19/01/2026 (Ajout classe pour interception AJAX)
+ #}
+
+<h1>Détails du Livre</h1>
+<table>
+    <tbody>
+        <tr>
+                <th>ISBN</th>
+                <td>{{ livre.isbn }}</td> 
+        </tr>
+        <tr>
+            <th>Nom</th>
+            <td>{{ livre.nom }}</td>
+        </tr>
+        <tr>
+            <th>Auteur</th>
+            <td>{{ livre.auteur }}</td>
+        </tr>
+        <tr>
+            <th>Description</th>
+            <td>{{ livre.description }}</td>
+        </tr>
+        <tr>
+            <th>LienImg</th>
+            <td>{{ livre.lienImg }}</td>
+        </tr>
+        <tr>
+            <th>NbStock</th>
+            <td>{{ livre.NbStock }}</td>
+        </tr>
+    </tbody>
+</table>
+
+<div style="display: flex; gap: 10px;">
+    {# 
+       IMPORTANT : Ajout de la classe 'edit-modal-trigger' 
+       C'est ce qui permet au JavaScript de l'index d'intercepter le clic 
+       et de charger le formulaire dans la même modale.
+    #}
+{% if app.session.get('admin_authenticated') %}
+    <a href="{{ path('app_livre_edit', {'id': livre.id}) }}" class="edit-modal-trigger">
+        <button type="button">Modifier</button>
+    </a>
+    
+    <a href="{{ path('app_livre_delete', {'id': livre.id}) }}">
+        <button type="button" style="background-color: #d32f2f;">Supprimer</button>
+    </a>
+{% endif %}
+</div>

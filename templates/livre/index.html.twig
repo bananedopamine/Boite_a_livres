@@ -1,7 +1,7 @@
 {# @author : Dufour Marc (marc.dufour@stjosup.com)
  # @version : 1
  # @dateCreate : 12/01/2026
- # @lastUpdate : 15/01/2026
+ # @lastUpdate : 19/01/2026
  #}
 
 {% extends 'base.html.twig' %}
@@ -36,7 +36,7 @@
             <tbody>
                 {% for livre in itemsToDisplay %}
                     <tr>
-                        <td><a href="{{ path('app_livre_show', {'id': livre.id}) }}">{{ livre.isbn }}</a></td> 
+                        <td><a href="{{ path('app_livre_show', {'id': livre.id}) }}" class="modal-trigger">{{ livre.isbn }}</a></td> 
                         <td>{{ livre.nom }}</td>
                         <td>{{ livre.auteur }}</td>
                         <td>{{ livre.NbStock }}</td>
@@ -67,4 +67,96 @@
             </div>
         </div>
     {% endif %}
+
+{# Structure de la Modale #}
+{# Tout en bas du fichier index.html.twig #}
+<dialog id="livre-modal" style="width: 50%; border-radius: 8px; border: 1px solid #ccc; padding: 20px;">
+    <div id="modal-content">
+        </div>
+    <br>
+    <button type="button" onclick="document.getElementById('livre-modal').close()">Fermer</button>
+</dialog>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    /**
+     * Fonction utilitaire pour charger du contenu dans la modale
+     */
+    async function loadToModal(url) {
+        const modal = document.getElementById('livre-modal');
+        const content = document.getElementById('modal-content');
+
+        try {
+            const response = await fetch(url, {
+               headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+            const html = await response.text();
+            content.innerHTML = html;
+            
+            if (modal && !modal.open) {
+                modal.showModal();
+            }
+        } catch (err) {
+            console.error('Erreur de chargement :', err);
+        }
+    }
+
+    // --- 1. OUVERTURE : Clic sur le nom (Show) ou sur Modifier (Edit) ---
+    document.addEventListener('click', (e) => {
+        const trigger = e.target.closest('.modal-trigger, .edit-modal-trigger');
+        if (trigger) {
+            e.preventDefault();
+            loadToModal(trigger.href);
+        }
+    });
+
+    // --- 2. ENREGISTREMENT : Intercepter la soumission du formulaire ---
+    document.addEventListener('submit', async (e) => {
+        const content = document.getElementById('modal-content');
+        // On vérifie que le formulaire soumis est bien DANS la modale
+        if (!content || !content.contains(e.target)) return;
+
+        const modal = document.getElementById('livre-modal');
+        const form = e.target;
+        
+        e.preventDefault();
+        const formData = new FormData(form);
+
+        // --- CORRECTION AJOUTÉE ICI ---
+        // On ajoute manuellement le bouton de soumission au FormData
+        if (e.submitter && e.submitter.name) {
+            formData.append(e.submitter.name, e.submitter.value);
+        }
+
+        const actionUrl = form.getAttribute('action') || window.location.href;
+
+        try {
+            const response = await fetch(actionUrl, {
+                method: 'POST',
+                body: formData,
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+
+            if (response.ok) {
+                try {
+                    const result = await response.json();
+                    if (result.success) {
+                        modal.close();
+                        window.location.reload(); 
+                        return;
+                    }
+                } catch (jsonErr) {
+                    modal.close();
+                    window.location.reload();
+                }
+            } else if (response.status === 422) {
+                // Erreur de validation : on remplace le formulaire par celui avec les erreurs
+                content.innerHTML = await response.text();
+            }
+        } catch (err) {
+            console.error("Erreur lors de l'envoi :", err);
+        }
+    });
+</script>
 {% endblock %}

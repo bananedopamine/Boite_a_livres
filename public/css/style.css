@@ -1,3 +1,13 @@
+/* @author : Dufour Marc (marc.dufour@stjosup.com)
+ * @version : 1
+ * @dateCreate : 19/01/2026
+ * @lastUpdate : 19/01/2026
+ */
+
+/*******************************************/
+/*             FLASH MESSAGES              */
+/*******************************************/
+
 /* Style pour les messages flash */
 .flash-message {
     padding: 1rem;
@@ -25,4 +35,50 @@
     background-color: #fff3cd;
     color: #856404;
     border-color: #ffeeba;
+}
+
+
+/*******************************************/
+/*                 MODAL                   */
+/*******************************************/
+
+/* ------------ Modal Général ------------ */
+
+/* Ajustement du tableau à l'intérieur de la modale */
+#modal-content table {
+    width: 100%;
+    margin-bottom: 20px;
+    table-layout: fixed;
+}
+#modal-content th {
+    width: 150px; 
+    text-align: left;
+    vertical-align: top;
+    padding: 10px;
+}
+#modal-content td {
+    padding: 10px;
+    vertical-align: top;
+    word-wrap: break-word;    
+    overflow-wrap: break-word;
+    white-space: normal;      
+}
+
+/* ------------- Modal Livre ------------- */
+
+/* Style de l'arrière-plan quand la modale est ouverte */
+#livre-modal::backdrop {
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(3px);
+}
+
+/* Style de l'arrière-plan quand la modale est ouverte */
+#livre-modal::backdrop {
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(3px);
+}
+/* Style des boutons dans la modale */
+#livre-modal button, 
+#livre-modal .button {
+    cursor: pointer;
 }
