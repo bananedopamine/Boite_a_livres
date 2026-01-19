@@ -1,7 +1,7 @@
 {# @author : Dufour Marc (marc.dufour@stjosup.com)
  # @version : 1
  # @dateCreate : 12/01/2026
- # @lastUpdate : 15/01/2026
+ # @lastUpdate : 19/01/2026
  #}
  
 {% extends 'base.html.twig' %}
@@ -33,14 +33,20 @@
                     <td>{{ mouvement.id }}</td>
                     <td>
                         {% if mouvement.livre %}
-                            <a href="{{ path('app_livre_show', {id: mouvement.livre.id}) }}">
+                            <a href="{{ path('app_livre_show', {id: mouvement.livre.id}) }}" class="modal-trigger">
                                 {{ mouvement.livre.isbn }}
                             </a>
                         {% else %}
                             <span class="text-danger">Livre supprimé</span>
                         {% endif %}
                     </td>
-                    <td>{{ mouvement.livre ? mouvement.livre.nom : '-' }}</td>
+                    <td>
+                        {% if mouvement.livre %}
+                            {{ mouvement.livre.nom }}</a>
+                        {% else %}
+                            <span class="text-danger">Livre supprimé</span>
+                        {% endif %}
+                    </td>
                     <td>
                         <span class="badge {{ mouvement.Type ? 'bg-danger' : 'bg-success' }}">
                             {{ mouvement.Type ? 'Sortie (-1)' : 'Entrée (+1)' }}
@@ -49,7 +55,7 @@
                     <td>{{ mouvement.dateHeure ? mouvement.dateHeure|date('d/m/Y H:i:s') : '' }}</td>
                     <td>{{ mouvement.nomPrenom }}</td>
                     <td>
-                        <a href="{{ path('app_mouvement_show', {'id': mouvement.id}) }}" class="btn btn-sm btn-outline-info">
+                        <a href="{{ path('app_mouvement_show', {'id': mouvement.id}) }}" class="modal-trigger">
                             Détails
                         </a>
                     </td>
@@ -78,4 +84,98 @@
             </div>
         </div>
     {% endif %}
+
+    {{ include('livre/_modal_livre_details.html.twig') }}
+
+{# Structure de la Modale #}
+<dialog id="mouvement-modal" style="width: 50%; border-radius: 8px; border: 1px solid #ccc; padding: 20px;">
+    <div id="modal-content">
+        </div>
+    <br>
+    <button onclick="document.getElementById('mouvement-modal').close()">Fermer</button>
+</dialog>
+
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    const modal = document.getElementById('mouvement-modal');
+    const content = document.getElementById('modal-content');
+
+    /**
+     * Fonction utilitaire pour charger du contenu dans la modale
+     */
+    async function loadToModal(url) {
+        try {
+            const response = await fetch(url, {
+               headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+            content.innerHTML = await response.text();
+            if (!modal.open) modal.showModal();
+        } catch (err) {
+            console.error('Erreur de chargement :', err);
+        }
+    }
+
+    // --- 1. OUVERTURE : Clic sur le nom (Show) ou sur Modifier (Edit) ---
+    document.addEventListener('click', (e) => {
+        const trigger = e.target.closest('.modal-trigger, .edit-modal-trigger');
+        if (trigger) {
+            e.preventDefault();
+            loadToModal(trigger.href);
+        }
+    });
+
+    // --- 2. ENREGISTREMENT : Intercepter la soumission du formulaire ---
+    content.addEventListener('submit', async (e) => {
+        const form = e.target.closest('form');
+        if (!form) return;
+
+        e.preventDefault();
+        
+        const formData = new FormData(form);
+
+        // --- CORRECTION AJOUTÉE ICI ---
+        // On ajoute manuellement le bouton de soumission au FormData
+        // car 'new FormData(form)' l'ignore souvent par défaut, ce qui fait échouer
+        // la vérification $form->isSubmitted() côté Symfony.
+        if (e.submitter && e.submitter.name) {
+            formData.append(e.submitter.name, e.submitter.value);
+        }
+        // ------------------------------
+
+        const actionUrl = form.action || window.location.href;
+
+        try {
+            const response = await fetch(actionUrl, {
+                method: 'POST',
+                body: formData,
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+
+            if (response.ok) {
+                // Si le serveur renvoie du JSON (succès), on ferme et on recharge
+                try {
+                    const result = await response.json();
+                    if (result.success) {
+                        modal.close();
+                        window.location.reload(); 
+                        return;
+                    }
+                } catch (jsonErr) {
+                    // Si ce n'est pas du JSON, c'est peut-être du HTML (cas de la suppression ou redirection simple)
+                    // On recharge par sécurité
+                    modal.close();
+                    window.location.reload();
+                }
+            } else if (response.status === 422) {
+                // Erreur de validation (ex: formulaire invalide), on réaffiche le contenu (le formulaire avec erreurs)
+                content.innerHTML = await response.text();
+            }
+        } catch (err) {
+            console.error("Erreur lors de l'envoi :", err);
+        }
+    });
+
+</script>
 {% endblock %}

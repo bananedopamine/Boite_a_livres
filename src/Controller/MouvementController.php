@@ -3,7 +3,7 @@
 /* @author : Dufour Marc (marc.dufour@stjosup.com)
  * @version : 1
  * @dateCreate : 12/01/2026
- * @lastUpdate : 15/01/2026
+ * @lastUpdate : 19/01/2026
  */
 
 namespace App\Controller;
@@ -29,17 +29,32 @@ class MouvementController extends AbstractController
         ]);
     }
     #[Route('/debut/{action}', name: 'app_mouvement_debut', defaults: ['action' => null])]
-    public function debut(?string $action): Response
+    public function debut(?string $action, Request $request): Response
     {
-        // 'false' pour entrée, 'true' pour sortie
+        // Si c'est une requête AJAX, on ne renvoie que le fragment Twig
+        if ($request->isXmlHttpRequest()) {
+            return $this->render('mouvement/_mouvement_details.html.twig', [
+                'selection_defaut' => $action
+            ]);
+        }
+
+        // Sinon, on renvoie la page complète habituelle 
         return $this->render('mouvement/debut.html.twig', [
             'selection_defaut' => $action
         ]);
     }
 
     #[Route('/show/{id<\d+>}', name: 'app_mouvement_show')]
-    public function show(Mouvement $mouvement): Response
+    public function show(Mouvement $mouvement, Request $request): Response
     {
+        // Si c'est une requête AJAX, on ne renvoie que le fragment Twig
+        if ($request->isXmlHttpRequest()) {
+            return $this->render('mouvement/_mouvement_details.html.twig', [
+                'mouvement' => $mouvement
+            ]);
+        }
+
+        // Sinon, on renvoie la page complète habituelle 
         return $this->render('mouvement/show.html.twig', [
             'mouvement' => $mouvement,
         ]);

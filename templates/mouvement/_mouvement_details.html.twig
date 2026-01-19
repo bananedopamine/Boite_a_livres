@@ -1,0 +1,36 @@
+{# @author : Dufour Marc (marc.dufour@stjosup.com)
+ # @version : 1.1
+ # @lastUpdate : 19/01/2026 (Ajout classe pour interception AJAX)
+ #}
+
+{# templates/mouvement/_mouvement_details.html.twig #}
+<h1>Détails du mouvement</h1>
+<table>
+    <tbody>
+        <tr>
+            <th>id</th>
+            <td>{{ mouvement.id }}</td> 
+        </tr>
+        <tr>
+            <th>Livre</th>
+            <td>
+                {% if mouvement.livre %}
+                    <a href="{{ path('app_livre_show', {id: mouvement.livre.id}) }}" class="modal-trigger">
+                        {{ mouvement.livre.isbn }}
+                    </a>
+                {% else %}
+                    <span class="text-danger">Livre supprimé</span>
+                {% endif %}
+            </td>
+        </tr>
+        <tr>
+            <th>timestamp</th>
+            <td>{{ mouvement.dateHeure|date('d/m/Y H:i') }}</td>
+        </tr>
+        <tr>
+            <th>auteur</th>
+            <td>{{ mouvement.nomPrenom }}</td>
+        </tr>
+    </tbody>
+</table>
+{{ include('livre/_modal_livre_details.html.twig') }}
