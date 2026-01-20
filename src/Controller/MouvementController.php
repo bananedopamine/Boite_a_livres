@@ -33,7 +33,7 @@ class MouvementController extends AbstractController
     {
         // Si c'est une requête AJAX, on ne renvoie que le fragment Twig
         if ($request->isXmlHttpRequest()) {
-            return $this->render('mouvement/_mouvement_details.html.twig', [
+            return $this->render('mouvement/debut.html.twig', [
                 'selection_defaut' => $action
             ]);
         }
@@ -50,7 +50,7 @@ class MouvementController extends AbstractController
         // Si c'est une requête AJAX, on ne renvoie que le fragment Twig
         if ($request->isXmlHttpRequest()) {
             return $this->render('mouvement/_mouvement_details.html.twig', [
-                'mouvement' => $mouvement
+                'mouvement' => $mouvement,
             ]);
         }
 
@@ -63,7 +63,7 @@ class MouvementController extends AbstractController
     #[Route('/verification', name: 'app_mouvement_verification', methods: ['POST'])]
     public function verificationIsbn(Request $requete, LivreRepository $depotLivre): Response
     {
-        $isbnRecu = $requete->request->get('isbn'); 
+        $isbnRecu = $requete->request->get('isbn');
         $typeAction = $requete->request->get('type_action'); 
 
         $livre = $depotLivre->findOneBy(['isbn' => $isbnRecu]);
@@ -85,11 +85,12 @@ class MouvementController extends AbstractController
             if ($livre) {
                 return $this->redirectToRoute('app_mouvement_confirmation', [
                     'id' => $livre->getId(),
-                    'type' => 'false' 
+                    'type' => 'false'
                 ]);
-            } else {
-                return $this->redirectToRoute('app_livre_new', [
-                    'isbn_pre_rempli' => $isbnRecu,
+            } 
+            else {
+                return $this->redirectToRoute('app_livre_google_check', [
+                    'isbn' => $isbnRecu,
                     'origine' => 'mouvement_entree'
                 ]);
             }
