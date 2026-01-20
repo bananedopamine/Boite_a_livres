@@ -3,6 +3,16 @@ Création d'une boite à livres, chez IES ingénierie à Port - Jerome /seine
 
 ---
 
+# Versions : 
+
+- PHP : 8.4
+
+- Symfony : 7.3
+
+- Symfony CLI : 5.16.1 
+
+---
+
 ## Accès public (sans connexion admin) :
     - Entrée d'un livre
     - Sortie d'un livre
