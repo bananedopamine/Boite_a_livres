@@ -39,7 +39,7 @@ class AdminSecurityController extends AbstractController
                 $this->session->set('admin_authenticated', true);
                 
                 $this->addFlash('success', 'Connexion admin réussie.');
-                return $this->redirectToRoute('app_livre_index');
+                return $this->redirectToRoute('home_index');
             }
 
             $tentatives = $this->session->get('login_attempts', 0) + 1;
