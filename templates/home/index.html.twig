@@ -1,125 +1,133 @@
 {# @author : Dufour Marc (marc.dufour@stjosup.com)
- # @version : 1
- # @dateCreate : 12/01/2026
- # @lastUpdate : 12/01/2026
+ # @version : 1.3
+ # @lastUpdate : 22/01/2026 (Logique SPA - Orchestration des modales)
  #}
- 
+
 {% extends 'base.html.twig' %}
 
 {% block body %}
-
 <div class="container" style="text-align: center; margin-top: 50px;">
-    <h1>Bienvenue dans la gestion de stock</h1>
+    <h1>Gestion de Stock IES</h1>
+    <p>Choisissez une action pour commencer le scan.</p>
     
     <nav style="display: flex; justify-content: center; gap: 20px; margin-top: 30px;">
-        
-        {# BOUTON 1 : ENTRÉE (Dépot) #}
-        <a href="{{ path('app_mouvement_debut', {'action': 'false'}) }}" class="modal-trigger">
-            <button class="btn btn-primary btn-lg">Déposer un livre</button>
-        </a>
+        {# BOUTON ENTRÉE : On passe 'false' pour indiquer que ce n'est PAS une sortie #}
+        <button class="btn btn-primary btn-lg" onclick="ouvrirScan('false')">
+            Déposer un livre
+        </button>
 
-        {# BOUTON 2 : SORTIE (Retrait) #}
-        <a href="{{ path('app_mouvement_debut', {'action': 'true'}) }}" class="modal-trigger">
-            <button class="btn btn-warning btn-lg">Prendre un livre</button>
-        </a>
+        {# BOUTON SORTIE : On passe 'true' pour indiquer que c'est une sortie #}
+        <button class="btn btn-warning btn-lg" onclick="ouvrirScan('true')">
+            Prendre un livre
+        </button>
 
-        {# BOUTON 3 : Bibliothèque #}
-        <a href="{{ path('app_livre_index') }}">
-            <button class="btn btn-info btn-lg">Bibliothèque</button>
+        <a href="{{ path('app_livre_index') }}" class="btn btn-info btn-lg">
+            Bibliothèque
         </a> 
-
     </nav>
 </div>
-
-{# Structure de la Modale #}
-<dialog id="livre-modal" style="width: 50%; border-radius: 8px; border: 1px solid #ccc; padding: 20px;">
-    <div id="modal-content">
-        </div>
-    <br>
-    <button type="button" onclick="document.getElementById('livre-modal').close()">Fermer</button>
-</dialog>
-
 {% endblock %}
 
 {% block javascripts %}
 <script>
-    /**
-     * Fonction utilitaire pour charger du contenu dans la modale
-     */
-    async function loadToModal(url) {
-        const modal = document.getElementById('livre-modal');
-        const content = document.getElementById('modal-content');
+    const modalePrincipale = document.getElementById('modale_principale');
+    let typeActionActuel = 'false'; // Garde en mémoire si c'est Entrée ou Sortie
 
-        try {
-            const response = await fetch(url, {
-               headers: { 'X-Requested-With': 'XMLHttpRequest' }
-            });
-            const html = await response.text();
-            content.innerHTML = html;
-            
-            if (modal && !modal.open) {
-                modal.showModal();
-            }
-        } catch (err) {
-            console.error('Erreur de chargement :', err);
-        }
+    /**
+     * 1. Ouvre la première modale (le scan ISBN)
+     */
+    function ouvrirScan(action) {
+        typeActionActuel = action;
+        const url = "{{ path('app_mouvement_debut_fragment') }}?action=" + action;
+        chargerModale(url);
     }
 
-    // --- 1. OUVERTURE : Clic sur le nom (Show) ou sur Modifier (Edit) ---
-    document.addEventListener('click', (e) => {
-        const trigger = e.target.closest('.modal-trigger, .edit-modal-trigger');
-        if (trigger) {
-            e.preventDefault();
-            loadToModal(trigger.href);
-        }
-    });
-
-    // --- 2. ENREGISTREMENT : Intercepter la soumission du formulaire ---
-    document.addEventListener('submit', async (e) => {
-        const content = document.getElementById('modal-content');
-        // On vérifie que le formulaire soumis est bien DANS la modale
-        if (!content || !content.contains(e.target)) return;
-
-        const modal = document.getElementById('livre-modal');
-        const form = e.target;
-        
+    /**
+     * 2. ÉCOUTEUR GLOBAL DE SOUMISSION (Le Cerveau)
+     * On intercepte tous les formulaires qui apparaissent dans la modale
+     */
+    modalePrincipale.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const formData = new FormData(form);
+        const formulaire = e.target;
+        const actionUrl = formulaire.action;
+        const formData = new FormData(formulaire);
 
-        // --- CORRECTION AJOUTÉE ICI ---
-        // On ajoute manuellement le bouton de soumission au FormData
-        if (e.submitter && e.submitter.name) {
-            formData.append(e.submitter.name, e.submitter.value);
+        // --- CAS A : Soumission du SCAN ISBN ---
+        if (actionUrl.includes('verification') || formulaire.querySelector('#isbnInput')) {
+            const isbn = formulaire.querySelector('#isbnInput').value;
+            verifierIsbn(isbn);
+            return;
         }
 
-        const actionUrl = form.getAttribute('action') || window.location.href;
-
+        // --- CAS B : Soumission du NOUVEAU LIVRE ou CONFIRMATION ---
         try {
-            const response = await fetch(actionUrl, {
+            const reponse = await fetch(actionUrl, {
                 method: 'POST',
                 body: formData,
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
             });
 
-            if (response.ok) {
-                try {
-                    const result = await response.json();
-                    if (result.success) {
-                        modal.close();
-                        window.location.reload(); 
-                        return;
-                    }
-                } catch (jsonErr) {
-                    modal.close();
-                    window.location.reload();
+            const resultat = await reponse.json();
+
+            if (resultat.success) {
+                if (resultat.id) {
+                    // Si on vient de créer un livre, on passe à la confirmation finale
+                    ouvrirConfirmation(resultat.id);
+                } else {
+                    // Si on a finalisé le mouvement, on ferme tout
+                    modalePrincipale.close();
+                    window.location.reload(); // Pour afficher le message flash de succès
                 }
-            } else if (response.status === 422) {
-                // Erreur de validation : on remplace le formulaire par celui avec les erreurs
-                content.innerHTML = await response.text();
             }
-        } catch (err) {
-            console.error("Erreur lors de l'envoi :", err);
+        } catch (erreur) {
+            console.error("Erreur soumission formulaire:", erreur);
         }
     });
+
+    /**
+     * 3. Logique de vérification ISBN (Appel API)
+     */
+    async function verifierIsbn(isbn) {
+        try {
+            const reponse = await fetch(`/livre/api/verif-isbn/${isbn}`);
+            const resultat = await reponse.json();
+
+            if (resultat.statut === 'existe') {
+                // Le livre est en BDD -> Go confirmation
+                ouvrirConfirmation(resultat.id);
+            } 
+            else if (resultat.statut === 'google') {
+                // Trouvé sur Google -> Go formulaire création pré-rempli
+                ouvrirFormulaireNouveau(resultat.donnees);
+            } 
+            else {
+                // Pas trouvé -> Affichage "Livre inconnu" (On le fera dans la prochaine étape)
+                document.getElementById('contenu_modale').innerHTML = `
+                    <h3>Livre inconnu</h3>
+                    <p>L'ISBN <strong>${resultat.isbn}</strong> n'a pas été trouvé.</p>
+                    <button onclick="ouvrirScan('${typeActionActuel}')">Réessayer</button>
+                `;
+            }
+        } catch (erreur) {
+            console.error("Erreur API ISBN:", erreur);
+        }
+    }
+
+    /**
+     * 4. Affiche le formulaire de création de livre
+     */
+    function ouvrirFormulaireNouveau(donnees) {
+        const params = new URLSearchParams(donnees).toString();
+        const url = "{{ path('app_livre_new') }}?" + params;
+        chargerModale(url);
+    }
+
+    /**
+     * 5. Affiche l'étape finale (Nom/Prénom)
+     */
+    function ouvrirConfirmation(livreId) {
+        const url = `/mouvement/confirmation-fragment/${livreId}?type_action=${typeActionActuel}`;
+        chargerModale(url);
+    }
 </script>
 {% endblock %}
