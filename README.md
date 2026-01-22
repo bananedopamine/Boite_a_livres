@@ -48,3 +48,4 @@ PIN_ADMIN=[Code pin à 6 chiffres]
 -{Concern:xxxx} / {Answer Concern:xxxx} :
 
     Ouverture et fermeture d'un questionnement sur les fonctionnalités et/ou la suite du programme 
+    
