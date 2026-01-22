@@ -1,7 +1,7 @@
 /* @author : Dufour Marc (marc.dufour@stjosup.com)
- * @version : 1
+ * @version : 1.1
  * @dateCreate : 19/01/2026
- * @lastUpdate : 19/01/2026
+ * @lastUpdate : 22/01/2026
  */
 
 /*******************************************/
@@ -37,14 +37,24 @@
     border-color: #ffeeba;
 }
 
-
 /*******************************************/
 /*                 MODAL                   */
 /*******************************************/
 
-/* ------------ Modal Général ------------ */
+/* --- Modal Général (base.html.twig) --- */
+.modal-main {
+    width: 100%;
+    max-width: 600px;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
 
-/* Ajustement du tableau à l'intérieur de la modale */
+.btn-modal-close {
+    margin-top: 20px;
+    background: #666;
+}
+
 #modal-content table {
     width: 100%;
     margin-bottom: 20px;
@@ -72,13 +82,72 @@
     backdrop-filter: blur(3px);
 }
 
-/* Style de l'arrière-plan quand la modale est ouverte */
-#livre-modal::backdrop {
-    background-color: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(3px);
+/* --- Éléments de Formulaire dans Modale (_modal_debut et _modal_confirmation) --- */
+.form-group-modal {
+    margin-bottom: 15px;
 }
-/* Style des boutons dans la modale */
-#livre-modal button, 
-#livre-modal .button {
-    cursor: pointer;
+
+.input-full {
+    width: 100%;
+    padding: 10px;
+}
+
+.input-isbn-large {
+    width: 100%;
+    font-size: 1.2rem;
+    padding: 10px;
+}
+
+.modal-actions-end {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.modal-actions-between {
+    display: flex;
+    gap: 10px;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* --- Détails Livre dans Modale (_modal_confirmation) --- */
+.book-summary-box {
+    background: #f4f4f4;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    display: flex;
+    gap: 15px;
+    align-items: start;
+}
+
+.img-cover-thumb {
+    max-width: 80px;
+    border-radius: 4px;
+}
+
+.text-action-label {
+    margin: 0;
+    font-weight: bold;
+}
+
+.text-success-bold { color: #5cb85c; }
+.text-danger-bold { color: #d9534f; }
+
+/*******************************************/
+/*                 PAGES                   */
+/*******************************************/
+
+/* --- Accueil (index.html.twig) --- */
+.home-container {
+    text-align: center;
+    margin-top: 50px;
+}
+
+.home-nav-menu {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 30px;
 }

@@ -2,9 +2,9 @@
 
 <h3>Étape Finale : Confirmation</h3>
 
-<div style="background: #f4f4f4; padding: 15px; border-radius: 5px; margin-bottom: 20px; display: flex; gap: 15px; align-items: start;">
+<div class="book-summary-box">
     {% if livre.lienImg %}
-        <img src="{{ livre.lienImg }}" alt="Couverture" style="max-width: 80px; border-radius: 4px;">
+        <img src="{{ livre.lienImg }}" alt="Couverture" class="img-cover-thumb">
     {% endif %}
     <div>
         <strong>Titre :</strong> {{ livre.nom }} <br>
@@ -18,13 +18,13 @@
     {# On transmet le type d'action pour le contrôleur #}
     <input type="hidden" name="type_action" value="{{ estSortie ? 'true' : 'false' }}">
 
-    <div style="margin-bottom: 15px;">
+    <div class="form-group-modal">
         <label for="nomPrenom">Votre Nom et Prénom :</label>
         <input type="text" id="nomPrenom" name="nomPrenom" placeholder="Qui effectue l'opération ?" required autofocus 
-               style="width: 100%; padding: 10px;">
+               class="input-full">
     </div>
 
-    <div style="display: flex; gap: 10px; justify-content: space-between; align-items: center;">
+    <div class="modal-actions-between">
         <p style="margin: 0; color: {{ estSortie ? '#d9534f' : '#5cb85c' }}; font-weight: bold;">
             Action : {{ estSortie ? 'SORTIE' : 'ENTRÉE' }}
         </p>

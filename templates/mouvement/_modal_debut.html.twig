@@ -3,22 +3,22 @@
 <h3>Étape 1 : Scan du livre</h3>
 
 <form id="form_scan" action="{{ path('app_mouvement_debut_fragment') }}" method="post">
-    <div style="margin-bottom: 15px;">
+    <div class="form-group-modal">
         <label>Type de mouvement :</label>
-        <select name="type_action_select" id="type_action_select" style="width: 100%;">
+        <select name="type_action_select" id="type_action_select" class="input-full">
             <option value="false" {{ selection_defaut == 'false' ? 'selected' : '' }}> ENTRÉE (Retour)</option>
             <option value="true"  {{ selection_defaut == 'true'  ? 'selected' : '' }}> SORTIE (Emprunt)</option>
         </select>
     </div>
 
-    <div style="margin-bottom: 15px;">
+    <div class="form-group-modal">
         <label>Scanner ou entrer l'ISBN :</label>
         {# L'ID 'isbnInput' est crucial car le JS de index.html.twig le surveille #}
         <input type="text" name="isbn" id="isbnInput" placeholder="Ex: 978..." required autofocus 
-               style="width: 100%; font-size: 1.2rem; padding: 10px;">
+               class="input-isbn-large">
     </div>
 
-    <div style="display: flex; gap: 10px; justify-content: flex-end;">
+    <div class="modal-actions-end">
         <button type="submit" class="btn btn-primary">Vérifier le livre</button>
     </div>
 </form>
