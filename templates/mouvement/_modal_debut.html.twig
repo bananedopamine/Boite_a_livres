@@ -1,0 +1,24 @@
+<div class="container">
+    <form action="{{ path('app_mouvement_verification') }}" method="post">
+        <div class="mb-3">
+            <label class="form-label">Type de mouvement :</label>
+            <select name="type_action" class="form-select">
+                <option value="false" {{ selection_defaut == 'false' ? 'selected' : '' }} > ENTRÉE (Retour de livre)</option>
+                <option value="true"  {{ selection_defaut == 'true'  ? 'selected' : '' }} > SORTIE (Emprunt de livre)</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Scanner ou entrer l'ISBN :</label>
+            {# On ajoute un ID à l'input pour le cibler facilement #}
+            <input type="text" name="isbn" id="isbnInput" class="form-control" required autofocus>
+        </div>
+
+        <div class="d-flex gap-2">
+
+            <button type="submit" class="btn btn-primary" onclick="checkGoogle()">
+                Suivant
+            </button>
+        </div>
+    </form>
+</div>

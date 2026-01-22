@@ -33,7 +33,7 @@ class MouvementController extends AbstractController
     {
         // Si c'est une requête AJAX, on ne renvoie que le fragment Twig
         if ($request->isXmlHttpRequest()) {
-            return $this->render('mouvement/debut.html.twig', [
+            return $this->render('mouvement/_modal_debut.html.twig', [
                 'selection_defaut' => $action
             ]);
         }
