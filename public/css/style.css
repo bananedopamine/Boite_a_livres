@@ -49,6 +49,9 @@
     border-radius: 8px;
     border: 1px solid #ccc;
 }
+.btn-modal {
+    margin-top: 20px;
+}
 
 .btn-modal-close {
     margin-top: 20px;

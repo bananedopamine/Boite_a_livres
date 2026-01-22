@@ -89,6 +89,12 @@
      */
     async function verifierIsbn(isbn) {
         try {
+            // Avant de vérifier, on synchronise le type d'action au cas où l'utilisateur l'a changé dans le select
+            const selectAction = document.getElementById('type_action_select');
+            if (selectAction) {
+                typeActionActuel = selectAction.value;
+            }
+
             const reponse = await fetch(`/livre/api/verif-isbn/${isbn}`);
             const resultat = await reponse.json();
 
@@ -105,7 +111,12 @@
                 document.getElementById('contenu_modale').innerHTML = `
                     <h3>Livre inconnu</h3>
                     <p>L'ISBN <strong>${resultat.isbn}</strong> n'a pas été trouvé.</p>
-                    <button onclick="ouvrirScan('${typeActionActuel}')">Réessayer</button>
+                    <div class="modal-actions-between" class=".btn-modal">
+                        <button class="btn btn-primary" onclick="ouvrirFormulaireNouveau({isbn: '${isbn}'})">
+                            Créer manuellement
+                        </button>
+                        <button class="btn" onclick="ouvrirScan('${typeActionActuel}')">Réessayer</button>
+                    </div>
                 `;
             }
         } catch (erreur) {
