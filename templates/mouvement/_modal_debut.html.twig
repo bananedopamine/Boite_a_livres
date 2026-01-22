@@ -1,24 +1,29 @@
-<div class="container">
-    <form action="{{ path('app_mouvement_verification') }}" method="post">
-        <div class="mb-3">
-            <label class="form-label">Type de mouvement :</label>
-            <select name="type_action" class="form-select">
-                <option value="false" {{ selection_defaut == 'false' ? 'selected' : '' }} > ENTRÉE (Retour de livre)</option>
-                <option value="true"  {{ selection_defaut == 'true'  ? 'selected' : '' }} > SORTIE (Emprunt de livre)</option>
-            </select>
-        </div>
+{# templates/mouvement/_modal_debut.html.twig #}
 
-        <div class="mb-3">
-            <label class="form-label">Scanner ou entrer l'ISBN :</label>
-            {# On ajoute un ID à l'input pour le cibler facilement #}
-            <input type="text" name="isbn" id="isbnInput" class="form-control" required autofocus>
-        </div>
+<h3>Étape 1 : Scan du livre</h3>
 
-        <div class="d-flex gap-2">
+<form id="form_scan" action="{{ path('app_mouvement_debut_fragment') }}" method="post">
+    <div style="margin-bottom: 15px;">
+        <label>Type de mouvement :</label>
+        <select name="type_action_select" id="type_action_select" style="width: 100%;">
+            <option value="false" {{ selection_defaut == 'false' ? 'selected' : '' }}> ENTRÉE (Retour)</option>
+            <option value="true"  {{ selection_defaut == 'true'  ? 'selected' : '' }}> SORTIE (Emprunt)</option>
+        </select>
+    </div>
 
-            <button type="submit" class="btn btn-primary" onclick="checkGoogle()">
-                Suivant
-            </button>
-        </div>
-    </form>
-</div>
+    <div style="margin-bottom: 15px;">
+        <label>Scanner ou entrer l'ISBN :</label>
+        {# L'ID 'isbnInput' est crucial car le JS de index.html.twig le surveille #}
+        <input type="text" name="isbn" id="isbnInput" placeholder="Ex: 978..." required autofocus 
+               style="width: 100%; font-size: 1.2rem; padding: 10px;">
+    </div>
+
+    <div style="display: flex; gap: 10px; justify-content: flex-end;">
+        <button type="submit" class="btn btn-primary">Vérifier le livre</button>
+    </div>
+</form>
+
+<script>
+    // Petit script pour forcer le focus sur l'input au chargement de la modale
+    setTimeout(() => document.getElementById('isbnInput').focus(), 100);
+</script>
