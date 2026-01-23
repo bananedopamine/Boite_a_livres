@@ -1,0 +1,20 @@
+{# templates/livre/_modal_not_found.html.twig #}
+
+<div class="modal-404">
+    <h3>Livre introuvable</h3>
+    
+    <p>L'ISBN <strong>{{ isbn }}</strong> n'existe pas dans notre base de données et n'a pas pu être identifié sur Google Books.</p>
+    
+    <div class="alert alert-warning">
+        Vérifiez que le code-barres est bien celui du livre ou saisissez les informations manuellement dans la bibliothèque.
+    </div>
+
+    <div class="modal-actions-center" class="btn btn-404">
+        <button class="btn btn-secondary" onclick="document.getElementById('modale_principale').close()">
+            Annuler
+        </button>
+        <button class="btn btn-primary" onclick="ouvrirScan('{{ typeAction }}')">
+            Réessayer le scan
+        </button>
+    </div>
+</div>
