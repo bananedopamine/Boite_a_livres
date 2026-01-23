@@ -13,7 +13,27 @@ Création d'une boite à livres, chez IES ingénierie à Port - Jerome /seine
 
 ---
 
+## Lancement du serveur en local avec symfony
+
+Après avoir installer les prérequis :
+ - Se rendre dans la racine du projet
+ - Ouvrir un invite de commande (cmd)
+ - Y écrire cette ligne de commande :
+```bash
+symfony serve -vv
+```
+Pour arrêter le serveur, tapper la combinaison de touche "ctrl" + "c".
+
+Pour s'assurer de l'arrêt du serveur local, vous pouvez écrire dans l'invite de commande :
+```bash
+symfony serve:stop
+```
+
+---
+
 ## Accès public (sans connexion admin) :
+[Page d'accueil du projet](http://localhost:8000/)
+
     - Entrée d'un livre
     - Sortie d'un livre
     - Consultation de la bibliothèque 
@@ -25,7 +45,7 @@ Création d'une boite à livres, chez IES ingénierie à Port - Jerome /seine
 
 ## Accès admin
 
-Accès par un code pin, écris en brute dans le point env sous la variable :
+Accès par un code pin, écris en brute dans le .env sous la variable :
 ```.env
 PIN_ADMIN=[Code pin à 6 chiffres]
 ```
@@ -37,14 +57,19 @@ PIN_ADMIN=[Code pin à 6 chiffres]
 
 [Projet GitHub](https://github.com/bananedopamine/Boite_a_livres) 
 
--{Temp:xxxx} / {Closing Temp:xxxx} :
+- {Temp:xxxx} / {Closing Temp:xxxx} :
 
     Ouvrir et fermer un problème temporaire, résolu dans les commit suivant
 
--{Error:xxx} / {Closing Error:xxxx} :
+- {Error:xxx} / {Closing Error:xxxx} :
 
     Ouverture et fermeture d'une erreur ne faisant pas partie de la ligne de travail actuel mais posant un probème à l'utilisation de l'application
 
--{Concern:xxxx} / {Answer Concern:xxxx} :
+- {Concern:xxxx} / {Answer Concern:xxxx} :
 
     Ouverture et fermeture d'un questionnement sur les fonctionnalités et/ou la suite du programme 
+
+- {esthétique} :
+
+    Balise concernant uniquement l'affichage d'une page ou l'esthétique général du code.
+    Porter sur les commentaires dans le code, le css ou les balises HTML utilisées
