@@ -148,4 +148,6 @@ class MouvementController extends AbstractController
 
         return $this->json(['success' => true]);
     }
+
+    #endregion
 }

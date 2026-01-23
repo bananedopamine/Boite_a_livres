@@ -165,7 +165,7 @@ class LivreController extends AbstractController
         }
 
         // Retourne uniquement le fragment Twig pour l'affichage en modale
-        return $this->render('livre/_modal_new.html.twig', [
+        return $this->render('livre/_modal_livre_new.html.twig', [
             'form' => $formulaire->createView(),
         ], new Response(null, $formulaire->isSubmitted() ? 422 : 200));
     }

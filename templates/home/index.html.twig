@@ -139,7 +139,7 @@
      * 5. Affiche l'étape finale (Nom/Prénom)
      */
     function ouvrirConfirmation(livreId) {
-        const url = `/mouvement/confirmation-fragment/${livreId}?type_action=${typeActionActuel}`;
+        const url = `/mouvement/confirmation/${livreId}?type_action=${typeActionActuel}`;
         chargerModale(url);
     }
 </script>
