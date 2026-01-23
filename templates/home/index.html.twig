@@ -22,7 +22,9 @@
         </button>
 
         <a href="{{ path('app_livre_index') }}" class="btn btn-info btn-lg">
-            Bibliothèque
+            <button class="btn btn-info btn-lg">
+                Bibliothèque
+            </button>
         </a> 
     </nav>
 </div>
@@ -38,7 +40,7 @@
      */
     function ouvrirScan(action) {
         typeActionActuel = action;
-        const url = "{{ path('app_mouvement_debut_fragment') }}?action=" + action;
+        const url = "{{ path('app_mouvement_debut') }}?action=" + action;
         chargerModale(url);
     }
 

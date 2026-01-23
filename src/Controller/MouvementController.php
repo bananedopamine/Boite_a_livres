@@ -2,7 +2,9 @@
 
 namespace App\Controller;
 
+use App\Entity\Livre;
 use App\Entity\Mouvement;
+use App\Repository\MouvementRepository;
 use App\Repository\LivreRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -10,15 +12,87 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
+
 #[Route('/mouvement')]
 class MouvementController extends AbstractController
 {
+    #region Gestion_mouvement index, show, search
+
+    #[Route('/', name:'app_mouvement_index')]
+    public function index(MouvementRepository $mouvements) : Response
+    {
+        return $this->render('mouvement/index.html.twig', [
+            'mouvements' => $mouvements->findBy([], ['dateHeure' => 'DESC']),
+        ]);
+    }
+
+    #[Route('/show/{id<\d+>}', name: 'app_mouvement_show')]
+    public function show(Mouvement $mouvement, Request $request): Response
+    {
+        // Si c'est une requête AJAX, on ne renvoie que le  Twig
+        if ($request->isXmlHttpRequest()) {
+            return $this->render('mouvement/_mouvement_details.html.twig', [
+                'mouvement' => $mouvement,
+            ]);
+        }
+
+        // Sinon, on renvoie la page complète habituelle 
+        return $this->render('mouvement/show.html.twig', [
+            'mouvement' => $mouvement,
+        ]);
+    }
+
+    #[Route('/recherche', name: 'app_mouvement_search', methods: ['GET'])]
+    public function search(Request $request, MouvementRepository $mouvementRepository): Response
+    {
+        $isbn = $request->query->get('isbn');
+        $auteur = $request->query->get('auteur');
+        $user = $request->query->get('user');
+        $direction = $request->query->get('sort', 'DESC');
+
+        $qb = $mouvementRepository->createQueryBuilder('m')
+            ->leftJoin('m.livre', 'l')
+            ->addSelect('l');
+
+        if (!empty($isbn)) {
+            $qb->andWhere('l.isbn LIKE :isbn')
+               ->setParameter('isbn', '%' . $isbn . '%');
+        }
+
+        if (!empty($auteur)) {
+            $qb->andWhere('l.auteur LIKE :auteur')
+               ->setParameter('auteur', '%' . $auteur . '%');
+        }
+
+        // Recherche sur le nom de la personne ayant fait le mouvement
+        if (!empty($user)) {
+            $qb->andWhere('m.nomPrenom LIKE :user')
+               ->setParameter('user', '%' . $user . '%');
+        }
+
+        $mouvements = $qb->orderBy('m.dateHeure', $direction)
+                         ->getQuery()
+                         ->getResult();
+        
+        return $this->render('mouvement/index.html.twig', [
+            'mouvements' => $mouvements,
+            'last_isbn' => $isbn,
+            'last_auteur' => $auteur,
+            'last_user' => $user, 
+            'current_sort' => $direction,
+        ]);
+    }
+
+    #endregion
+
+    #region Modal debut, confirmation, finaliser
+
     /**
-     * Retourne le formulaire de scan ISBN (fragment HTML pour modale).
+     * Retourne le formulaire de scan ISBN ( HTML pour modale).
      * Interagit avec : _modal_debut.html.twig
      */
-    #[Route('/debut-fragment', name: 'app_mouvement_debut_fragment')]
-    public function debutFragment(Request $requete): Response
+    #[Route('/debut', name: 'app_mouvement_debut')]
+    public function debut(Request $requete): Response
     {
         // 'action' contient "true" (Sortie) ou "false" (Entrée)
         $actionMouvement = $requete->query->get('action'); 
@@ -29,11 +103,11 @@ class MouvementController extends AbstractController
     }
 
     /**
-     * Retourne le formulaire de confirmation (fragment HTML pour modale).
+     * Retourne le formulaire de confirmation ( HTML pour modale).
      * Interagit avec : _modal_confirmation.html.twig
      */
-    #[Route('/confirmation-fragment/{id<\d+>}', name: 'app_mouvement_confirmation_fragment')]
-    public function confirmationFragment(int $id, Request $requete, LivreRepository $livreRepo): Response
+    #[Route('/confirmation/{id<\d+>}', name: 'app_mouvement_confirmation')]
+    public function confirmation(int $id, Request $requete, LivreRepository $livreRepo): Response
     {
         $livre = $livreRepo->find($id);
         $estUneSortie = $requete->query->get('type_action') === 'true';

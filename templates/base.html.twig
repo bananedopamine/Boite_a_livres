@@ -1,7 +1,7 @@
 {# @author : Dufour Marc (marc.dufour@stjosup.com)
  # @version : 1.2
  # @dateCreate : 12/01/2026
- # @lastUpdate : 22/01/2026 (Migration vers Webapp Modale)
+ # @lastUpdate : 23/01/2026 (Migration vers Webapp Modale)
  #}
 
 <!DOCTYPE html>
@@ -9,7 +9,7 @@
     <head>
         <meta charset="UTF-8">
         <title>{% block title %}Gestion Stock - IES{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>📚</text></svg>">
+        {# <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>📚</text></svg>"> #}
         
         {# Intégration de Simple.css #}
         <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css"> 
@@ -21,69 +21,95 @@
         <header>
             <nav>
                 <div>
-                    <a href="{{ path('app_home') }}"><strong>Accueil</strong></a>
-                    <a href="{{ path('app_livre_index') }}">Bibliothèque</a>
+                    <a href="javascript:history.back()" title="Retour">
+                        <img src="{{ asset('extras/images/Back_arrow.png')}}" style="width: 50px" align="center" alt="Retour à la liste"> 
+                    </a>
+
+                    <a href="{{path('home_index')}}" >
+                        <img src="{{ asset('extras/images/Accueil.png') }}" alt "Accueil" style="width: 50px;height: 50px " align="center">
+                    </a>
+
+                    {% if app.session.get('admin_authenticated') %}
+                    <td>
+                        <a href="{{ path('app_admin_index')}}">Accueil admin</a>
+                    </td>
+                    {% endif %}
                 </div>
+
+                <h1>Ma Boîte à Livres</h1>
+
                 <div>
-                    {% if is_granted('ROLE_ADMIN') %}
-                         <a href="{{ path('app_admin_dashboard') }}">Admin</a>
+                    {% if app.session.get('admin_authenticated') %}
+                        <a href="{{ path('app_admin_logout') }}">Déconnexion Admin</a>
+                    {% else %}
+
+                        <a href="{{ path('app_admin_login') }}">Admin</a>
+
                     {% endif %}
                 </div>
             </nav>
         </header>
 
         <main>
-            {# Affichage des messages flash #}
+            
             {% for label, messages in app.flashes %}
                 {% for message in messages %}
-                    <div class="alert alert-{{ label }} flash-message">
+                    <div class="alert alert-{{ label }} flash-message alert-dismissible fade show" role="alert">
                         {{ message }}
                     </div>
-                {% endfor %}{% endfor %}
+                {% endfor %}
+            {% endfor %}
 
             {% block body %}{% endblock %}
+
+            
+
+
         </main>
 
-        {# --- STRUCTURE UNIQUE POUR LES MODALES --- #}
         <dialog id="modale_principale" class="modal-main">
             <div id="contenu_modale">
                 </div>
             <button type="button" onclick="document.getElementById('modale_principale').close()" class="btn-modal-close">Fermer</button>
         </dialog>
 
-        <footer>
+         <footer>
             <p>&copy; {{ "now"|date("Y") }} - IES Ingénierie</p>
         </footer>
 
-        {# Scripts globaux #}
         <script>
-            // Gestion automatique de la disparition des messages flash
             document.addEventListener('DOMContentLoaded', () => {
-                const notifications = document.querySelectorAll('.flash-message');
-                notifications.forEach((notice) => {
+                const notices = document.querySelectorAll('.flash-message');
+
+                notices.forEach((notice) => {
                     setTimeout(() => {
-                        notice.style.transition = "opacity 0.8s ease-out";
+                        notice.style.transition = "opacity 0.8s ease-out, transform 0.8s ease-out";
                         notice.style.opacity = "0";
-                        setTimeout(() => notice.remove(), 800);
-                    }, 3000);
+                        notice.style.transform = "translateY(-20px)"; 
+
+                        setTimeout(() => {
+                            notice.remove();
+                        }, 800);
+                    }, 5000);
                 });
             });
 
+                
             /**
-             * Fonction globale pour ouvrir la modale et charger du contenu
-             * Cette fonction sera utilisée par notre "cerveau" JS dans index.html.twig
-             */
+                * Fonction globale pour ouvrir la modale et charger du contenu
+                * Cette fonction sera utilisée par notre "cerveau" JS dans index.html.twig
+                */
             async function chargerModale(url) {
                 const modale = document.getElementById('modale_principale');
                 const contenu = document.getElementById('contenu_modale');
-                
+
                 try {
                     const reponse = await fetch(url, {
                         headers: { 'X-Requested-With': 'XMLHttpRequest' }
                     });
                     const html = await reponse.text();
                     contenu.innerHTML = html;
-                    
+
                     if (!modale.open) {
                         modale.showModal();
                     }
