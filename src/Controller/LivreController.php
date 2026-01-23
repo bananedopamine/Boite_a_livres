@@ -19,6 +19,13 @@ use Symfony\Component\HttpFoundation\RequestStack;
 class LivreController extends AbstractController
 {
 
+    private $session;
+
+    public function __construct(RequestStack $requestStack)
+    {
+        $this->session = $requestStack->getSession();
+    }
+
     #region défaut index, show, search
 
     #[Route('/', name: 'app_livre_index', methods: ['GET'])]
