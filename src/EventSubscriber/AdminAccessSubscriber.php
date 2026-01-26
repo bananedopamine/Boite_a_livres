@@ -25,12 +25,12 @@ class AdminAccessSubscriber implements EventSubscriberInterface
             return;
         }
 
-        if (str_starts_with($route, 'app_livre_')) {
-            $session = $this->requestStack->getSession();
-            if (!$session->get('admin_authenticated')) {
-                $event->setResponse(new RedirectResponse($this->router->generate('app_admin_login')));
-            }
-        }
+        // if (str_starts_with($route, 'app_livre_')) {
+        //     $session = $this->requestStack->getSession();
+        //     if (!$session->get('admin_authenticated')) {
+        //         $event->setResponse(new RedirectResponse($this->router->generate('app_admin_login')));
+        //     }
+        // }
     }
 
     public static function getSubscribedEvents(): array
