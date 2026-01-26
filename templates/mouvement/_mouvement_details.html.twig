@@ -1,9 +1,8 @@
 {# @author : Dufour Marc (marc.dufour@stjosup.com)
- # @version : 1.1
- # @lastUpdate : 19/01/2026 (Ajout classe pour interception AJAX)
+ # @version : 1.2
+ # @lastUpdate : 26/01/2026 (Ajout boutons Admin et sous-modale suppression)
  #}
 
-{# templates/mouvement/_mouvement_details.html.twig #}
 <h1>Détails du mouvement</h1>
 <table>
     <tbody>
@@ -15,6 +14,7 @@
             <th>Livre</th>
             <td>
                 {% if mouvement.livre %}
+                    {# Ce lien ouvre la modale "Livre" par dessus la modale "Mouvement" si nécessaire #}
                     <a href="{{ path('app_livre_show', {id: mouvement.livre.id}) }}" class="modal-trigger">
                         {{ mouvement.livre.isbn }}
                     </a>
@@ -24,13 +24,20 @@
             </td>
         </tr>
         <tr>
-            <th>timestamp</th>
+            <th>Date / Heure</th>
             <td>{{ mouvement.dateHeure|date('d/m/Y H:i') }}</td>
         </tr>
         <tr>
-            <th>auteur</th>
+            <th>Type</th>
+            <td>
+                <span class="badge {{ mouvement.Type ? 'bg-danger' : 'bg-success' }}">
+                    {{ mouvement.Type ? 'Sortie' : 'Entrée' }}
+                </span>
+            </td>
+        </tr>
+        <tr>
+            <th>Auteur de l'action</th>
             <td>{{ mouvement.nomPrenom }}</td>
         </tr>
     </tbody>
 </table>
-{{ include('livre/_modal_livre_details.html.twig') }}
