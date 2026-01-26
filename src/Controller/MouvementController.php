@@ -133,7 +133,7 @@ class MouvementController extends AbstractController
         $mouvement = new Mouvement();
         $mouvement->setLivre($livre);
         $mouvement->setNomPrenom($nomUtilisateur);
-        $mouvement->setDateHeure(new \DateTimeImmutable());
+        $mouvement->setDateHeure(new \DateTime());
         $mouvement->setType($typeSortie);
 
         // Mise à jour logique du stock
