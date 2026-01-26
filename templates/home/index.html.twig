@@ -136,11 +136,66 @@
     }
 
     /**
-     * 5. Affiche l'étape finale (Nom/Prénom)
-     */
-    function ouvrirConfirmation(livreId) {
+    * 5. Affiche l'étape finale (Nom/Prénom) en traitant du JSON
+    */
+    async function ouvrirConfirmation(livreId) {
         const url = `/mouvement/confirmation/${livreId}?type_action=${typeActionActuel}`;
-        chargerModale(url);
+        
+        try {
+            const reponse = await fetch(url, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+            const data = await reponse.json();
+
+            if (data.success) {
+                const livre = data.livre;
+                const couleurAction = data.estSortie ? '#d9534f' : '#5cb85c';
+                const labelAction = data.estSortie ? 'SORTIE' : 'ENTRÉE';
+                const texteBouton = data.estSortie ? "l'emprunt" : "le retour";
+                const classeBouton = data.estSortie ? 'btn-warning' : 'btn-success';
+
+                // On injecte le HTML dynamiquement dans la modale
+                document.getElementById('contenu_modale').innerHTML = `
+                    <h3>Étape Finale : Confirmation</h3>
+                    <div class="book-summary-box">
+                        ${livre.lienImg ? `<img src="${livre.lienImg}" alt="Couverture" class="img-cover-thumb">` : ''}
+                        <div>
+                            <strong>Titre :</strong> ${livre.titre} <br>
+                            <strong>Auteur :</strong> ${livre.auteur} <br>
+                            <strong>ISBN :</strong> ${livre.isbn} <br>
+                            <strong>Stock actuel :</strong> ${livre.stock}
+                        </div>
+                    </div>
+
+                    <form action="${data.urlFinaliser}" method="post">
+                        <input type="hidden" name="type_action" value="${data.estSortie}">
+
+                        <div class="form-group-modal">
+                            <label for="nomPrenom">Votre Nom et Prénom :</label>
+                            <input type="text" id="nomPrenom" name="nomPrenom" 
+                                placeholder="Qui effectue l'opération ?" required autofocus class="input-full">
+                        </div>
+
+                        <div class="modal-actions-between">
+                            <p style="margin: 0; color: ${couleurAction}; font-weight: bold;">
+                                Action : ${labelAction}
+                            </p>
+                            <button type="submit" class="btn ${classeBouton}">
+                                Valider ${texteBouton}
+                            </button>
+                        </div>
+                    </form>
+                `;
+
+                if (!modalePrincipale.open) {
+                    modalePrincipale.showModal();
+                }
+                // Focus automatique sur le champ nom
+                setTimeout(() => document.getElementById('nomPrenom').focus(), 100);
+            }
+        } catch (erreur) {
+            console.error("Erreur lors de la récupération de la confirmation :", erreur);
+        }
     }
 </script>
 {% endblock %}

@@ -110,11 +110,25 @@ class MouvementController extends AbstractController
     public function confirmation(int $id, Request $requete, LivreRepository $livreRepo): Response
     {
         $livre = $livreRepo->find($id);
+        
+        if (!$livre) {
+            return $this->json(['success' => false, 'message' => 'Livre non trouvé'], 404);
+        }
+    
         $estUneSortie = $requete->query->get('type_action') === 'true';
-
-        return $this->render('mouvement/_modal_confirmation.html.twig', [
-            'livre'     => $livre,
-            'estSortie' => $estUneSortie
+    
+        return $this->json([
+            'success'   => true,
+            'livre' => [
+                'id'      => $livre->getId(),
+                'titre'   => $livre->getNom(),
+                'auteur'  => $livre->getAuteur(),
+                'isbn'    => $livre->getIsbn(),
+                'stock'   => $livre->getNbStock(),
+                'lienImg' => $livre->getLienImg(),
+            ],
+            'estSortie'    => $estUneSortie,
+            'urlFinaliser' => $this->generateUrl('app_mouvement_finaliser', ['id' => $livre->getId()])
         ]);
     }
 
