@@ -48,7 +48,7 @@
      * 2. ÉCOUTEUR GLOBAL DE SOUMISSION (Le Cerveau)
      * On intercepte tous les formulaires qui apparaissent dans la modale
      */
-    modalePrincipale.addEventListener('submit', async (e) => {
+    document.addEventListener('submit', async (e) => {
         e.preventDefault();
         const formulaire = e.target;
         const actionUrl = formulaire.action;
@@ -69,16 +69,35 @@
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
             });
 
-            const resultat = await reponse.json();
+            const contentType = await reponse.headers.get('content-type');
 
-            if (resultat.success) {
-                if (resultat.id) {
-                    // Si on vient de créer un livre, on passe à la confirmation finale
-                    ouvrirConfirmation(resultat.id);
-                } else {
-                    // Si on a finalisé le mouvement, on ferme tout
-                    modalePrincipale.close();
-                    window.location.reload(); // Pour afficher le message flash de succès
+            // MODIFICATION : Détection du type de réponse
+            if (contentType && contentType.includes('application/json')) {
+                // Réponse JSON (ancien comportement)
+                const resultat = await reponse.json();
+                
+                if (resultat.success) {
+                    if (resultat.id) {
+                        // Si on vient de créer un livre, on passe à la confirmation finale
+                        ouvrirConfirmation(resultat.id);
+                    } else {
+                        // Si on a finalisé le mouvement, on ferme tout
+                        modalePrincipale.close();
+                        window.location.reload();
+                    }
+                }
+            } else {
+                // Réponse HTML (nouveau comportement)
+                const html = await reponse.text();
+                document.getElementById('contenu_modale').innerHTML = html;
+                
+                // Vérifier si c'est un succès (présence de data-success)
+                const successElement = document.querySelector('[data-success="true"]');
+                if (successElement && successElement.dataset.livreId) {
+                    // Auto-trigger la confirmation
+                    setTimeout(() => {
+                        ouvrirConfirmation(successElement.dataset.livreId);
+                    }, 1000);
                 }
             }
         } catch (erreur) {
