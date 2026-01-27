@@ -157,6 +157,10 @@ class MouvementController extends AbstractController
             $livre->setNbStock($livre->getNbStock() + 1);
         }
 
+        if (!$livre->isActif()){
+            $livre->setActif(true);
+        }
+
         $em->persist($mouvement);
         $em->flush();
 
