@@ -84,7 +84,7 @@ class LivreController extends AbstractController
 
     #endregion
 
-    #region gestion_livre verification 
+    #region verification 
 
     /**
      * API : Vérifie l'existence d'un livre (BDD locale puis Google Books).
@@ -203,12 +203,20 @@ class LivreController extends AbstractController
         if (!$this->session->get('admin_authenticated')) {
             return $this->redirectToRoute('app_admin_login');
         }
+        $livre->setActif(false);
 
-        if ($this->isCsrfTokenValid('delete'.$livre->getId(), $request->getPayload()->getString('_token'))) {
-            $entityManager->remove($livre);
-            $entityManager->flush();
-            $this->addFlash('success', 'Le livre a été supprimé.');
-        }
+        $entityManager->persist($livre);
+        $entityManager->flush();
+
+        // if ($livre->isActif()){
+        //     $livre->setActif(false);
+        // }
+
+        // if ($this->isCsrfTokenValid('delete'.$livre->getId(), $request->getPayload()->getString('_token'))) {
+        //     $entityManager->remove($livre);
+        //     $entityManager->flush();
+        //     $this->addFlash('success', 'Le livre a été supprimé.');
+        // }
 
         return $this->redirectToRoute('app_livre_index', [], Response::HTTP_SEE_OTHER);
     }

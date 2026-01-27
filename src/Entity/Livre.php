@@ -46,7 +46,7 @@ class Livre
     private Collection $mouvements;
 
     #[ORM\Column(nullable: true)]
-    private ?bool $actif = null;
+    private ?bool $actif = true;
 
     public function __construct()
     {
