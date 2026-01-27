@@ -45,6 +45,9 @@ class Livre
     #[ORM\OneToMany(targetEntity: Mouvement::class, mappedBy: 'livre')] 
     private Collection $mouvements;
 
+    #[ORM\Column(nullable: true)]
+    private ?bool $actif = null;
+
     public function __construct()
     {
         $this->mouvements = new ArrayCollection();
@@ -149,6 +152,18 @@ class Livre
                 $mouvement->setISBN(null);
             }
         }
+
+        return $this;
+    }
+
+    public function isActif(): ?bool
+    {
+        return $this->actif;
+    }
+
+    public function setActif(bool $actif): static
+    {
+        $this->actif = $actif;
 
         return $this;
     }
