@@ -4,7 +4,16 @@
 <p>Ce livre n'est pas encore dans votre bibliothèque. Les informations ont été récupérées via Google Books.</p>
 
 <div class="modal-form-container">
-    {{ form_start(form, {'attr': {'id': 'form_nouveau_livre'}}) }}
+    {{ form_start(form, {
+        'action': path('app_livre_new', form.vars.value.isbn ? {
+            'isbn': form.vars.value.isbn, 
+            'titre': form.vars.value.nom, 
+            'auteur': form.vars.value.auteur, 
+            'description': form.vars.value.description, 
+            'image': form.vars.value.lienImg
+        } : {}),
+        'attr': {'id': 'form_nouveau_livre', 'class': 'form-creation-livre'}
+    }) }}
         
         <div class="form-group-modal">
             {{ form_label(form.nom, 'Titre du livre') }}
