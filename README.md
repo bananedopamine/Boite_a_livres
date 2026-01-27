@@ -73,3 +73,7 @@ PIN_ADMIN=[Code pin à 6 chiffres]
 
     Balise concernant uniquement l'affichage d'une page ou l'esthétique général du code.
     Porter sur les commentaires dans le code, le css ou les balises HTML utilisées
+
+- {Switch ...}
+
+    Changement important d'un pan de l'application vers une autre manière d'execution
