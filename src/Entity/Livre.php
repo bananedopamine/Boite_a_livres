@@ -30,7 +30,7 @@ class Livre
     #[ORM\Column(length: 255)]
     private ?string $auteur = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255,nullable: true)]
     private ?string $description = null;
 
     #[ORM\Column(length: 255,nullable: true)]
@@ -94,7 +94,7 @@ class Livre
         return $this->description;
     }
 
-    public function setdescription(string $description): static
+    public function setdescription(?string $description): static
     {
         $this->description = $description;
 
