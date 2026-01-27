@@ -84,7 +84,7 @@ class LivreController extends AbstractController
 
     #endregion
 
-    #region gestion_livre verification, new, edit, delete
+    #region gestion_livre verification 
 
     /**
      * API : Vérifie l'existence d'un livre (BDD locale puis Google Books).
@@ -132,6 +132,10 @@ class LivreController extends AbstractController
             'isbn' => $isbn
         ]);
     }
+    
+    #endregion
+
+    #region new, edit, delete
 
     /**
      * Retourne le formulaire de création de livre (fragment HTML pour modale).
