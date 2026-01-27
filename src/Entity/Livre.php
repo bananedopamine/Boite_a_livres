@@ -106,7 +106,7 @@ class Livre
         return $this->lienImg;
     }
 
-    public function setLienImg(string $lienImg): static
+    public function setLienImg(?string $lienImg): static
     {
         $this->lienImg = $lienImg;
 
