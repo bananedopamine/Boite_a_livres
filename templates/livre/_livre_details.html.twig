@@ -30,6 +30,18 @@
             <th>NbStock</th>
             <td>{{ livre.NbStock }}</td>
         </tr>
+        {% if app.session.get('admin_authenticated') %}
+            <tr>
+                <th>actif</th>
+                <td>
+                    {% if livre.actif %}
+                        <span>Actif</span>
+                    {% else %}
+                        <span>Inactif</span>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endif %}
     </tbody>
 </table>
 
@@ -64,8 +76,12 @@
                 Annuler
             </button>
             
+            
+            <a href="{{ path('app_livre_delete', {'id': livre.id})}}">
+                <button></button>
+            </a>
             {# On inclut le formulaire de suppression réel ici #}
-            {{ include('livre/_delete_form.html.twig') }}
+            {# {{ include('livre/_delete_form.html.twig') }} #}
         </div>
     </dialog>
 {% endif %}

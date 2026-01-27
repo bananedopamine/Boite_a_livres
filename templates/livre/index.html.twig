@@ -28,6 +28,9 @@
                     <th>Nom</th>
                     <th>Auteur</th>
                     <th>Stock</th>
+                    {% if app.session.get('admin_authenticated') %}
+                        <th>actif</th>
+                    {% endif %}
                 </tr>
             </thead>
             <tbody>
@@ -37,6 +40,15 @@
                         <td>{{ livre.nom }}</td>
                         <td>{{ livre.auteur }}</td>
                         <td>{{ livre.NbStock }}</td>
+                        {% if app.session.get('admin_authenticated') %}
+                        <td>
+                            {% if livre.actif %}
+                                <span>Actif</span>
+                            {% else %}
+                                <span>Inactif</span>
+                            {% endif %}
+                        </td>
+                        {% endif %}
                     </tr>
                 {% endfor %}
             </tbody>
