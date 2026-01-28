@@ -18,7 +18,8 @@
                        id="isbn" 
                        class="form-control" 
                        placeholder="Ex: 9782..." 
-                       value="{{ last_isbn|default('') }}">
+                       value="{{ last_isbn|default('') }}"
+                       autocomplete="off">
             </div>
 
             {# Filtre par Auteur #}
@@ -29,7 +30,8 @@
                        id="auteur" 
                        class="form-control" 
                        placeholder="Nom de l'auteur..." 
-                       value="{{ last_auteur|default('') }}">
+                       value="{{ last_auteur|default('') }}"
+                       autocomplete="off">
             </div>
 
             <div class="col-md-2 d-flex align-items-end">
