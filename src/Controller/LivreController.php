@@ -26,8 +26,7 @@ class LivreController extends AbstractController
         $this->session = $requestStack->getSession();
     }
 
-    #region défaut index, show, search
-
+    #region défaut index, show, search, liste
     #[Route('/', name: 'app_livre_index', methods: ['GET'])]
     public function index(Request $request, LivreRepository $livreRepository): Response
     {
@@ -79,6 +78,62 @@ class LivreController extends AbstractController
             'livres' => $livres,
             'last_isbn' => $isbn,
             'last_auteur' => $auteur
+        ]);
+    }
+
+    /**
+     * API : Retourne la liste des livres en JSON pour le tableau dynamique
+     * Interagit avec : Le JavaScript de la page livre/index.html.twig
+     */
+    #[Route('/api/liste', name: 'app_livre_api_liste', methods: ['GET'])]
+    public function apiListe(Request $request, LivreRepository $livreRepository): JsonResponse
+    {
+        $isbn = $request->query->get('isbn', '');
+        $auteur = $request->query->get('auteur', '');
+        $isAdmin = $this->session->get('admin_authenticated', false);
+
+        // Construction de la requête
+        $qb = $livreRepository->createQueryBuilder('l');
+
+        // Filtres de recherche
+        if (!empty($isbn)) {
+            $qb->andWhere('l.isbn LIKE :isbnVal')
+               ->setParameter('isbnVal', '%' . $isbn . '%');
+        }
+        if (!empty($auteur)) {
+            $qb->andWhere('l.auteur LIKE :auteurVal')
+               ->setParameter('auteurVal', '%' . $auteur . '%');
+        }
+
+        // Si pas admin, afficher seulement les livres en stock
+        if (!$isAdmin) {
+            $qb->andWhere('l.NbStock > 0');
+        }
+
+        $livres = $qb->orderBy('l.isbn', 'ASC')
+                     ->getQuery()
+                     ->getResult();
+
+        // Transformation en tableau pour JSON
+        $data = [];
+        foreach ($livres as $livre) {
+            $data[] = [
+                'id' => $livre->getId(),
+                'isbn' => $livre->getIsbn(),
+                'nom' => $livre->getNom(),
+                'auteur' => $livre->getAuteur(),
+                'stock' => $livre->getNbStock(),
+                'actif' => $livre->isActif(),
+                'lienImg' => $livre->getLienImg(),
+                'description' => $livre->getDescription()
+            ];
+        }
+
+        return $this->json([
+            'success' => true,
+            'livres' => $data,
+            'total' => count($data),
+            'isAdmin' => $isAdmin
         ]);
     }
 

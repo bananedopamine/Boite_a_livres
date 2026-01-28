@@ -1,7 +1,7 @@
 {# @author : Dufour Marc (marc.dufour@stjosup.com)
- # @version : 1
+ # @version : 2.0
  # @dateCreate : 12/01/2026
- # @lastUpdate : 19/01/2026
+ # @lastUpdate : 28/01/2026 (Architecture modulaire avec tableau dynamique)
  #}
 
 {% extends 'base.html.twig' %}
@@ -11,67 +11,19 @@
 {% block body %}
     <h1>Liste des livres en stock</h1>
 
+    {# Inclusion du formulaire de recherche dynamique #}
     {% include 'livre/_search_form.html.twig' %}
 
-    {% set itemsToDisplay = [] %}
-    {% for livre in livres %}
-        {% if (app.session.get('admin_authenticated')) or (livre.NbStock > 0) %}
-            {% set itemsToDisplay = itemsToDisplay|merge([livre]) %}
-        {% endif %}
-    {% endfor %}
+    {# Inclusion de la structure du tableau #}
+    {% include 'livre/livre_tableau_structure.html.twig' %}
 
-    {% if itemsToDisplay|length > 0 %}
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>ISBN</th>
-                    <th>Nom</th>
-                    <th>Auteur</th>
-                    <th>Stock</th>
-                    {% if app.session.get('admin_authenticated') %}
-                        <th>actif</th>
-                    {% endif %}
-                </tr>
-            </thead>
-            <tbody>
-                {% for livre in itemsToDisplay %}
-                    <tr>
-                        <td><a href="{{ path('app_livre_show', {'id': livre.id}) }}" class="modal-trigger">{{ livre.isbn }}</a></td> 
-                        <td>{{ livre.nom }}</td>
-                        <td>{{ livre.auteur }}</td>
-                        <td>{{ livre.NbStock }}</td>
-                        {% if app.session.get('admin_authenticated') %}
-                        <td>
-                            {% if livre.actif %}
-                                <span>Actif</span>
-                            {% else %}
-                                <span>Inactif</span>
-                            {% endif %}
-                        </td>
-                        {% endif %}
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-        <div class="alert alert-warning mt-3">
-            {% if last_isbn or last_auteur %}
-                Aucun livre ne correspond à votre recherche (
-                {% if last_isbn %}ISBN: {{ last_isbn }}{% endif %}
-                {% if last_isbn and last_auteur %} - {% endif %}
-                {% if last_auteur %}Auteur: {{ last_auteur }}{% endif %}
-                ).
-            {% else %}
-                Aucun livre n'est actuellement disponible en stock.
-            {% endif %}
-            <div>
-                <a href="{{ path('app_livre_index') }}" class="btn btn-sm btn-outline-secondary">
-                    Voir toute la bibliothèque
-                </a>
-            </div>
-        </div>
-    {% endif %}
-
+    {# Inclusion de la modale pour les détails du livre #}
     {{ include('livre/_modal_livre_details.html.twig') }}
     
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {# Inclusion du script JavaScript pour le tableau dynamique #}
+    <script src="{{ asset('js/livre_tableau_dynamique.js') }}"></script>
 {% endblock %}
