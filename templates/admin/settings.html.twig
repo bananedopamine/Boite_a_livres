@@ -1,0 +1,145 @@
+{# templates/admin/settings.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Paramètres Admin{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h1>Paramètres Administrateur</h1>
+
+    {# Messages de succès/erreur #}
+    {% if error %}
+        <div class="alert alert-danger">
+            {{ error }}
+        </div>
+    {% endif %}
+
+    {% if success %}
+        <div class="alert alert-success">
+            {{ success }}
+        </div>
+    {% endif %}
+
+    {# Section 1 : Changement du code PIN #}
+    <div class="card" style="margin-bottom: 20px; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+        <h2>Modifier le code PIN</h2>
+        <p>Le code PIN actuel est : <code>{{ current_pin }}</code></p>
+        
+        <form method="post" action="{{ path('app_admin_settings') }}">
+            <input type="hidden" name="action" value="change_pin">
+
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label for="current_pin">Code PIN actuel :</label>
+                <input 
+                    type="password" 
+                    id="current_pin" 
+                    name="current_pin" 
+                    required 
+                    class="form-control"
+                    placeholder="Entrez le code PIN actuel"
+                    pattern="\d{4,}"
+                    title="Le PIN doit contenir au moins 4 chiffres"
+                >
+            </div>
+
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label for="new_pin">Nouveau code PIN :</label>
+                <input 
+                    type="password" 
+                    id="new_pin" 
+                    name="new_pin" 
+                    required 
+                    class="form-control"
+                    placeholder="Entrez le nouveau code PIN"
+                    pattern="\d{4,}"
+                    title="Le PIN doit contenir au moins 4 chiffres"
+                    minlength="4"
+                >
+                <small style="color: #666;">Le PIN doit contenir au moins 4 chiffres.</small>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label for="confirm_pin">Confirmer le nouveau PIN :</label>
+                <input 
+                    type="password" 
+                    id="confirm_pin" 
+                    name="confirm_pin" 
+                    required 
+                    class="form-control"
+                    placeholder="Confirmez le nouveau code PIN"
+                    pattern="\d{4,}"
+                    title="Le PIN doit contenir au moins 4 chiffres"
+                    minlength="4"
+                >
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                Enregistrer le nouveau PIN
+            </button>
+        </form>
+    </div>
+
+    {# Section 2 : Informations système (optionnel) #}
+    <div class="card" style="margin-bottom: 20px; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+        <h2>Informations système</h2>
+        <table class="table">
+            <tr>
+                <th>Version Symfony</th>
+                <td>{{ constant('Symfony\\Component\\HttpKernel\\Kernel::VERSION') }}</td>
+            </tr>
+            <tr>
+                <th>Version PHP</th>
+                <td>{{ constant('PHP_VERSION') }}</td>
+            </tr>
+            <tr>
+                <th>Environnement</th>
+                <td>{{ app.environment }}</td>
+            </tr>
+            <tr>
+                <th>Mode Debug</th>
+                <td>{{ app.debug ? 'Activé' : 'Désactivé' }}</td>
+            </tr>
+        </table>
+    </div>
+
+    {# Section 3 : Actions rapides #}
+    <div class="card" style="padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+        <h2>Actions rapides</h2>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <a href="{{ path('app_livre_index') }}" class="btn btn-info">
+                Gérer les livres
+            </a>
+            <a href="{{ path('app_mouvement_index') }}" class="btn btn-info">
+                Voir l'historique
+            </a>
+            <a href="{{ path('app_admin_logout') }}" class="btn btn-danger">
+                Se déconnecter
+            </a>
+        </div>
+    </div>
+
+    <div style="margin-top: 20px;">
+        <a href="{{ path('app_admin_index') }}" class="btn">
+            ← Retour à l'accueil admin
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+
+<script>
+    // Validation côté client pour vérifier que les deux PINs correspondent
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const newPin = document.getElementById('new_pin').value;
+        const confirmPin = document.getElementById('confirm_pin').value;
+
+        if (newPin !== confirmPin) {
+            e.preventDefault();
+            alert('Les deux codes PIN ne correspondent pas !');
+            return false;
+        }
+    });
+</script>
+{% endblock %}

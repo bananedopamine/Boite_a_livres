@@ -9,7 +9,6 @@
     <head>
         <meta charset="UTF-8">
         <title>{% block title %}Gestion Stock - IES{% endblock %}</title>
-        {# <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>📚</text></svg>"> #}
         
         {# Intégration de Simple.css #}
         <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css"> 
@@ -21,6 +20,36 @@
         <header>
             <nav>
                 <div>
+                    {% if app.session.get('admin_authenticated') %}
+                        {# DROPDOWN MENU ADMIN #}
+                        <div class="dropdown">
+                            <button class="dropdown-toggle" id="adminDropdown" type="button">
+                                Admin
+                            </button>
+                            <div class="dropdown-menu" id="adminMenu">
+                                <a href="{{ path('app_livre_index') }}" class="dropdown-item">
+                                    Bibliothèque
+                                </a>
+                                <a href="{{ path('app_mouvement_index') }}" class="dropdown-item">
+                                    Historique des mouvements
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a href="{{ path('app_admin_settings') }}" class="dropdown-item">
+                                    Paramètres
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a href="{{ path('app_admin_logout') }}" class="dropdown-item danger">
+                                    Déconnexion
+                                </a>
+                            </div>
+                        </div>
+                    {% else %}
+                        <a href="{{ path('app_admin_login') }}" class="btn">Admin</a>
+                    {% endif %}
+
+                    <h1>Ma Boîte à Livres</h1>
+
+                <div>
                     <a href="javascript:history.back()" title="Retour">
                         <img src="{{ asset('extras/images/Back_arrow.png')}}" style="width: 50px" align="center" alt="Retour à la liste"> 
                     </a>
@@ -29,23 +58,12 @@
                         <img src="{{ asset('extras/images/Accueil.png') }}" alt "Accueil" style="width: 50px;height: 50px " align="center">
                     </a>
 
-                    {% if app.session.get('admin_authenticated') %}
+                    {# {% if app.session.get('admin_authenticated') %}
                     <td>
                         <a href="{{ path('app_admin_index')}}">Accueil admin</a>
                     </td>
-                    {% endif %}
+                    {% endif %} #}
                 </div>
-
-                <h1>Ma Boîte à Livres</h1>
-
-                <div>
-                    {% if app.session.get('admin_authenticated') %}
-                        <a href="{{ path('app_admin_logout') }}">Déconnexion Admin</a>
-                    {% else %}
-
-                        <a href="{{ path('app_admin_login') }}">Admin</a>
-
-                    {% endif %}
                 </div>
             </nav>
         </header>
@@ -92,6 +110,23 @@
                         }, 800);
                     }, 5000);
                 });
+
+
+                const dropdownBtn = document.getElementById('adminDropdown');
+    const dropdownMenu = document.getElementById('adminMenu');
+
+    if (dropdownBtn && dropdownMenu) {
+        // Toggle au clic sur le bouton
+        dropdownBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            dropdownMenu.classList.toggle('show');
+        });
+
+        // Fermer si on clique n'importe où ailleurs sur la page
+        document.addEventListener('click', function() {
+            dropdownMenu.classList.remove('show');
+        });
+    }
             });
 
                 
