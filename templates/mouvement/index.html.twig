@@ -17,7 +17,6 @@
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th>Id</th>
                     <th>Livre (ISBN)</th>
                     <th>Titre</th>
                     <th>Type</th>
@@ -28,7 +27,6 @@
             <tbody>
             {% for mouvement in mouvements %}
                 <tr>
-                    <td>{{ mouvement.id }}</td>
                     <td>
                         {% if mouvement.livre %}
                             {# Lien vers le LIVRE : utilise la modale Livre standard #}
