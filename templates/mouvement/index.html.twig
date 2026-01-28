@@ -23,7 +23,6 @@
                     <th>Type</th>
                     <th>Date / Heure</th>
                     <th>Utilisateur</th>
-                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -54,12 +53,6 @@
                     </td>
                     <td>{{ mouvement.dateHeure ? mouvement.dateHeure|date('d/m/Y H:i:s') : '' }}</td>
                     <td>{{ mouvement.nomPrenom }}</td>
-                    <td>
-                        {# [MODIFICATION] Utilisation de la classe spécifique pour la modale Mouvement #}
-                        <a href="{{ path('app_mouvement_show', {'id': mouvement.id}) }}" class="mouvement-modal-trigger">
-                            Détails
-                        </a>
-                    </td>
                 </tr>
             {% endfor %}
             </tbody>
@@ -69,8 +62,5 @@
     {# [IMPORTANT] Inclusion des DEUX fichiers de modale #}
     {# 1. Pour gérer les clics sur les ISBN/Titres de livres #}
     {{ include('livre/_modal_livre_details.html.twig') }}
-    
-    {# 2. Pour gérer les détails/édition des mouvements #}
-    {{ include('mouvement/_modal_mouvement_details.html.twig') }}
 
 {% endblock body %}
