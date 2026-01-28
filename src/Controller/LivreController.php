@@ -250,7 +250,7 @@ class LivreController extends AbstractController
             return $this->redirectToRoute('app_livre_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('livre/edit.html.twig', [
+        return $this->render('livre/_modal_edit.html.twig', [
             'livre' => $livre,
             'form' => $form,
         ]);
