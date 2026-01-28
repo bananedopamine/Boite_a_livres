@@ -151,8 +151,13 @@ class MouvementController extends AbstractController
         $mouvement->setType($typeSortie);
 
         // Mise à jour logique du stock
-        if ($typeSortie) {
-            $livre->setNbStock($livre->getNbStock() - 1);
+        if ($typeSortie ) {
+            if ($livre->getnbStock() > 0){
+                $livre->setNbStock($livre->getNbStock() - 1);
+            }
+            else{
+                $livre->setNbStock(0);
+            }
         } else {
             $livre->setNbStock($livre->getNbStock() + 1);
         }
