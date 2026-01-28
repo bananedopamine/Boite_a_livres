@@ -1,6 +1,6 @@
 {# @author : Dufour Marc (marc.dufour@stjosup.com)
- # @version : 1.1
- # @lastUpdate : 26/01/2026 (Refonte architecture Modale)
+ # @version : 1.2
+ # @lastUpdate : 28/01/2026 (Ajout message d'erreur recherche vide)
  #}
  
 {% extends 'base.html.twig' %}
@@ -57,6 +57,26 @@
             {% endfor %}
             </tbody>
         </table>
+    {% else %}
+        {# Message d'erreur si aucun mouvement trouvé #}
+        <div class="alert alert-warning mt-3">
+            {% if last_isbn or last_auteur or last_user %}
+                Aucun mouvement ne correspond à votre recherche (
+                {% if last_isbn %}ISBN: {{ last_isbn }}{% endif %}
+                {% if last_isbn and (last_auteur or last_user) %} - {% endif %}
+                {% if last_auteur %}Auteur: {{ last_auteur }}{% endif %}
+                {% if last_auteur and last_user %} - {% endif %}
+                {% if last_user %}Personne: {{ last_user }}{% endif %}
+                ).
+            {% else %}
+                Aucun mouvement n'est enregistré dans l'historique.
+            {% endif %}
+            <div>
+                <a href="{{ path('app_mouvement_index') }}" class="btn btn-sm btn-outline-secondary">
+                    Voir tout l'historique
+                </a>
+            </div>
+        </div>
     {% endif %}
 
     {# [IMPORTANT] Inclusion des DEUX fichiers de modale #}
