@@ -14,14 +14,13 @@
     </div>
 </div>
 
-<form action="{{ path('app_mouvement_finaliser', {'id': livre.id}) }}" method="post">
+<form action="{{ path('app_mouvement_finaliser', {'id': livre.id}) }}" method="post" autocomplete="off">
     {# On transmet le type d'action pour le contrôleur #}
     <input type="hidden" name="type_action" value="{{ estSortie ? 'true' : 'false' }}">
 
-    <div class="form-group-modal">
+    <div class="form-group-modal" autocomplete="off">
         <label for="nomPrenom">Votre Nom et Prénom :</label>
-        <input type="text" id="nomPrenom" name="nomPrenom" placeholder="Qui effectue l'opération ?" required autofocus 
-               class="input-full">
+        <input type="text" id="nomPrenom" name="nomPrenom" placeholder="Qui effectue l'opération ?" required autofocus class="input-full" autocomplete="off">
     </div>
 
     <div class="modal-actions-between">

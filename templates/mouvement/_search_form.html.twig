@@ -7,15 +7,15 @@
 <div class="bg-light mb-4">
     <div>
         <h5 class="card-title">Filtrer l'historique</h5>
-        <form action="{{ path('app_mouvement_search') }}" method="get" class="row g-3">
+        <form action="{{ path('app_mouvement_search') }}" method="get" class="row g-3" autocomplete="off">
             <div class="col-md-3">
-                <input type="text" name="isbn" class="form-control" placeholder="ISBN..." value="{{ last_isbn|default('') }}">
+                <input type="text" name="isbn" class="form-control" placeholder="ISBN..." value="{{ last_isbn|default('') }}" autocomplete="off">
             </div>
             <div class="col-md-3">
-                <input type="text" name="auteur" class="form-control" placeholder="Auteur du livre..." value="{{ last_auteur|default('') }}">
+                <input type="text" name="auteur" class="form-control" placeholder="Auteur du livre..." value="{{ last_auteur|default('') }}" autocomplete="off">
             </div>
             <div class="col-md-3">
-                <input type="text" name="user" class="form-control" placeholder="Nom de la personne..." value="{{ last_user|default('') }}">
+                <input type="text" name="user" class="form-control" placeholder="Nom de la personne..." value="{{ last_user|default('') }}" autocomplete="off">
             </div>
             <div class="col-md-2">
                 <select name="sort" class="form-select" onchange="this.form.submit()">
