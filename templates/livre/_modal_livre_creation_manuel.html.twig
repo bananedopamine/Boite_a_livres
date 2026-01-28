@@ -1,0 +1,81 @@
+{# @author : Dufour Marc (marc.dufour@stjosup.com)
+ # @version : 1
+ # @lastUpdate : 28/01/2026 (Ajout création rapide de livre)
+ #}
+
+<div class="modal-quick-create">
+    <h3>Créer un nouveau livre</h3>
+    
+    <p>L'ISBN <strong>{{ isbn }}</strong> n'a pas été trouvé. Créez le livre rapidement :</p>
+    
+    <form id="form-quick-create" method="POST" action="{{ path('app_livre_creation_manuel') }}">
+        <input type="hidden" name="isbn" value="{{ isbn }}">
+        
+        <div class="form-group">
+            <label for="titre">Titre du livre *</label>
+            <input 
+                type="text" 
+                id="titre" 
+                name="titre" 
+                class="form-control" 
+                required
+                placeholder="Entrez le titre du livre"
+            >
+        </div>
+
+        <div class="form-group">
+            <label for="auteur">Auteur (optionnel)</label>
+            <input 
+                type="text" 
+                id="auteur" 
+                name="auteur" 
+                class="form-control" 
+                placeholder="Nom de l'auteur"
+            >
+        </div>
+
+        <div class="modal-actions">
+            <button type="button" class="btn btn-secondary" onclick="document.getElementById('modale_principale').close()">
+                Annuler
+            </button>
+            <button type="submit" class="btn btn-primary">
+                Créer le livre
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+document.getElementById('form-quick-create').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    
+    fetch(this.action, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Fermer la modale
+            document.getElementById('modale_principale').close();
+            
+            // Rediriger ou continuer le processus
+            if (typeof continueMouvementProcess === 'function') {
+                continueMouvementProcess(data.id);
+            } else {
+                // Afficher un message de succès
+                alert('Livre créé avec succès !');
+                location.reload();
+            }
+        } else {
+            alert(data.message || 'Erreur lors de la création du livre');
+        }
+    })
+    .catch(error => {
+        console.error('Erreur:', error);
+        alert('Une erreur est survenue');
+    });
+});
+</script>

@@ -135,7 +135,62 @@ class LivreController extends AbstractController
     
     #endregion
 
-    #region new, edit, delete
+    #region création new, newManuel 
+
+    /**
+     * Création rapide d'un livre avec ISBN et titre uniquement
+     * Interagit avec : _modal_livre_creation_manuel.html.twig
+     */
+    #[Route('/creation-rapide', name: 'app_livre_creation_manuel', methods: ['POST'])]
+    public function newManuel(Request $request, EntityManagerInterface $em, LivreRepository $livreRepository): JsonResponse
+    {
+        $isbn = $request->request->get('isbn');
+        $titre = $request->request->get('titre');
+        $auteur = $request->request->get('auteur', '');
+
+        // Validation
+        if (empty($isbn) || empty($titre)) {
+            return $this->json([
+                'success' => false,
+                'message' => 'L\'ISBN et le titre sont obligatoires'
+            ], 400);
+        }
+
+        // Vérifier que l'ISBN n'existe pas déjà
+        $existant = $livreRepository->findOneBy(['isbn' => $isbn]);
+        if ($existant) {
+            return $this->json([
+                'success' => false,
+                'message' => 'Un livre avec cet ISBN existe déjà'
+            ], 400);
+        }
+
+        // Créer le livre avec les valeurs par défaut
+        $livre = new Livre();
+        $livre->setIsbn($isbn);
+        $livre->setNom($titre);
+        $livre->setAuteur($auteur ?: 'Auteur inconnu'); // Valeur par défaut si vide
+        $livre->setDescription(''); // Valeur par défaut
+        $livre->setLienImg(null); // Optionnel
+        $livre->setNbStock(0);
+        $livre->setActif(true);
+
+        try {
+            $em->persist($livre);
+            $em->flush();
+
+            return $this->json([
+                'success' => true,
+                'id' => $livre->getId(),
+                'message' => 'Livre créé avec succès'
+            ]);
+        } catch (\Exception $e) {
+            return $this->json([
+                'success' => false,
+                'message' => 'Erreur lors de la création : ' . $e->getMessage()
+            ], 500);
+        }
+    }
 
     /**
      * Retourne le formulaire de création de livre (fragment HTML pour modale).
@@ -173,6 +228,10 @@ class LivreController extends AbstractController
             'form' => $formulaire->createView(),
         ], new Response(null, $formulaire->isSubmitted() ? 422 : 200));
     }
+
+    #endregion 
+
+    #region gestion edit, delete
 
     #[Route('/{id}/edit', name: 'app_livre_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Livre $livre, EntityManagerInterface $entityManager): Response

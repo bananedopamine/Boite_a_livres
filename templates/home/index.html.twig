@@ -1,6 +1,6 @@
 {# @author : Dufour Marc (marc.dufour@stjosup.com)
- # @version : 1.3
- # @lastUpdate : 22/01/2026 (Logique SPA - Orchestration des modales)
+ # @version : 1.4
+ # @lastUpdate : 28/01/2026 (Ajout création rapide de livre)
  #}
 
 {% extends 'base.html.twig' %}
@@ -128,20 +128,146 @@
                 ouvrirFormulaireNouveau(resultat.donnees);
             } 
             else {
-                // Pas trouvé -> Affichage "Livre inconnu" (On le fera dans la prochaine étape)
-                document.getElementById('contenu_modale').innerHTML = `
-                    <h3>Livre inconnu</h3>
-                    <p>L'ISBN <strong>${resultat.isbn}</strong> n'a pas été trouvé.</p>
-                    <div class="modal-actions-between" class=".btn-modal">
-                        <button class="btn btn-primary" onclick="ouvrirFormulaireNouveau({isbn: '${isbn}'})">
-                            Créer manuellement
-                        </button>
-                        <button class="btn" onclick="ouvrirScan('${typeActionActuel}')">Réessayer</button>
-                    </div>
-                `;
+                // Pas trouvé -> Affichage options de création
+                afficherOptionsCreation(isbn);
             }
         } catch (erreur) {
             console.error("Erreur API ISBN:", erreur);
+        }
+    }
+
+    /**
+     * 3bis. Affiche les options de création (rapide ou complète)
+     */
+    function afficherOptionsCreation(isbn) {
+        document.getElementById('contenu_modale').innerHTML = `
+            <div class="modal-404">
+                <h3>Livre introuvable</h3>
+                
+                <p>L'ISBN <strong>${isbn}</strong> n'existe pas dans notre base de données et n'a pas pu être identifié sur Google Books.</p>
+                
+                <div class="alert alert-warning" style="margin: 20px 0; padding: 15px; background-color: #fff3cd; border-left: 4px solid #ffc107;">
+                    <strong>Que souhaitez-vous faire ?</strong>
+                </div>
+
+                <div class="modal-actions-column" style="display: flex; flex-direction: column; gap: 10px;">
+                    <button class="btn btn-primary" onclick="ouvrirCreationRapide('${isbn}')" style="width: 100%;">
+                        Création rapide (ISBN + Titre uniquement)
+                    </button>
+                    
+                    <button class="btn btn-secondary" onclick="ouvrirScan('${typeActionActuel}')" style="width: 100%;">
+                        Réessayer le scan
+                    </button>
+                    
+                    <button class="btn btn-light" onclick="modalePrincipale.close()" style="width: 100%; margin-top: 10px;">
+                        Annuler
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+
+    /**
+     * 3ter. Ouvre la modale de création rapide
+     */
+    function ouvrirCreationRapide(isbn) {
+        document.getElementById('contenu_modale').innerHTML = `
+            <div class="modal-quick-create">
+                <h3>Créer un nouveau livre</h3>
+                
+                <p>L'ISBN <strong>${isbn}</strong> n'a pas été trouvé. Créez le livre rapidement :</p>
+                
+                <form id="form-quick-create" onsubmit="soumettreCreationRapide(event, '${isbn}')">
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label for="titre" style="display: block; margin-bottom: 5px; font-weight: bold;">
+                            Titre du livre *
+                        </label>
+                        <input 
+                            type="text" 
+                            id="titre" 
+                            name="titre" 
+                            class="form-control" 
+                            required
+                            placeholder="Entrez le titre du livre"
+                            style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;"
+                            autofocus
+                        >
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label for="auteur" style="display: block; margin-bottom: 5px; font-weight: bold;">
+                            Auteur (optionnel)
+                        </label>
+                        <input 
+                            type="text" 
+                            id="auteur" 
+                            name="auteur" 
+                            class="form-control" 
+                            placeholder="Nom de l'auteur"
+                            style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;"
+                        >
+                    </div>
+
+                    <div class="modal-actions" style="display: flex; justify-content: space-between; gap: 10px;">
+                        <button type="button" class="btn btn-secondary" onclick="afficherOptionsCreation('${isbn}')" style="flex: 1;">
+                            ← Retour
+                        </button>
+                        <button type="submit" class="btn btn-primary" style="flex: 1;">
+                            Créer le livre
+                        </button>
+                        <button class="btn" onclick="ouvrirScan('${typeActionActuel}')">Réessayer</button>
+                    </div>
+                </form>
+            </div>
+        `;
+        
+        // Focus automatique sur le champ titre
+        setTimeout(() => document.getElementById('titre').focus(), 100);
+    }
+
+    /**
+     * 3quater. Soumet le formulaire de création rapide
+     */
+    async function soumettreCreationRapide(event, isbn) {
+        event.preventDefault();
+        
+        const form = event.target;
+        const titre = form.titre.value;
+        const auteur = form.auteur.value;
+        
+        const formData = new FormData();
+        formData.append('isbn', isbn);
+        formData.append('titre', titre);
+        formData.append('auteur', auteur);
+        
+        try {
+            const reponse = await fetch("{{ path('app_livre_creation_manuel') }}", {
+                method: 'POST',
+                body: formData
+            });
+            
+            const data = await reponse.json();
+            
+            if (data.success) {
+                // Afficher un message de succès temporaire
+                document.getElementById('contenu_modale').innerHTML = `
+                    <div style="text-align: center; padding: 20px;">
+                        <div style="font-size: 48px; color: #5cb85c;">✓</div>
+                        <h3 style="color: #5cb85c;">Livre créé avec succès !</h3>
+                        <p>Passage à l'étape de confirmation...</p>
+                    </div>
+                `;
+                
+                // Passer à la confirmation après 1 seconde
+                setTimeout(() => {
+                    ouvrirConfirmation(data.id);
+                }, 1000);
+            } else {
+                alert(data.message || 'Erreur lors de la création du livre');
+            }
+        } catch (erreur) {
+            console.error('Erreur:', erreur);
+            alert('Une erreur est survenue lors de la création du livre');
         }
     }
 
