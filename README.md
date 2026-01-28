@@ -35,11 +35,14 @@ symfony serve:stop
 [Page d'accueil du projet](http://localhost:8000/)
 
     - Entrée d'un livre
+        -> création automatique et manuelle si livre non enregistrer
     - Sortie d'un livre
+        -> création automatique et manuelle si livre non enregistrer
     - Consultation de la bibliothèque 
-        => Les stocks à 0 ne sont pas affichés
+        => Les stocks à 0 et les livres désactivés (supprimer) ne sont pas affichés
     - Consultation des informations d'un livre
         -> via bibliothèque
+    - Recherche d'un livre spécifique (par ISBN,ou auteur)
 
 ---
 
