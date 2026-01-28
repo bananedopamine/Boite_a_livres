@@ -302,8 +302,8 @@
                 // On injecte le HTML dynamiquement dans la modale
                 document.getElementById('contenu_modale').innerHTML = `
                     <h3>Étape Finale : Confirmation</h3>
-                    <div class="book-summary-box">
-                        ${livre.lienImg ? `<img src="${livre.lienImg}" alt="Couverture" class="img-cover-thumb">` : ''}
+                    <div class="book-summary-box" autocomplete="off">
+                        ${livre.lienImg ? `<img src="${livre.lienImg}" alt="Couverture" class="img-cover-thumb" onerror="this.src='{{ asset('extras/images/unknown_book.jpg') }}'">` : `<img src="{{ asset('extras/images/unknown_book.jpg') }}" alt="Couverture" class="img-cover-thumb">`}
                         <div>
                             <strong>Titre :</strong> ${livre.titre} <br>
                             <strong>Auteur :</strong> ${livre.auteur} <br>
@@ -318,7 +318,7 @@
                         <div class="form-group-modal">
                             <label for="nomPrenom">Votre Nom et Prénom :</label>
                             <input type="text" id="nomPrenom" name="nomPrenom" 
-                                placeholder="Qui effectue l'opération ?" required autofocus class="input-full">
+                                placeholder="Qui effectue l'opération ?" required autofocus class="input-full" autocomplete="off">
                         </div>
 
                         <div class="modal-actions-between">
