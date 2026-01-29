@@ -12,20 +12,21 @@
     
     <nav class="home-nav-menu">
         {# BOUTON ENTRÉE : On passe 'false' pour indiquer que ce n'est PAS une sortie #}
-        <button class="btn btn-primary btn-lg" onclick="ouvrirScan('false')">
+        <button class="btn btn-primary" onclick="ouvrirScan('false')">
             Déposer un livre
         </button>
 
         {# BOUTON SORTIE : On passe 'true' pour indiquer que c'est une sortie #}
-        <button class="btn btn-warning btn-lg" onclick="ouvrirScan('true')">
+        <button class="btn btn-primary" onclick="ouvrirScan('true')">
             Prendre un livre
         </button>
 
-        <a href="{{ path('app_livre_index') }}" class="btn btn-info btn-lg">
-            <button class="btn btn-info btn-lg">
+        <button class="btn btn-primary">
+            <a  href="{{ path('app_livre_index') }}" class="href-bibli">
                 Bibliothèque
-            </button>
-        </a> 
+            </a>
+        </button>
+
     </nav>
 </div>
 {% endblock %}

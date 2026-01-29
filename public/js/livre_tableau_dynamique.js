@@ -148,7 +148,7 @@ function afficherLivres(livres, isAdmin) {
         // Stock (avec badge de couleur)
         const tdStock = document.createElement('td');
         const badgeStock = document.createElement('span');
-        badgeStock.className = livre.stock > 0 ? 'badge bg-success' : 'badge bg-danger';
+        tdStock.className = livre.stock > 0 ? 'bg-success' : 'bg-danger';
         badgeStock.textContent = livre.stock;
         tdStock.appendChild(badgeStock);
         tr.appendChild(tdStock);
@@ -157,7 +157,7 @@ function afficherLivres(livres, isAdmin) {
         if (isAdmin) {
             const tdActif = document.createElement('td');
             const badgeActif = document.createElement('span');
-            badgeActif.className = livre.actif ? 'badge bg-success' : 'badge bg-secondary';
+            tdActif.className = livre.actif ? 'bg-success' : 'bg-secondary';
             badgeActif.textContent = livre.actif ? 'Actif' : 'Inactif';
             tdActif.appendChild(badgeActif);
             tr.appendChild(tdActif);

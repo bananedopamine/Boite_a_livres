@@ -226,10 +226,10 @@ function afficherMouvements(mouvements, isAdmin) {
         badgeType.className = 'badge';
         // Note: l'API renvoie souvent un booléen ou '1'/'0' pour le type
         if (mouvement.type || mouvement.type == '1') {
-            badgeType.classList.add('bg-danger');
+            tdType.classList.add('bg-danger');
             badgeType.textContent = 'Sortie';
         } else {
-            badgeType.classList.add('bg-success');
+            tdType.classList.add('bg-success');
             badgeType.textContent = 'Entrée';
         }
         tdType.appendChild(badgeType);

@@ -11,7 +11,6 @@
         <title>{% block title %}Gestion Stock - IES{% endblock %}</title>
         
         {# Intégration de Simple.css #}
-        <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css"> 
         <link rel="stylesheet" href="{{ asset('css/style.css') }}">
         
         {% block stylesheets %}{% endblock %}
@@ -19,7 +18,12 @@
     <body>
         <header>
             <nav>
-                <div>
+                <div class="inline-container">
+                    <a class="logo-home" href="{{path('home_index')}}" >
+                        <img src="{{ asset('extras/images/245-MRK.ERG.506_LogoTransparent_v1.0.png') }}" alt "Accueil" style="width: 200px; height: auto;" align="center">
+                    </a>
+                    <h1>Ma Boîte à Livres</h1>
+
                     {% if app.session.get('admin_authenticated') %}
                         {# DROPDOWN MENU ADMIN #}
                         <div class="dropdown">
@@ -47,23 +51,12 @@
                         <a href="{{ path('app_admin_login') }}" class="btn">Admin</a>
                     {% endif %}
 
-                    <h1>Ma Boîte à Livres</h1>
 
-                <div>
-                    <a href="javascript:history.back()" title="Retour">
-                        <img src="{{ asset('extras/images/Back_arrow.png')}}" style="width: 50px" align="center" alt="Retour à la liste"> 
-                    </a>
-
-                    <a href="{{path('home_index')}}" >
-                        <img src="{{ asset('extras/images/Accueil.png') }}" alt "Accueil" style="width: 50px;height: 50px " align="center">
-                    </a>
-
-                    {# {% if app.session.get('admin_authenticated') %}
-                    <td>
-                        <a href="{{ path('app_admin_index')}}">Accueil admin</a>
-                    </td>
-                    {% endif %} #}
-                </div>
+                    <div>
+                        <a href="javascript:history.back()" title="Retour">
+                            <img src="{{ asset('extras/images/Back_arrow.png')}}" style="width: 50px" align="center" alt="Retour à la liste"> 
+                        </a>
+                    </div>
                 </div>
             </nav>
         </header>
