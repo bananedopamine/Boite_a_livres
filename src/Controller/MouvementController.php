@@ -10,7 +10,9 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 
 #[Route('/mouvement')]
@@ -80,6 +82,68 @@ class MouvementController extends AbstractController
             'last_auteur' => $auteur,
             'last_user' => $user, 
             'current_sort' => $direction,
+        ]);
+    }
+
+    /**
+     * API : Retourne la liste des mouvements en JSON pour le tableau dynamique
+     * Interagit avec : Le JavaScript mouvement_tableau_dynamique.js
+     */
+    #[Route('/api/liste', name: 'app_mouvement_api_liste', methods: ['GET'])]
+    public function apiListe(Request $request, MouvementRepository $mouvementRepository): JsonResponse
+    {
+        $isbn = $request->query->get('isbn', '');
+        $auteur = $request->query->get('auteur', '');
+        $user = $request->query->get('user', '');
+        $session = $request->getSession();
+        $isAdmin = $session->get('admin_authenticated', false);
+
+        // Construction de la requête
+        $qb = $mouvementRepository->createQueryBuilder('m')
+            ->leftJoin('m.livre', 'l');
+
+        // Filtres de recherche
+        if (!empty($isbn)) {
+            $qb->andWhere('l.isbn LIKE :isbnVal')
+               ->setParameter('isbnVal', '%' . $isbn . '%');
+        }
+        if (!empty($auteur)) {
+            $qb->andWhere('l.auteur LIKE :auteurVal')
+               ->setParameter('auteurVal', '%' . $auteur . '%');
+        }
+        if (!empty($user)) {
+            $qb->andWhere('m.nomPrenom LIKE :userVal')
+               ->setParameter('userVal', '%' . $user . '%');
+        }
+
+        $mouvements = $qb->orderBy('m.dateHeure', 'DESC')
+                        ->getQuery()
+                        ->getResult();
+
+        // Transformation en tableau pour JSON
+        $data = [];
+        foreach ($mouvements as $mouvement) {
+            $livre = $mouvement->getLivre();
+            
+            $data[] = [
+                'id' => $mouvement->getId(),
+                'type' => $mouvement->isType(),
+                'dateHeure' => $mouvement->getDateHeure() ? $mouvement->getDateHeure()->format('d/m/Y H:i:s') : '',
+                'nomPrenom' => $mouvement->getNomPrenom(),
+                'livre' => $livre ? [
+                    'id' => $livre->getId(),
+                    'isbn' => $livre->getIsbn(),
+                    'nom' => $livre->getNom(),
+                    'auteur' => $livre->getAuteur()
+                ] : null
+            ];
+        }
+
+        return $this->json([
+            'success' => true,
+            'mouvements' => $data,
+            'total' => count($data),
+            'isAdmin' => $isAdmin,
         ]);
     }
 

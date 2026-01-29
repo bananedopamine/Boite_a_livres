@@ -1,37 +1,45 @@
 {# @author : Dufour Marc (marc.dufour@stjosup.com)
- # @version : 1
+ # @version : 2.0
  # @dateCreate : 14/01/2026
- # @lastUpdate : 14/01/2026
+ # @lastUpdate : 29/01/2026 (Version dynamique pour AJAX - Mouvements)
  #}
 
 <div class="bg-light mb-4">
     <div>
-        <h5 class="card-title">Filtrer l'historique</h5>
-        <form action="{{ path('app_mouvement_search') }}" method="get" class="row g-3" autocomplete="off">
-            <div class="col-md-3">
-                <input type="text" name="isbn" class="form-control" placeholder="ISBN..." value="{{ last_isbn|default('') }}" autocomplete="off">
+        <h5 class="card-title">Rechercher dans l'historique</h5>
+        
+        <form id="form-recherche-mouvements" class="row g-3" autocomplete="off">
+            
+            {# Filtre par ISBN #}
+            <div class="col-md-4">
+                <label for="isbn" class="form-label">Numéro ISBN</label>
+                <input type="text" name="isbn" id="isbn" class="form-control" placeholder="Ex: 9782..." autocomplete="off" value="{{ last_isbn ?? '' }}">
             </div>
-            <div class="col-md-3">
-                <input type="text" name="auteur" class="form-control" placeholder="Auteur du livre..." value="{{ last_auteur|default('') }}" autocomplete="off">
+
+            {# Filtre par Auteur #}
+            <div class="col-md-4">
+                <label for="auteur" class="form-label">Auteur</label>
+                <input type="text" name="auteur" id="auteur" class="form-control" placeholder="Nom de l'auteur..." autocomplete="off" value="{{ last_auteur ?? '' }}">
             </div>
-            <div class="col-md-3">
-                <input type="text" name="user" class="form-control" placeholder="Nom de la personne..." value="{{ last_user|default('') }}" autocomplete="off">
+
+            {# Filtre par Utilisateur #}
+            <div class="col-md-4">
+                <label for="user" class="form-label">Utilisateur</label>
+                <input type="text" name="user" id="user" class="form-control" placeholder="Nom de la personne..." autocomplete="off" value="{{ last_user ?? '' }}">
             </div>
-            <div class="col-md-2">
-                <select name="sort" class="form-select" onchange="this.form.submit()">
-                    <option value="DESC" {{ current_sort|default('DESC') == 'DESC' ? 'selected' : '' }}>Plus récents</option>
-                    <option value="ASC" {{ current_sort|default('DESC') == 'ASC' ? 'selected' : '' }}>Plus anciens</option>
-                </select>
-            </div>
-            <div class="col-md-3">
-                <div class="btn-group w-100">
-                    <button type="submit" class="btn btn-primary">Rechercher</button>
+
+            <div class="col-12 d-flex justify-content-end">
+                <div class="btn-group">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i> Rechercher
+                    </button>
                     
-                    <a href="{{ path('app_mouvement_index') }}" class="btn btn-outline-secondary">
-                        <button type="submit" class="btn btn-primary">Effacer</button>
-                    </a>
+                    <button type="button" class="btn btn-outline-secondary" id="btn-effacer">
+                        Effacer
+                    </button>
                 </div>
             </div>
+
         </form>
     </div>
 </div>

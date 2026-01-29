@@ -1,0 +1,51 @@
+{# @author : Dufour Marc (marc.dufour@stjosup.com)
+ # @version : 2.0
+ # @dateCreate : 29/01/2026
+ # @description : Structure du tableau dynamique des mouvements
+ #}
+
+{# Zone d'affichage du tableau avec attributs data pour le JavaScript #}
+<div id="zone-tableau-mouvement" 
+     data-api-url="{{ path('app_mouvement_api_liste') }}"
+     data-show-url="{{ path('app_mouvement_show', {id: '99999'})|replace({'99999': '__ID__'}) }}"
+     data-livre-show-url="{{ path('app_livre_show', {id: '66666'})|replace({'66666': '__ID__'}) }}">
+    
+    {# Indicateur de chargement #}
+    <div id="loading-indicator-mouvement" class="text-center py-5">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Chargement...</span>
+        </div>
+        <p class="mt-2">Chargement des mouvements...</p>
+    </div>
+
+    {# Message d'erreur (caché par défaut) #}
+    <div id="message-erreur-mouvement" class="alert alert-warning mt-3" style="display: none;">
+        <span id="texte-erreur-mouvement"></span>
+    </div>
+
+    {# Compteur de résultats #}
+    <div id="compteur-resultats-mouvement" class="mb-2" style="display: none;">
+        <small class="text-muted">
+            <strong id="nombre-mouvements">0</strong> mouvement(s) trouvé(s)
+        </small>
+    </div>
+
+    {# Tableau des mouvements #}
+    <div id="conteneur-tableau-mouvement" style="display: none;">
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Livre (ISBN)</th>
+                    <th>Titre</th>
+                    <th>Auteur</th>
+                    <th>Type</th>
+                    <th>Date / Heure</th>
+                    <th>Utilisateur</th>
+                </tr>
+            </thead>
+            <tbody id="tbody-mouvements">
+                {# Contenu généré dynamiquement par JavaScript #}
+            </tbody>
+        </table>
+    </div>
+</div>

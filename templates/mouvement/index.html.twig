@@ -1,8 +1,9 @@
 {# @author : Dufour Marc (marc.dufour@stjosup.com)
- # @version : 1.2
- # @lastUpdate : 28/01/2026 (Ajout message d'erreur recherche vide)
+ # @version : 2.0
+ # @dateCreate : 12/01/2026
+ # @lastUpdate : 29/01/2026 (Architecture modulaire avec tableau dynamique)
  #}
- 
+
 {% extends 'base.html.twig' %}
 
 {% block title %}Historique des mouvements{% endblock %}
@@ -10,75 +11,20 @@
 {% block body %}
     <h1>Historique des mouvements</h1>
 
-    {# Inclusion du formulaire de recherche dédié aux mouvements #}
+    {# Inclusion du formulaire de recherche #}
     {% include 'mouvement/_search_form.html.twig' %}
 
-    {% if mouvements is not empty %}
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Livre (ISBN)</th>
-                    <th>Titre</th>
-                    <th>Type</th>
-                    <th>Date / Heure</th>
-                    <th>Utilisateur</th>
-                </tr>
-            </thead>
-            <tbody>
-            {% for mouvement in mouvements %}
-                <tr>
-                    <td>
-                        {% if mouvement.livre %}
-                            {# Lien vers le LIVRE : utilise la modale Livre standard #}
-                            <a href="{{ path('app_livre_show', {id: mouvement.livre.id}) }}" class="modal-trigger">
-                                {{ mouvement.livre.isbn }}
-                            </a>
-                        {% else %}
-                            <span class="text-danger">Livre supprimé</span>
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if mouvement.livre %}
-                            {{ mouvement.livre.nom }}
-                        {% else %}
-                             <span class="text-danger">Livre supprimé</span>
-                        {% endif %}
-                    </td>
-                    <td>
-                        <span class="badge {{ mouvement.Type ? 'bg-danger' : 'bg-success' }}">
-                            {{ mouvement.Type ? 'Sortie' : 'Entrée' }}
-                        </span>
-                    </td>
-                    <td>{{ mouvement.dateHeure ? mouvement.dateHeure|date('d/m/Y H:i:s') : '' }}</td>
-                    <td>{{ mouvement.nomPrenom }}</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-        {# Message d'erreur si aucun mouvement trouvé #}
-        <div class="alert alert-warning mt-3">
-            {% if last_isbn or last_auteur or last_user %}
-                Aucun mouvement ne correspond à votre recherche (
-                {% if last_isbn %}ISBN: {{ last_isbn }}{% endif %}
-                {% if last_isbn and (last_auteur or last_user) %} - {% endif %}
-                {% if last_auteur %}Auteur: {{ last_auteur }}{% endif %}
-                {% if last_auteur and last_user %} - {% endif %}
-                {% if last_user %}Personne: {{ last_user }}{% endif %}
-                ).
-            {% else %}
-                Aucun mouvement n'est enregistré dans l'historique.
-            {% endif %}
-            <div>
-                <a href="{{ path('app_mouvement_index') }}" class="btn btn-sm btn-outline-secondary">
-                    Voir tout l'historique
-                </a>
-            </div>
-        </div>
-    {% endif %}
+    {# Inclusion de la structure du tableau #}
+    {% include 'mouvement/mouvement_tableau_structure.html.twig' %}
 
     {# [IMPORTANT] Inclusion des DEUX fichiers de modale #}
     {# 1. Pour gérer les clics sur les ISBN/Titres de livres #}
     {{ include('livre/_modal_livre_details.html.twig') }}
+    
+{% endblock %}
 
-{% endblock body %}
+{% block javascripts %}
+    {{ parent() }}
+    {# Inclusion du script JavaScript pour le tableau dynamique #}
+    <script src="{{ asset('js/mouvement_tableau_dynamique.js') }}"></script>
+{% endblock %}
