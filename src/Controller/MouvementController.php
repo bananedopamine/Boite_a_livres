@@ -89,57 +89,75 @@ class MouvementController extends AbstractController
      * API : Retourne la liste des mouvements en JSON pour le tableau dynamique
      * Interagit avec : Le JavaScript mouvement_tableau_dynamique.js
      */
-    #[Route('/api/liste', name: 'app_mouvement_api_liste', methods: ['GET'])]
+    #[Route('/api/liste', name: 'app_mouvement_api_liste')]
     public function apiListe(Request $request, MouvementRepository $mouvementRepository): JsonResponse
     {
-        $isbn = $request->query->get('isbn', '');
-        $auteur = $request->query->get('auteur', '');
-        $user = $request->query->get('user', '');
+
         $session = $request->getSession();
         $isAdmin = $session->get('admin_authenticated', false);
-
-        // Construction de la requête
+        // 1. On crée le constructeur de requête directement ici
         $qb = $mouvementRepository->createQueryBuilder('m')
-            ->leftJoin('m.livre', 'l');
+            ->leftJoin('m.livre', 'l')
+            ->addSelect('l'); // On joint les livres pour chercher dedans
 
-        // Filtres de recherche
-        if (!empty($isbn)) {
-            $qb->andWhere('l.isbn LIKE :isbnVal')
-               ->setParameter('isbnVal', '%' . $isbn . '%');
-        }
-        if (!empty($auteur)) {
-            $qb->andWhere('l.auteur LIKE :auteurVal')
-               ->setParameter('auteurVal', '%' . $auteur . '%');
-        }
-        if (!empty($user)) {
-            $qb->andWhere('m.nomPrenom LIKE :userVal')
-               ->setParameter('userVal', '%' . $user . '%');
+        // 2. Gestion des filtres textuels (ISBN, Auteur, User)
+        // On vérifie si chaque champ est rempli, et on ajoute la condition "WHERE"
+        if ($isbn = $request->query->get('isbn')) {
+            $qb->andWhere('l.isbn LIKE :isbn')
+               ->setParameter('isbn', '%' . $isbn . '%');
         }
 
-        $mouvements = $qb->orderBy('m.dateHeure', 'DESC')
-                        ->getQuery()
-                        ->getResult();
+        if ($auteur = $request->query->get('auteur')) {
+            $qb->andWhere('l.auteur LIKE :auteur')
+               ->setParameter('auteur', '%' . $auteur . '%');
+        }
 
-        // Transformation en tableau pour JSON
+        if ($user = $request->query->get('user')) {
+            $qb->andWhere('m.nomPrenom LIKE :user')
+               ->setParameter('user', '%' . $user . '%');
+        }
+
+        // 3. Gestion du filtre TYPE (Entrée / Sortie)
+        $type = $request->query->get('type');
+        if ($type) {
+            // "sortie" = true (1), "entree" = false (0)
+            $isSortie = ($type === 'sortie');
+            
+            // Correction ici : m.Type avec une MAJUSCULE
+            $qb->andWhere('m.Type = :leType') 
+               ->setParameter('leType', $isSortie);
+        }
+        
+        // 4. Gestion du TRI (Date croissante / décroissante)
+        $sort = $request->query->get('sort', 'DESC');
+        $direction = strtoupper($sort) === 'ASC' ? 'ASC' : 'DESC';
+        
+        // Correction ici aussi par sécurité : m.dateHeure (vérifiez la majuscule sur dateHeure si ça plante aussi)
+        $qb->orderBy('m.dateHeure', $direction);
+
+        // 5. Exécution de la requête
+        $mouvements = $qb->getQuery()->getResult();
+
+        // 6. Construction de la réponse JSON
         $data = [];
-        foreach ($mouvements as $mouvement) {
-            $livre = $mouvement->getLivre();
+        foreach ($mouvements as $mvt) {
+            $livre = $mvt->getLivre();
             
             $data[] = [
-                'id' => $mouvement->getId(),
-                'type' => $mouvement->isType(),
-                'dateHeure' => $mouvement->getDateHeure() ? $mouvement->getDateHeure()->format('d/m/Y H:i:s') : '',
-                'nomPrenom' => $mouvement->getNomPrenom(),
+                'id' => $mvt->getId(),
+                'dateHeure' => $mvt->getDateHeure()->format('d/m/Y H:i'),
+                'nomPrenom' => $mvt->getNomPrenom(),
+                'type' => $mvt->isType(), // ou $mvt->getType() selon votre entité
                 'livre' => $livre ? [
                     'id' => $livre->getId(),
                     'isbn' => $livre->getIsbn(),
                     'nom' => $livre->getNom(),
-                    'auteur' => $livre->getAuteur()
+                    'auteur' => $livre->getAuteur(),
                 ] : null
             ];
         }
 
-        return $this->json([
+        return new JsonResponse([
             'success' => true,
             'mouvements' => $data,
             'total' => count($data),

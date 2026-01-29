@@ -1,7 +1,7 @@
 /**
  * @author : Dufour Marc (marc.dufour@stjosup.com)
- * @version : 2.0
- * @dateCreate : 29/01/2026
+ * @version : 2.1
+ * @lastUpdate : 29/01/2026 (Support filtres Tri et Type)
  * @description : Gestion du tableau dynamique des mouvements avec AJAX
  */
 
@@ -9,7 +9,9 @@
 let critereRecherche = {
     isbn: '',
     auteur: '',
-    user: ''
+    user: '',
+    type: '',   // Nouveau : filtre entrée/sortie
+    tri: 'DESC' // Nouveau : ordre décroissant par défaut
 };
 
 /**
@@ -24,13 +26,27 @@ document.addEventListener('DOMContentLoaded', function() {
     if (formRecherche) {
         formRecherche.addEventListener('submit', function(e) {
             e.preventDefault();
-            
-            // Récupérer les critères
-            critereRecherche.isbn = document.getElementById('isbn').value.trim();
-            critereRecherche.auteur = document.getElementById('auteur').value.trim();
-            critereRecherche.user = document.getElementById('user').value.trim();
-            
-            // Charger les mouvements avec les critères
+            // Mise à jour des critères et lancement de la recherche
+            majCriteres();
+            chargerMouvements();
+        });
+    }
+
+    // Gestion des listes déroulantes (Tri et Type)
+    // On lance la recherche immédiatement au changement (pas besoin de bouton valider)
+    const selectType = document.getElementById('select-type');
+    const selectTri = document.getElementById('select-tri');
+
+    if (selectType) {
+        selectType.addEventListener('change', function() {
+            majCriteres();
+            chargerMouvements();
+        });
+    }
+
+    if (selectTri) {
+        selectTri.addEventListener('change', function() {
+            majCriteres();
             chargerMouvements();
         });
     }
@@ -41,14 +57,22 @@ document.addEventListener('DOMContentLoaded', function() {
         btnEffacer.addEventListener('click', function() {
             // Réinitialiser le formulaire
             document.getElementById('form-recherche-mouvements').reset();
-            critereRecherche = { isbn: '', auteur: '', user: '' };
+            
+            // Réinitialiser l'objet de critères
+            critereRecherche = { 
+                isbn: '', 
+                auteur: '', 
+                user: '', 
+                type: '', 
+                tri: 'DESC' 
+            };
             
             // Recharger tous les mouvements
             chargerMouvements();
         });
     }
 
-    // Recherche en temps réel (optionnel - commentez si non désiré)
+    // Recherche en temps réel sur les champs texte
     const isbnInput = document.getElementById('isbn');
     const auteurInput = document.getElementById('auteur');
     const userInput = document.getElementById('user');
@@ -65,6 +89,22 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 /**
+ * Met à jour l'objet critereRecherche depuis les champs du DOM
+ */
+function majCriteres() {
+    critereRecherche.isbn = document.getElementById('isbn').value.trim();
+    critereRecherche.auteur = document.getElementById('auteur').value.trim();
+    critereRecherche.user = document.getElementById('user').value.trim();
+    
+    // Nouveaux champs (si présents dans le DOM)
+    const elType = document.getElementById('select-type');
+    const elTri = document.getElementById('select-tri');
+    
+    if (elType) critereRecherche.type = elType.value;
+    if (elTri) critereRecherche.tri = elTri.value;
+}
+
+/**
  * Fonction principale : charge les mouvements via AJAX
  */
 async function chargerMouvements() {
@@ -77,6 +117,10 @@ async function chargerMouvements() {
         if (critereRecherche.isbn) params.append('isbn', critereRecherche.isbn);
         if (critereRecherche.auteur) params.append('auteur', critereRecherche.auteur);
         if (critereRecherche.user) params.append('user', critereRecherche.user);
+        
+        // Ajout des nouveaux paramètres URL
+        if (critereRecherche.type) params.append('type', critereRecherche.type);
+        if (critereRecherche.tri) params.append('sort', critereRecherche.tri);
 
         // Récupérer l'URL de base depuis l'attribut data
         const urlBase = document.getElementById('zone-tableau-mouvement').dataset.apiUrl;
@@ -180,7 +224,8 @@ function afficherMouvements(mouvements, isAdmin) {
         const tdType = document.createElement('td');
         const badgeType = document.createElement('span');
         badgeType.className = 'badge';
-        if (mouvement.type) {
+        // Note: l'API renvoie souvent un booléen ou '1'/'0' pour le type
+        if (mouvement.type || mouvement.type == '1') {
             badgeType.classList.add('bg-danger');
             badgeType.textContent = 'Sortie';
         } else {
@@ -215,17 +260,14 @@ function afficherMouvements(mouvements, isAdmin) {
  * Attache les événements pour ouvrir les modales de livres
  */
 function attacherEvenementsModales() {
-    // Récupérer l'URL template
     const livreUrlTemplate = document.getElementById('zone-tableau-mouvement').dataset.livreShowUrl;
 
-    // Liens vers les détails des livres
     document.querySelectorAll('.modal-trigger-livre').forEach(lien => {
         lien.addEventListener('click', (e) => {
             e.preventDefault();
             const livreId = lien.dataset.livreId;
             const url = livreUrlTemplate.replace('__ID__', livreId);
             
-            // Utiliser la fonction globale chargerModale() définie dans base.html.twig
             if (typeof chargerModale === 'function') {
                 chargerModale(url);
             } else {
@@ -245,12 +287,17 @@ function afficherMessageVide() {
     const messageErreur = document.getElementById('message-erreur-mouvement');
     const texteErreur = document.getElementById('texte-erreur-mouvement');
     
-    if (critereRecherche.isbn || critereRecherche.auteur || critereRecherche.user) {
-        let criteres = [];
-        if (critereRecherche.isbn) criteres.push(`ISBN: ${critereRecherche.isbn}`);
-        if (critereRecherche.auteur) criteres.push(`Auteur: ${critereRecherche.auteur}`);
-        if (critereRecherche.user) criteres.push(`Personne: ${critereRecherche.user}`);
-        
+    // Construction du message de feedback
+    let criteres = [];
+    if (critereRecherche.isbn) criteres.push(`ISBN: ${critereRecherche.isbn}`);
+    if (critereRecherche.auteur) criteres.push(`Auteur: ${critereRecherche.auteur}`);
+    if (critereRecherche.user) criteres.push(`Personne: ${critereRecherche.user}`);
+    
+    // Ajout feedback visuel pour les nouveaux filtres
+    if (critereRecherche.type === 'entree') criteres.push(`Type: Entrées`);
+    if (critereRecherche.type === 'sortie') criteres.push(`Type: Sorties`);
+    
+    if (criteres.length > 0) {
         texteErreur.innerHTML = `
             <strong>Aucun mouvement trouvé</strong> avec les critères : ${criteres.join(' - ')}
             <div class="mt-2">
@@ -296,12 +343,10 @@ function afficherChargement(afficher) {
 }
 
 /**
- * Recherche en temps réel (optionnel)
+ * Recherche en temps réel (déclenchée par debounce)
  */
 function rechercherEnTempsReel() {
-    critereRecherche.isbn = document.getElementById('isbn').value.trim();
-    critereRecherche.auteur = document.getElementById('auteur').value.trim();
-    critereRecherche.user = document.getElementById('user').value.trim();
+    majCriteres();
     chargerMouvements();
 }
 

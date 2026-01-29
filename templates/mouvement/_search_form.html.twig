@@ -28,6 +28,25 @@
                 <input type="text" name="user" id="user" class="form-control" placeholder="Nom de la personne..." autocomplete="off" value="{{ last_user ?? '' }}">
             </div>
 
+            {# Filtre par Type (Entrée / Sortie) #}
+            <div class="col-md-3">
+                <label for="select-type" class="form-label">Type de mouvement</label>
+                <select id="select-type" name="type" class="form-select">
+                    <option value="">Tous les types</option>
+                    <option value="entree">Entrées (Ajouts)</option>
+                    <option value="sortie">Sorties (Retraits)</option>
+                </select>
+            </div>
+
+            {# Tri par Date #}
+            <div class="col-md-3">
+                <label for="select-tri" class="form-label">Ordre d'affichage</label>
+                <select id="select-tri" name="tri" class="form-select">
+                    <option value="DESC" selected>Plus récent au plus ancien</option>
+                    <option value="ASC">Plus ancien au plus récent</option>
+                </select>
+            </div>
+            
             <div class="col-12 d-flex justify-content-end">
                 <div class="btn-group">
                     <button type="submit" class="btn btn-primary">
