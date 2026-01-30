@@ -383,6 +383,151 @@ main.table-full-width {
     padding: 2rem;
 }
 
+/* ===============================================
+   TABLEAUX ÉLARGIS - Pages Livre et Mouvement
+   =============================================== */
+
+/* Container pour les pages avec tableaux - prend 80% de la largeur */
+.page-tableau-large {
+    grid-column: 1 / -1 !important;
+    max-width: 80%;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(5px);
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Alternative : utiliser main directement pour les pages de tableaux */
+main.tableau-large {
+    grid-column: 1 / -1 !important;
+    max-width: 85%;
+    width: 85%;
+    margin: 2rem auto;
+}
+
+/* Zone de recherche compacte au-dessus du tableau */
+.search-container-compact {
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Formulaire de recherche en ligne */
+.search-form-inline {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    align-items: flex-end;
+}
+
+.search-form-inline .form-group {
+    flex: 1;
+    min-width: 200px;
+    margin-bottom: 0;
+}
+
+.search-form-inline .btn-group {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* Tableau responsive et large */
+.table-wrapper-large {
+    width: 100%;
+    overflow-x: auto;
+    margin: 1rem 0;
+    grid-column : 1 / -1;
+}
+
+.table-wrapper-large table {
+    width: 100%;
+    min-width: 100%;
+}
+
+/* Amélioration des cellules de tableau */
+.table-wrapper-large td,
+.table-wrapper-large th {
+    padding: 1rem 0.75rem;
+    white-space: nowrap;
+}
+
+/* Compteur de résultats */
+.results-counter {
+    background-color: rgba(13, 71, 161, 0.1);
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    font-weight: 600;
+    color: var(--accent);
+}
+
+/* Zone de chargement */
+.loading-overlay {
+    text-align: center;
+    padding: 3rem;
+    color: var(--text-light);
+}
+
+.loading-overlay .spinner {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(13, 71, 161, 0.1);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Message d'erreur/vide */
+.empty-state {
+    text-align: center;
+    padding: 3rem;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 8px;
+    margin: 2rem 0;
+}
+
+.empty-state strong {
+    display: block;
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+    color: var(--text);
+}
+
+/* Responsive : sur petits écrans, revenir à 95% */
+@media (max-width: 1200px) {
+    .page-tableau-large,
+    main.tableau-large {
+        max-width: 95%;
+        width: 95%;
+    }
+}
+
+@media (max-width: 768px) {
+    .search-form-inline {
+        flex-direction: column;
+    }
+    
+    .search-form-inline .form-group {
+        width: 100%;
+    }
+    
+    .page-tableau-large,
+    main.tableau-large {
+        max-width: 98%;
+        width: 98%;
+        padding: 1rem;
+    }
+}
+
 
 /*#endregion*/
 
@@ -1371,3 +1516,7 @@ textarea:focus {
 /* ===============================================
    FIN DU STYLESHEET
    =============================================== */
+
+.tab-struc {
+    grid : unset
+}
