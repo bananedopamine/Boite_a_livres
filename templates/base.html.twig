@@ -22,37 +22,37 @@
                     <a class="logo-home" href="{{path('home_index')}}" >
                         <img src="{{ asset('extras/images/245-MRK.ERG.506_LogoTransparent_v1.0.png') }}" alt "Accueil" style="width: 200px; height: auto;" align="center">
                     </a>
+                    
                     <h1>Ma Boîte à Livres</h1>
 
-                    {% if app.session.get('admin_authenticated') %}
+                    <div style="display:flex;">
+                        {% if app.session.get('admin_authenticated') %}
                         {# DROPDOWN MENU ADMIN #}
-                        <div class="dropdown">
-                            <button class="dropdown-toggle" id="adminDropdown" type="button">
-                                Admin
-                            </button>
-                            <div class="dropdown-menu" id="adminMenu">
-                                <a href="{{ path('app_livre_index') }}" class="dropdown-item">
-                                    Bibliothèque
-                                </a>
-                                <a href="{{ path('app_mouvement_index') }}" class="dropdown-item">
-                                    Historique des mouvements
-                                </a>
-                                <div class="dropdown-divider"></div>
-                                <a href="{{ path('app_admin_settings') }}" class="dropdown-item">
-                                    Paramètres
-                                </a>
-                                <div class="dropdown-divider"></div>
-                                <a href="{{ path('app_admin_logout') }}" class="dropdown-item danger">
-                                    Déconnexion
-                                </a>
+                            <div class="dropdown">
+                                <button class="dropdown-toggle" id="adminDropdown" type="button">
+                                    Admin
+                                </button>
+                                <div class="dropdown-menu" id="adminMenu">
+                                    <a href="{{ path('app_livre_index') }}" class="dropdown-item">
+                                        Bibliothèque
+                                    </a>
+                                    <a href="{{ path('app_mouvement_index') }}" class="dropdown-item">
+                                        Historique des mouvements
+                                    </a>
+                                    <div class="dropdown-divider"></div>
+                                    <a href="{{ path('app_admin_settings') }}" class="dropdown-item">
+                                        Paramètres
+                                    </a>
+                                    <div class="dropdown-divider"></div>
+                                    <a href="{{ path('app_admin_logout') }}" class="dropdown-item danger">
+                                        Déconnexion
+                                    </a>
+                                </div>
                             </div>
-                        </div>
-                    {% else %}
-                        <a href="{{ path('app_admin_login') }}" class="btn">Admin</a>
-                    {% endif %}
+                        {% else %}
+                            <a href="{{ path('app_admin_login') }}" class="btn">Admin</a>
+                        {% endif %}
 
-
-                    <div>
                         <a href="javascript:history.back()" title="Retour">
                             <img src="{{ asset('extras/images/Back_arrow.png')}}" style="width: 50px" align="center" alt="Retour à la liste"> 
                         </a>
