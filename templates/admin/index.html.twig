@@ -4,13 +4,11 @@
 
 {% block body %}
 <nav style="display: flex; justify-content: center; gap: 20px; margin-top: 30px;">
-    <a href="{{ path('app_mouvement_index') }}">
-        <Button> Afficher l'historique des mouvements </Button>
-    </a>
+
+    <Button onclick="window.location.href='{{ path('app_mouvement_index') }}' " class="btn btn-primary"> Afficher l'historique des mouvements </Button>
     
-    <a href="{{ path('app_livre_index') }}">
-        <Button> Afficher la bibliothèque actuel </Button>
-    </a>
+    <Button onclick="window.location.href='{{ path('app_livre_index') }}' " class="btn btn-primary"> Afficher la bibliothèque actuel </Button>
+    
 </nav>
 
 {% endblock %}
