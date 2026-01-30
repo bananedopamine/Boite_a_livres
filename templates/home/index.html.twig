@@ -11,23 +11,22 @@
     <p>Choisissez une action pour commencer le scan.</p>
     
     <nav class="home-nav-menu">
+
         {# BOUTON ENTRÉE : On passe 'false' pour indiquer que ce n'est PAS une sortie #}
         <button class="btn btn-primary" onclick="ouvrirScan('false')">
             Déposer un livre
         </button>
-
         {# BOUTON SORTIE : On passe 'true' pour indiquer que c'est une sortie #}
         <button class="btn btn-primary" onclick="ouvrirScan('true')">
             Prendre un livre
         </button>
 
-        <button class="btn btn-primary">
-            <a  href="{{ path('app_livre_index') }}" class="href-bibli">
-                Bibliothèque
-            </a>
+        <button onclick="window.location.href='{{ path('app_livre_index') }}'" class="btn btn-primary">
+            Bibliothèque
         </button>
-
     </nav>
+
+    
 </div>
 {% endblock %}
 
