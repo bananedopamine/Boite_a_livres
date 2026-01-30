@@ -1517,6 +1517,196 @@ textarea:focus {
    FIN DU STYLESHEET
    =============================================== */
 
-.tab-struc {
-    grid : unset
+/* ===============================================
+   PALETTE DE COULEURS POUR TABLEAUX
+   =============================================== */
+
+/* Couleurs alternées inspirées de l'image bg_bal.png */
+.table-striped tbody tr:nth-child(odd) {
+    background-color: rgba(240, 248, 255, 0.7) !important; /* Bleu très clair */
+}
+
+.table-striped tbody tr:nth-child(even) {
+    background-color: rgba(255, 250, 240, 0.7) !important; /* Beige très clair */
+}
+
+/* Hover sur les lignes du tableau */
+.table-hover tbody tr:hover {
+    background-color: rgba(66, 184, 221, 0.15) !important; /* Turquoise léger au survol */
+    cursor: pointer;
+    transform: scale(1.001);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+}
+
+/* En-tête du tableau avec gradient turquoise */
+.table thead th {
+    background: linear-gradient(135deg, rgba(66, 184, 221, 0.85) 0%, rgba(0, 159, 183, 0.85) 100%) !important;
+    color: white !important;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.95rem;
+    letter-spacing: 0.5px;
+    padding: 1.2rem 1rem !important;
+    border: none !important;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+/* Cellules du tableau */
+.table td {
+    padding: 1rem 0.75rem !important;
+    vertical-align: middle;
+    border-color: rgba(200, 200, 200, 0.3) !important;
+}
+
+/* Badges de stock/statut */
+.table .bg-success {
+    background: linear-gradient(135deg, #5cb85c 0%, #4cae4c 100%) !important;
+    color: white;
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    display: inline-block;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.table .bg-danger {
+    background: linear-gradient(135deg, #d9534f 0%, #c9302c 100%) !important;
+    color: white;
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    display: inline-block;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.table .bg-secondary {
+    background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%) !important;
+    color: white;
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    display: inline-block;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Liens dans le tableau (ISBN, etc.) */
+.table a {
+    color: #0d47a1;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.table a:hover {
+    color: #42b8dd;
+    text-decoration: underline;
+}
+
+/* Container du tableau avec ombre */
+.table-wrapper-large {
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    margin: 1.5rem 0;
+}
+
+.table-wrapper-large table {
+    margin-bottom: 0;
+}
+
+/* Alternance plus subtile pour une variante */
+.table-variant-soft tbody tr:nth-child(odd) {
+    background-color: rgba(214, 235, 247, 0.4) !important; /* Bleu clair de votre overlay */
+}
+
+.table-variant-soft tbody tr:nth-child(even) {
+    background-color: rgba(255, 248, 225, 0.5) !important; /* Jaune/beige très doux */
+}
+
+/* Style alternatif : tons de turquoise */
+.table-variant-turquoise tbody tr:nth-child(odd) {
+    background-color: rgba(66, 184, 221, 0.08) !important;
+}
+
+.table-variant-turquoise tbody tr:nth-child(even) {
+    background-color: rgba(0, 159, 183, 0.05) !important;
+}
+
+/* ===============================================
+   SOLUTION ÉLARGISSEMENT SÉLECTIF DU TABLEAU
+   =============================================== */
+
+/* Le tableau uniquement sort de la grille et prend 80% */
+.tableau-full-width {
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -40vw;
+    margin-right: -40vw;
+    width: 80vw;
+    max-width: 80vw;
+}
+
+/* Container pour le tableau élargi avec fond et padding */
+.tableau-full-width-container {
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    padding: 1.5rem;
+    margin: 2rem 0;
+}
+
+/* Alternative : utiliser CSS Grid pour sortir du parent */
+.breakout-grid {
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    padding: 2rem 10vw;
+}
+
+/* Conteneur pour centrer le contenu du breakout */
+.breakout-inner {
+    max-width: 80%;
+    margin: 0 auto;
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    padding: 1.5rem;
+}
+
+/* Responsive : sur petits écrans, revenir à la largeur normale */
+@media (max-width: 1200px) {
+    .tableau-full-width,
+    .breakout-grid {
+        left: 0;
+        right: 0;
+        margin-left: 0;
+        margin-right: 0;
+        width: 100%;
+        max-width: 100%;
+        padding-left: 0;
+        padding-right: 0;
+    }
+    
+    .breakout-inner {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .tableau-full-width-container,
+    .breakout-inner {
+        padding: 1rem;
+        border-radius: 8px;
+    }
 }
