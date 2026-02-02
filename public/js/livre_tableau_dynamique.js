@@ -129,9 +129,9 @@ function afficherLivres(livres, isAdmin) {
         // ISBN (avec lien modal)
         const tdIsbn = document.createElement('td');
         const linkIsbn = document.createElement('a');
-        linkIsbn.href = urlTemplate.replace('__ID__', livre.id);
-        linkIsbn.className = 'modal-trigger';
-        linkIsbn.textContent = livre.isbn;
+        tr.href = urlTemplate.replace('__ID__', livre.id);
+        tr.className = 'modal-trigger';
+        tdIsbn.textContent = livre.isbn;
         tdIsbn.appendChild(linkIsbn);
         tr.appendChild(tdIsbn);
 
