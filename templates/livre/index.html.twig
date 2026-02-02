@@ -7,9 +7,9 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}Liste des livres{% endblock %}
+{% block PageTitle %} Liste des livres {% endblock %}
 
 {% block body %}
-    <h1>Liste des livres en stock</h1>
 
     {# Inclusion du formulaire de recherche dynamique #}
     {% include 'livre/_search_form.html.twig' %}

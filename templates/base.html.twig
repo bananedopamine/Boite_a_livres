@@ -23,7 +23,7 @@
                         <img src="{{ asset('extras/images/245-MRK.ERG.506_LogoTransparent_v1.0.png') }}" alt "Accueil" style="width: 200px; height: auto;" align="center">
                     </a>
                     
-                    <h1>Ma Boîte à Livres</h1>
+                    <h1>{% block PageTitle %}Ma Boîte à Livres{% endblock %}</h1>
 
                     <div style="display:flex;">
                         {% if app.session.get('admin_authenticated') %}
