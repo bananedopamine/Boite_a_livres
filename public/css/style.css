@@ -1159,6 +1159,7 @@ hr {
     transition: all 0.2s ease;
     font-weight: 500;
     display: flex;
+    margin-top : 8px;
 }
 
 .dropdown-item:last-child {
