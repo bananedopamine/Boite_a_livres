@@ -754,21 +754,9 @@ button.btn-outline-secondary:hover,
     border-radius: 0.25rem;
 }
 
-.bg-success {
-    background-color: #25CC29 !important;
-}
-
-.bg-danger {
-    background-color: #FC0808 !important;
-}
-
 .bg-warning {
     background-color: #ffc107 !important;
     color: #212529 !important;
-}
-
-.bg-secondary {
-    background-color: #6c757d !important;
 }
 
 .bg-primary {
@@ -1565,34 +1553,22 @@ textarea:focus {
 .table .bg-success {
     background: linear-gradient(135deg, #5cb85c 0%, #4cae4c 100%) !important;
     color: white;
-    padding: 0.4rem 0.8rem;
-    border-radius: 20px;
-    font-weight: 600;
-    font-size: 0.9rem;
-    display: inline-block;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align:center;
 }
 
 .table .bg-danger {
     background: linear-gradient(135deg, #d9534f 0%, #c9302c 100%) !important;
     color: white;
-    padding: 0.4rem 0.8rem;
-    border-radius: 20px;
-    font-weight: 600;
-    font-size: 0.9rem;
-    display: inline-block;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align:center;
 }
 
 .table .bg-secondary {
     background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%) !important;
     color: white;
-    padding: 0.4rem 0.8rem;
-    border-radius: 20px;
-    font-weight: 600;
-    font-size: 0.9rem;
-    display: inline-block;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align:center;
 }
 
 /* Liens dans le tableau (ISBN, etc.) */
