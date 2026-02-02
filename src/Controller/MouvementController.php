@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Livre;
 use App\Entity\Mouvement;
+use App\Service\ExportService;
 use App\Repository\MouvementRepository;
 use App\Repository\LivreRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -13,6 +14,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 
 #[Route('/mouvement')]
@@ -255,4 +258,67 @@ class MouvementController extends AbstractController
     }
 
     #endregion
+
+    #region Excel export
+
+    /**
+     * Export des mouvements en Excel (filtrés selon les critères de recherche)
+     */
+    #[Route('/export', name: 'app_mouvement_export', methods: ['GET'])]
+    public function export(Request $request, MouvementRepository $mouvementRepository, ExportService $exportService): Response
+    {
+        $isbn = $request->query->get('isbn', '');
+        $auteur = $request->query->get('auteur', '');
+        $user = $request->query->get('user', '');
+        $type = $request->query->get('type', '');
+        $sort = $request->query->get('sort', 'DESC');
+
+        // Construction de la requête (même logique que apiListe)
+        $qb = $mouvementRepository->createQueryBuilder('m')
+            ->leftJoin('m.livre', 'l');
+
+        // Filtres de recherche
+        if (!empty($isbn)) {
+            $qb->andWhere('l.isbn LIKE :isbnVal')
+            ->setParameter('isbnVal', '%' . $isbn . '%');
+        }
+        if (!empty($auteur)) {
+            $qb->andWhere('l.auteur LIKE :auteurVal')
+            ->setParameter('auteurVal', '%' . $auteur . '%');
+        }
+        if (!empty($user)) {
+            $qb->andWhere('m.nomPrenom LIKE :userVal')
+            ->setParameter('userVal', '%' . $user . '%');
+        }
+        
+        // Filtre par type
+        if ($type === 'entree') {
+            $qb->andWhere('m.Type = 0');
+        } elseif ($type === 'sortie') {
+            $qb->andWhere('m.Type = 1');
+        }
+
+        // Tri
+        $direction = ($sort === 'ASC') ? 'ASC' : 'DESC';
+        $mouvements = $qb->orderBy('m.dateHeure', $direction)
+                        ->getQuery()
+                        ->getResult();
+
+        // Générer le fichier Excel
+        $filepath = $exportService->exportMouvements($mouvements);
+
+        // Préparer la réponse de téléchargement
+        $response = new BinaryFileResponse($filepath);
+        $response->setContentDisposition(
+            ResponseHeaderBag::DISPOSITION_ATTACHMENT,
+            basename($filepath)
+        );
+
+        // Supprimer le fichier après téléchargement
+        $response->deleteFileAfterSend(true);
+
+        return $response;
+    }
+
+    #endregion 
 }

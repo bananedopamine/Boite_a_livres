@@ -1,7 +1,7 @@
 /**
  * @author : Dufour Marc (marc.dufour@stjosup.com)
  * @version : 2.1
- * @lastUpdate : 29/01/2026 (Support filtres Tri et Type)
+ * @lastUpdate : 02/02/2026 (Support exportation excel)
  * @description : Gestion du tableau dynamique des mouvements avec AJAX
  */
 
@@ -85,6 +85,14 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     if (userInput) {
         userInput.addEventListener('input', debounce(rechercherEnTempsReel, 500));
+    }
+
+    // Bouton Export Excel
+    const btnExport = document.getElementById('btn-export-mouvements');
+    if (btnExport) {
+        btnExport.addEventListener('click', function() {
+            exporterMouvements();
+        });
     }
 });
 
@@ -363,4 +371,24 @@ function debounce(func, wait) {
         clearTimeout(timeout);
         timeout = setTimeout(later, wait);
     };
+}
+
+/**
+ * Exporte les mouvements actuellement affichés en Excel
+ */
+function exporterMouvements() {
+    // Construire l'URL avec les mêmes paramètres que la recherche actuelle
+    const params = new URLSearchParams();
+    if (critereRecherche.isbn) params.append('isbn', critereRecherche.isbn);
+    if (critereRecherche.auteur) params.append('auteur', critereRecherche.auteur);
+    if (critereRecherche.user) params.append('user', critereRecherche.user);
+    if (critereRecherche.type) params.append('type', critereRecherche.type);
+    if (critereRecherche.tri) params.append('sort', critereRecherche.tri);
+
+    // Récupérer l'URL d'export depuis l'attribut data
+    const urlBase = document.getElementById('zone-tableau-mouvement').dataset.exportUrl;
+    const url = urlBase + '?' + params.toString();
+
+    // Télécharger le fichier
+    window.location.href = url;
 }

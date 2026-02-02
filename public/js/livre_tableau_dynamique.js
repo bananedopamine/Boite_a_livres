@@ -56,6 +56,14 @@ document.addEventListener('DOMContentLoaded', function() {
     if (auteurInput) {
         auteurInput.addEventListener('input', debounce(rechercherEnTempsReel, 500));
     }
+
+    // Bouton Export Excel
+    const btnExport = document.getElementById('btn-export-livres');
+    if (btnExport) {
+        btnExport.addEventListener('click', function() {
+            exporterLivres();
+        });
+    }
 });
 
 /**
@@ -136,9 +144,9 @@ function afficherLivres(livres, isAdmin) {
         tr.appendChild(tdIsbn);
 
         // titre
-        const tdtitre = document.createElement('td');
-        tdtitre.textContent = livre.titre;
-        tr.appendChild(tdtitre);
+        const tdTitre = document.createElement('td');
+        tdTitre.textContent = livre.titre; // Note: le backend envoie encore 'nom' pour compatibilité
+        tr.appendChild(tdTitre);
 
         // Auteur
         const tdAuteur = document.createElement('td');
@@ -248,4 +256,21 @@ function debounce(func, wait) {
         clearTimeout(timeout);
         timeout = setTimeout(later, wait);
     };
+}
+
+/**
+ * Exporte les livres actuellement affichés en Excel
+ */
+function exporterLivres() {
+    // Construire l'URL avec les mêmes paramètres que la recherche actuelle
+    const params = new URLSearchParams();
+    if (critereRecherche.isbn) params.append('isbn', critereRecherche.isbn);
+    if (critereRecherche.auteur) params.append('auteur', critereRecherche.auteur);
+
+    // Récupérer l'URL d'export depuis l'attribut data
+    const urlBase = document.getElementById('zone-tableau').dataset.exportUrl;
+    const url = urlBase + '?' + params.toString();
+
+    // Télécharger le fichier
+    window.location.href = url;
 }

@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Livre;
 use App\Form\LivreType;
+use App\Service\ExportService;
 use App\Repository\LivreRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -14,6 +15,8 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 #[Route('/livre')]
 class LivreController extends AbstractController
@@ -324,6 +327,61 @@ class LivreController extends AbstractController
 
 
         return $this->redirectToRoute('app_livre_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    #endregion
+
+    #region Excel export
+
+    /**
+     * Export des livres en Excel (filtrés selon les critères de recherche)
+     */
+    #[Route('/export', name: 'app_livre_export', methods: ['GET'])]
+    public function export(Request $request, LivreRepository $livreRepository, ExportService $exportService): Response
+    {
+        $isbn = $request->query->get('isbn', '');
+        $auteur = $request->query->get('auteur', '');
+        $isAdmin = $this->session->get('admin_authenticated', false);
+
+        // Construction de la requête (même logique que apiListe)
+        $qb = $livreRepository->createQueryBuilder('l');
+
+        // Filtres de recherche
+        if (!empty($isbn)) {
+            $qb->andWhere('l.isbn LIKE :isbnVal')
+            ->setParameter('isbnVal', '%' . $isbn . '%');
+        }
+        if (!empty($auteur)) {
+            $qb->andWhere('l.auteur LIKE :auteurVal')
+            ->setParameter('auteurVal', '%' . $auteur . '%');
+        }
+
+        // Si pas admin, afficher seulement les livres en stock
+        if (!$isAdmin) {
+            $qb->andWhere('l.NbStock > 0');
+        }
+
+        $livres = $qb->orderBy('l.isbn', 'ASC')
+                    ->getQuery()
+                    ->getResult();
+
+        // Générer le fichier Excel
+        $filepath = $exportService->exportLivres($livres, $isAdmin);
+
+        // Préparer la réponse de téléchargement
+        $response = new BinaryFileResponse($filepath);
+        $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+
+        
+        $response->setContentDisposition(
+            ResponseHeaderBag::DISPOSITION_ATTACHMENT,
+            basename($filepath)
+        );
+
+        // Supprimer le fichier après téléchargement
+        $response->deleteFileAfterSend(true);
+
+        return $response;
     }
 
     #endregion

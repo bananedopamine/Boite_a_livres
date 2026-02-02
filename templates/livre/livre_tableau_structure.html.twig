@@ -5,9 +5,10 @@
  #}
 
 {# Zone d'affichage du tableau avec attributs data pour le JavaScript #}
-<div id="zone-tableau" class="breakout-grid"
+<div id="zone-tableau"  class="breakout-grid"
      data-api-url="{{ path('app_livre_api_liste') }}"
-     data-show-url="{{ path('app_livre_show', {id: 99999})|replace({'99999': '__ID__'}) }}">
+     data-show-url="{{ path('app_livre_show', {id: 99999})|replace({'99999': '__ID__'}) }}"
+     data-export-url="{{ path('app_livre_export') }}">
     
     {# Indicateur de chargement #}
     <div id="loading-indicator" class="text-center py-5">
@@ -22,11 +23,14 @@
         <span id="texte-erreur"></span>
     </div>
 
-    {# Compteur de résultats #}
-    <div id="compteur-resultats" class="mb-2" style="display: none;">
+    {# Compteur de résultats et bouton export #}
+    <div id="compteur-resultats" class="mb-2 d-flex justify-content-between align-items-center" style="display: none;">
         <small class="text-muted">
             <strong id="nombre-livres">0</strong> livre(s) trouvé(s)
         </small>
+        <button type="button" id="btn-export-livres" class="btn btn-sm btn-success">
+            <i class="fas fa-file-excel"></i> Exporter en Excel
+        </button>
     </div>
 
     {# Tableau des livres #}
@@ -35,7 +39,7 @@
             <thead class="table-dark">
                 <tr>
                     <th>ISBN</th>
-                    <th>titre</th>
+                    <th>Titre</th>
                     <th>Auteur</th>
                     <th>Stock</th>
                     <th id="colonne-actif" style="display: none;">Actif</th>
