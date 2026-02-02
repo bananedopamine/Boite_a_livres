@@ -1090,7 +1090,6 @@ hr {
     background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
     color: white;
     padding: 14px 24px;
-    border: none;
     cursor: pointer;
     border-radius: 8px;
     font-size: 1.1rem;
@@ -1135,7 +1134,6 @@ hr {
     border: 1px solid var(--border);
     z-index: 1000;
     margin-top: 8px;
-    overflow: hidden;
     animation: slideDown 0.3s ease;
 }
 
@@ -1157,15 +1155,10 @@ hr {
 .dropdown-item {
     color: var(--text);
     padding: 16px 20px;
-    text-decoration: none;
-    display: block;
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
     transition: all 0.2s ease;
     font-weight: 500;
-    font-size: 1.05rem;
-    min-height: 48px;
     display: flex;
-    align-items: center;
 }
 
 .dropdown-item:last-child {
@@ -1178,19 +1171,10 @@ hr {
     color: var(--accent);
 }
 
-.dropdown-item.danger {
-    color: #dc3545;
-}
-
-.dropdown-item.danger:hover {
-    background-color: #ffebee;
-    color: #b71c1c;
-}
-
 .dropdown-divider {
     height: 1px;
     background: linear-gradient(90deg, transparent, var(--border), transparent);
-    margin: 4px 0;
+    margin: 10px 0;
 }
 
 /*#endregion*/
