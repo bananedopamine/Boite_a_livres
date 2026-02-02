@@ -135,10 +135,10 @@ function afficherLivres(livres, isAdmin) {
         tdIsbn.appendChild(linkIsbn);
         tr.appendChild(tdIsbn);
 
-        // Nom
-        const tdNom = document.createElement('td');
-        tdNom.textContent = livre.nom;
-        tr.appendChild(tdNom);
+        // titre
+        const tdtitre = document.createElement('td');
+        tdtitre.textContent = livre.titre;
+        tr.appendChild(tdtitre);
 
         // Auteur
         const tdAuteur = document.createElement('td');

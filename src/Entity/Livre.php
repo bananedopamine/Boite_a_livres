@@ -25,7 +25,7 @@ class Livre
     private ?string $isbn = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $nom = null;
+    private ?string $titre = null;
 
     #[ORM\Column(length: 255)]
     private ?string $auteur = null;
@@ -68,14 +68,14 @@ class Livre
         $this->isbn = $isbn; return $this; 
     }
 
-    public function getnom(): ?string
+    public function gettitre(): ?string
     {
-        return $this->nom;
+        return $this->titre;
     }
 
-    public function setnom(string $nom): static
+    public function settitre(string $titre): static
     {
-        $this->nom = $nom;
+        $this->titre = $titre;
 
         return $this;
     }

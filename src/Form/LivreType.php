@@ -24,7 +24,7 @@ class LivreType extends AbstractType
             'label' => 'Numéro ISBN',
             'attr' => ['placeholder' => 'Ex: 978201...']
         ])
-            ->add('nom')
+            ->add('titre')
             ->add('auteur')
             ->add('description')
             ->add('lienImg')

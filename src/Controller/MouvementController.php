@@ -151,7 +151,7 @@ class MouvementController extends AbstractController
                 'livre' => $livre ? [
                     'id' => $livre->getId(),
                     'isbn' => $livre->getIsbn(),
-                    'nom' => $livre->getNom(),
+                    'titre' => $livre->gettitre(),
                     'auteur' => $livre->getAuteur(),
                 ] : null
             ];
@@ -203,7 +203,7 @@ class MouvementController extends AbstractController
             'success'   => true,
             'livre' => [
                 'id'      => $livre->getId(),
-                'titre'   => $livre->getNom(),
+                'titre'   => $livre->gettitre(),
                 'auteur'  => $livre->getAuteur(),
                 'isbn'    => $livre->getIsbn(),
                 'stock'   => $livre->getNbStock(),

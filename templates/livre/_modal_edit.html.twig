@@ -10,7 +10,7 @@
     <div id="edit-form-container">
         {% if app.request.xmlHttpRequest %}
             {# MODALE AJAX #}
-            <h2>Modifier {{ livre.nom }}</h2>
+            <h2>Modifier {{ livre.titre }}</h2>
             
             {{ include('livre/_form.html.twig', {
                 'form': form,

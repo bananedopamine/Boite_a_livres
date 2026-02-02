@@ -120,7 +120,7 @@ class LivreController extends AbstractController
             $data[] = [
                 'id' => $livre->getId(),
                 'isbn' => $livre->getIsbn(),
-                'nom' => $livre->getNom(),
+                'titre' => $livre->gettitre(),
                 'auteur' => $livre->getAuteur(),
                 'stock' => $livre->getNbStock(),
                 'actif' => $livre->isActif(),
@@ -223,7 +223,7 @@ class LivreController extends AbstractController
         // Créer le livre avec les valeurs par défaut
         $livre = new Livre();
         $livre->setIsbn($isbn);
-        $livre->setNom($titre);
+        $livre->settitre($titre);
         $livre->setAuteur($auteur ?: 'Auteur inconnu'); // Valeur par défaut si vide
         $livre->setDescription(''); // Valeur par défaut
         $livre->setLienImg(null); // Optionnel
@@ -258,7 +258,7 @@ class LivreController extends AbstractController
 
         // On pré-remplit l'objet Livre avec les données reçues en GET (provenant de l'API Google)
         $livre->setIsbn($requete->query->get('isbn'));
-        $livre->setNom($requete->query->get('titre'));
+        $livre->settitre($requete->query->get('titre'));
         $livre->setAuteur($requete->query->get('auteur'));
         $livre->setDescription($requete->query->get('description'));
         $livre->setLienImg($requete->query->get('image'));
@@ -322,15 +322,6 @@ class LivreController extends AbstractController
         $entityManager->persist($livre);
         $entityManager->flush();
 
-        // if ($livre->isActif()){
-        //     $livre->setActif(false);
-        // }
-
-        // if ($this->isCsrfTokenValid('delete'.$livre->getId(), $request->getPayload()->getString('_token'))) {
-        //     $entityManager->remove($livre);
-        //     $entityManager->flush();
-        //     $this->addFlash('success', 'Le livre a été supprimé.');
-        // }
 
         return $this->redirectToRoute('app_livre_index', [], Response::HTTP_SEE_OTHER);
     }

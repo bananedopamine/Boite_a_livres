@@ -7,12 +7,12 @@
 <table>
     <tbody>
         <tr>
-                <th>ISBN</th>
-                <td>{{ livre.isbn }}</td> 
+            <th>ISBN</th>
+            <td>{{ livre.isbn }}</td> 
         </tr>
         <tr>
-            <th>Nom</th>
-            <td>{{ livre.nom }}</td>
+            <th>titre</th>
+            <td>{{ livre.titre }}</td>
         </tr>
         <tr>
             <th>Auteur</th>
@@ -66,7 +66,7 @@
     {# Modale de confirmation de suppression (imbriquée) #}
     <dialog id="confirm-delete-modal" style="border-radius: 8px; border: 1px solid #ccc; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
         <h3 style="margin-top: 0;">Confirmer la suppression</h3>
-        <p>Êtes-vous sûr de vouloir supprimer le livre <strong>{{ livre.nom }}</strong> ?</p>
+        <p>Êtes-vous sûr de vouloir supprimer le livre <strong>{{ livre.titre }}</strong> ?</p>
         <p style="color: #d32f2f; font-size: 0.9em;">Cette action est irréversible.</p>
         
         <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">

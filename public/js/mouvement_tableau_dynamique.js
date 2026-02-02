@@ -195,7 +195,7 @@ function afficherMouvements(mouvements, isAdmin) {
         // ====================================
         const tdTitre = document.createElement('td');
         if (mouvement.livre) {
-            tdTitre.textContent = mouvement.livre.nom;
+            tdTitre.textContent = mouvement.livre.titre;
         } else {
             const spanSuppr = document.createElement('span');
             spanSuppr.className = 'text-danger';

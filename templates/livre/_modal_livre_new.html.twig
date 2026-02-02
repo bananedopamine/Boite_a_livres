@@ -7,7 +7,7 @@
     {{ form_start(form, {
         'action': path('app_livre_new', form.vars.value.isbn ? {
             'isbn': form.vars.value.isbn, 
-            'titre': form.vars.value.nom, 
+            'titre': form.vars.value.titre, 
             'auteur': form.vars.value.auteur, 
             'description': form.vars.value.description, 
             'image': form.vars.value.lienImg
@@ -16,8 +16,8 @@
     }) }}
         
         <div class="form-group-modal">
-            {{ form_label(form.nom, 'Titre du livre') }}
-            {{ form_widget(form.nom, {'attr': {'class': 'input-full'}}) }}
+            {{ form_label(form.titre, 'Titre du livre') }}
+            {{ form_widget(form.titre, {'attr': {'class': 'input-full'}}) }}
         </div>
 
         <div class="form-group-modal">
