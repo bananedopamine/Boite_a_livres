@@ -5,7 +5,7 @@
  #}
 
 {# Zone d'affichage du tableau avec attributs data pour le JavaScript #}
-<div id="zone-tableau-mouvement" 
+<div id="zone-tableau-mouvement" class="breakout-grid"
      data-api-url="{{ path('app_mouvement_api_liste') }}"
      data-show-url="{{ path('app_mouvement_show', {id: '99999'})|replace({'99999': '__ID__'}) }}"
      data-livre-show-url="{{ path('app_livre_show', {id: '66666'})|replace({'66666': '__ID__'}) }}">
@@ -31,7 +31,7 @@
     </div>
 
     {# Tableau des mouvements #}
-    <div id="conteneur-tableau-mouvement" style="display: none;">
+    <div id="conteneur-tableau-mouvement" class="breakout-inner" style="display: none;">
         <table class="table table-striped table-hover">
             <thead class="table-dark">
                 <tr>
