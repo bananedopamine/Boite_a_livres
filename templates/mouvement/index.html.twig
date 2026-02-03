@@ -11,8 +11,8 @@
 
 {% block body %}
 
-    {# Inclusion du formulaire de recherche #}
-    {% include 'mouvement/_search_form.html.twig' %}
+    {# Inclusion de la modal de recherche dynamique #}
+    {% include 'mouvement/_modal_filtres_mouvement.html.twig' %}
 
     {# Inclusion de la structure du tableau #}
     {% include 'mouvement/mouvement_tableau_structure.html.twig' %}
@@ -25,6 +25,9 @@
 
 {% block javascripts %}
     {{ parent() }}
+    {# MODIFICATION: Inclusion du gestionnaire de modales global #}
+    <script src="{{ asset('js/modal_handler.js') }}"></script>
+    
     {# Inclusion du script JavaScript pour le tableau dynamique #}
     <script src="{{ asset('js/mouvement_tableau_dynamique.js') }}"></script>
 {% endblock %}

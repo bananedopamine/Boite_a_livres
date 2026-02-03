@@ -1,17 +1,45 @@
 {# @author : Dufour Marc (marc.dufour@stjosup.com)
- # @version : 2.0
- # @dateCreate : 28/01/2026
- # @description : Structure du tableau dynamique des livres
+ # @version : 3.0
+ # @dateCreate : 03/02/2026
+ # @description : Structure du tableau dynamique des livres AVEC modale de filtres
  #}
 
 {# Zone d'affichage du tableau avec attributs data pour le JavaScript #}
-<div id="zone-tableau"  class="breakout-grid"
+{# ========================================
+       CONTRÔLES DU TABLEAU (Filtres + Export)
+       ======================================== #}
+    <div class="table-controls">
+        <div class="table-controls-left">
+            <button type="button" class="btn-open-filtres" onclick="ouvrirModaleFiltres()">
+                Filtres
+                <span id="filter-count-badge" class="filter-count-badge" style="display: none;">0</span>
+            </button>
+        </div>
+        
+        <div class="table-controls-right">
+            <small class="text-muted">
+                <strong id="nombre-livres">0</strong> livre(s)
+            </small>
+            <button type="button" id="btn-export-livres" class="btn btn-success">
+                <i class="fas fa-file-excel"></i> Exporter
+            </button>
+        </div>
+    </div>
+
+<div id="zone-tableau" class="breakout-grid"
      data-api-url="{{ path('app_livre_api_liste') }}"
      data-show-url="{{ path('app_livre_show', {id: 99999})|replace({'99999': '__ID__'}) }}"
      data-export-url="{{ path('app_livre_export') }}">
     
+    {# Affichage des filtres actifs #}
+    <div id="active-filters-container" class="active-filters"></div>
+    
+    {# ========================================
+       INDICATEURS ET MESSAGES
+       ======================================== #}
+    
     {# Indicateur de chargement #}
-    <div id="loading-indicator" class="text-center py-5">
+    <div id="loading-indicator" class="text-center py-5" style="display: none;">
         <div class="spinner-border text-primary" role="status">
             <span class="visually-hidden">Chargement...</span>
         </div>
@@ -23,15 +51,9 @@
         <span id="texte-erreur"></span>
     </div>
 
-    {# Compteur de résultats et bouton export #}
-    <div id="compteur-resultats" class="mb-2 d-flex justify-content-between align-items-center" style="display: none;">
-        <small class="text-muted">
-            <strong id="nombre-livres">0</strong> livre(s) trouvé(s)
-        </small>
-        <button type="button" id="btn-export-livres" class="btn btn-sm btn-success">
-            <i class="fas fa-file-excel"></i> Exporter en Excel
-        </button>
-    </div>
+    {# ========================================
+       TABLEAU DES LIVRES
+       ======================================== #}
 
     {# Tableau des livres #}
     <div id="conteneur-tableau" class="breakout-inner" style="display: none;">

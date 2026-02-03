@@ -1,8 +1,31 @@
 {# @author : Dufour Marc (marc.dufour@stjosup.com)
- # @version : 2.0
- # @dateCreate : 02/02/2026
- # @description : Structure du tableau dynamique des mouvements
+ # @version : 3.0
+ # @dateCreate : 03/02/2026
+ # @description : Structure du tableau dynamique des mouvements avec modale de filtres
  #}
+
+ 
+{# ========================================
+   INDICATEURS ET MESSAGES
+   ======================================== #}
+
+<div class="table-controls">
+    <div class="table-controls-left">
+        <button type="button" class="btn-open-filtres" onclick="ouvrirModaleFiltres()">
+            Filtres
+            <span id="filter-count-badge" class="filter-count-badge" style="display: none;">0</span>
+        </button>
+    </div>
+    
+    <div class="table-controls-right">
+        <small class="text-muted">
+            <strong id="nombre-mouvements">0</strong> mouvement(s)
+        </small>
+        <button type="button" id="btn-export-mouvements" class="btn btn-success">
+            <i class="fas fa-file-excel"></i> Exporter
+        </button>
+    </div>
+</div>
 
 {# Zone d'affichage du tableau avec attributs data pour le JavaScript #}
 <div id="zone-tableau-mouvement" class="breakout-grid"
@@ -11,8 +34,17 @@
      data-livre-show-url="{{ path('app_livre_show', {id: '66666'})|replace({'66666': '__ID__'}) }}"
      data-export-url="{{ path('app_mouvement_export') }}">
     
+    {# ========================================
+       CONTRÔLES DU TABLEAU (Filtres + Export)
+       ======================================== #}
+    
+    
+    {# Affichage des filtres actifs #}
+    <div id="active-filters-container" class="active-filters"></div>
+    
+    
     {# Indicateur de chargement #}
-    <div id="loading-indicator-mouvement" class="text-center py-5">
+    <div id="loading-indicator-mouvement" class="text-center py-5" style="display: none;">
         <div class="spinner-border text-primary" role="status">
             <span class="visually-hidden">Chargement...</span>
         </div>
@@ -24,16 +56,9 @@
         <span id="texte-erreur-mouvement"></span>
     </div>
 
-    {# Compteur de résultats et bouton export #}
-    <div id="compteur-resultats-mouvement" class="mb-2 d-flex justify-content-between align-items-center" style="display: none;">
-        <small class="text-muted">
-            <strong id="nombre-mouvements">0</strong> mouvement(s) trouvé(s)
-        </small>
-        <button type="button" id="btn-export-mouvements" class="btn btn-sm btn-success">
-            <i class="fas fa-file-excel"></i> Exporter en Excel
-        </button>
-    </div>
-
+    {# ========================================
+       TABLEAU DES MOUVEMENTS
+       ======================================== #}
     {# Tableau des mouvements #}
     <div id="conteneur-tableau-mouvement" class="breakout-inner" style="display: none;">
         <table class="table table-striped table-hover">
@@ -53,3 +78,7 @@
         </table>
     </div>
 </div>
+
+{# ========================================
+   INCLUSION DE LA MODALE DE FILTRES
+   ======================================== #}

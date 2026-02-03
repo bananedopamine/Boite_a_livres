@@ -103,65 +103,72 @@ async function chargerLivres() {
     }
 }
 
-/**
- * Affiche les livres dans le tableau
- */
 function afficherLivres(livres, isAdmin) {
     const tbody = document.getElementById('tbody-livres');
-    tbody.innerHTML = ''; // Vider le tableau
+    tbody.innerHTML = '';
 
-    // Gérer l'affichage de la colonne "Actif" pour admin
     const colonneActif = document.getElementById('colonne-actif');
     if (colonneActif) {
         colonneActif.style.display = isAdmin ? '' : 'none';
     }
 
     if (livres.length === 0) {
-        // Aucun livre trouvé
         afficherMessageVide();
         return;
     }
 
-    // Afficher le tableau et le compteur
     document.getElementById('conteneur-tableau').style.display = 'block';
-    document.getElementById('compteur-resultats').style.display = 'block';
     document.getElementById('message-erreur').style.display = 'none';
 
-    // Récupérer l'URL template pour les liens
     const urlTemplate = document.getElementById('zone-tableau').dataset.showUrl;
 
-    // Générer les lignes du tableau
     livres.forEach(livre => {
         const tr = document.createElement('tr');
         
-        // ISBN (avec lien modal)
+        // URL pour ce livre
+        const urlDetail = urlTemplate.replace('__ID__', livre.id);
+
+        // =========================================================
+        // MODIFICATION: Création de liens <a> explicites au lieu de tr.href
+        // =========================================================
+
+        // 1. Colonne ISBN
         const tdIsbn = document.createElement('td');
         const linkIsbn = document.createElement('a');
-        tr.href = urlTemplate.replace('__ID__', livre.id);
-        tr.className = 'modal-trigger';
+        linkIsbn.href = '#';
+        tdIsbn.className = 'modal-trigger-livre'; // Classe pour l'écouteur
+        tdIsbn.dataset.url = urlDetail; // Stockage de l'URL
         tdIsbn.textContent = livre.isbn;
         tdIsbn.appendChild(linkIsbn);
         tr.appendChild(tdIsbn);
 
-        // titre
+        // 2. Colonne Titre
         const tdTitre = document.createElement('td');
-        tdTitre.textContent = livre.titre; // Note: le backend envoie encore 'nom' pour compatibilité
+        const linkTitre = document.createElement('a');
+        tdTitre.href = '#';
+        tdTitre.className = 'modal-trigger-livre';
+        tdTitre.dataset.url = urlDetail;
+        tdTitre.style.color = 'inherit'; // Garder le style du texte
+        tdTitre.style.textDecoration = 'none';
+        tdTitre.textContent = livre.titre;
+        tdTitre.appendChild(linkTitre);
         tr.appendChild(tdTitre);
 
-        // Auteur
+        // 3. Colonne Auteur
         const tdAuteur = document.createElement('td');
         tdAuteur.textContent = livre.auteur;
         tr.appendChild(tdAuteur);
 
-        // Stock (avec badge de couleur)
+        // 4. Colonne Stock
         const tdStock = document.createElement('td');
         const badgeStock = document.createElement('span');
+        // MODIFICATION: Classes Bootstrap standard + logique couleur
         tdStock.className = livre.stock > 0 ? 'bg-success' : 'bg-danger';
         badgeStock.textContent = livre.stock;
         tdStock.appendChild(badgeStock);
         tr.appendChild(tdStock);
 
-        // Actif (si admin)
+        // 5. Colonne Actif (Admin)
         if (isAdmin) {
             const tdActif = document.createElement('td');
             const badgeActif = document.createElement('span');
@@ -173,6 +180,27 @@ function afficherLivres(livres, isAdmin) {
 
         tbody.appendChild(tr);
     });
+
+    // MODIFICATION: Appel de la fonction pour attacher les événements après génération DOM
+    attacherEvenementsModales();
+}
+
+/**
+ * MODIFICATION: Nouvelle fonction pour déléguer l'ouverture à chargerModale (modal_handler.js)
+ */
+function attacherEvenementsModales() {
+    document.querySelectorAll('.modal-trigger-livre').forEach(lien => {
+        lien.addEventListener('click', (e) => {
+            e.preventDefault();
+            const url = lien.dataset.url;
+            
+            if (typeof chargerModale === 'function') {
+                chargerModale(url);
+            } else {
+                console.error('La fonction chargerModale() n\'est pas définie (modal_handler.js manquant ?)');
+            }
+        });
+    });
 }
 
 /**
@@ -180,7 +208,6 @@ function afficherLivres(livres, isAdmin) {
  */
 function afficherMessageVide() {
     document.getElementById('conteneur-tableau').style.display = 'none';
-    document.getElementById('compteur-resultats').style.display = 'none';
     
     const messageErreur = document.getElementById('message-erreur');
     const texteErreur = document.getElementById('texte-erreur');
@@ -210,7 +237,6 @@ function afficherMessageVide() {
  */
 function afficherErreur(message) {
     document.getElementById('conteneur-tableau').style.display = 'none';
-    document.getElementById('compteur-resultats').style.display = 'none';
     
     const messageErreur = document.getElementById('message-erreur');
     const texteErreur = document.getElementById('texte-erreur');

@@ -77,11 +77,11 @@
 
 
         </main>
-
+        
         <dialog id="modale_principale" class="modal-main">
             <div id="contenu_modale">
-                </div>
-            <button type="button" onclick="document.getElementById('modale_principale').close()" class="btn-modal-close">Fermer</button>
+                
+            </div>
         </dialog>
 
          <footer>
@@ -146,6 +146,10 @@
                 }
             }
         </script>
+
+        <script src="{{ asset('js/modal_handler.js') }}"></script>
+        <script src="{{ asset('js/modal_filtres_handler.js') }}"></script>
+
         {% block javascripts %}{% endblock %}
     </body>
 </html>

@@ -76,8 +76,9 @@
     </table>
 </div>
 
-{% if app.session.get('admin_authenticated') %}
     <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 15px;">
+        <button type="button" onclick="document.getElementById('modale_principale').close()" class="btn-modal-close">Fermer</button>
+        {% if app.session.get('admin_authenticated') %}
         {# Bouton Modifier #}
         <a href="{{ path('app_livre_edit', {'id': livre.id}) }}" class="edit-modal-trigger">
             <button type="button" class="btn btn-primary">
@@ -114,7 +115,8 @@
                         Confirmer la suppression
                     </button>
                 </a>
+            
+            {% endif %}
             </div>
         </dialog>
     </div>
-{% endif %}

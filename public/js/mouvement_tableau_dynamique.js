@@ -169,7 +169,6 @@ function afficherMouvements(mouvements, isAdmin) {
 
     // Afficher le tableau et le compteur
     document.getElementById('conteneur-tableau-mouvement').style.display = 'block';
-    document.getElementById('compteur-resultats-mouvement').style.display = 'block';
     document.getElementById('message-erreur-mouvement').style.display = 'none';
 
     // Récupérer l'URL template pour les liens
@@ -290,7 +289,6 @@ function attacherEvenementsModales() {
  */
 function afficherMessageVide() {
     document.getElementById('conteneur-tableau-mouvement').style.display = 'none';
-    document.getElementById('compteur-resultats-mouvement').style.display = 'none';
     
     const messageErreur = document.getElementById('message-erreur-mouvement');
     const texteErreur = document.getElementById('texte-erreur-mouvement');
@@ -326,7 +324,6 @@ function afficherMessageVide() {
  */
 function afficherErreur(message) {
     document.getElementById('conteneur-tableau-mouvement').style.display = 'none';
-    document.getElementById('compteur-resultats-mouvement').style.display = 'none';
     
     const messageErreur = document.getElementById('message-erreur-mouvement');
     const texteErreur = document.getElementById('texte-erreur-mouvement');

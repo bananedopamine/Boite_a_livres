@@ -80,7 +80,7 @@ class AdminController extends AbstractController
     }
 
     /**
-     * ✅ NOUVELLE PAGE : Paramètres admin
+     * NOUVELLE PAGE : Paramètres admin
      */
     #[Route('/settings', name: 'app_admin_settings', methods: ['GET', 'POST'])]
     public function settings(Request $request): Response
@@ -130,7 +130,7 @@ class AdminController extends AbstractController
     }
 
     /**
-     * ✅ Fonction helper pour modifier le fichier .env
+     * Fonction helper pour modifier le fichier .env
      */
     private function updateEnvFile(string $key, string $value): bool
     {

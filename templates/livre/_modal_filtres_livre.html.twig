@@ -1,0 +1,70 @@
+{# templates/livre/_modal_filtres.html.twig #}
+
+<dialog id="modale_filtres">
+    <div class="modal-filtres-header">
+        <h3>
+            Filtres de recherche
+            <span id="filter-count-badge" class="filter-count-badge" style="display: none;">0</span>
+        </h3>
+        <button type="button" class="btn-close-filtres" onclick="fermerModaleFiltres()" aria-label="Fermer">
+            X
+        </button>
+    </div>
+    
+    <form id="form-filtres" class="modal-filtres-body">
+        <div class="filter-grid">
+            {# Filtre ISBN #}
+            <div class="filter-group">
+                <label for="filter-isbn">
+                    ISBN
+                </label>
+                <input 
+                    type="text" 
+                    id="filter-isbn" 
+                    name="isbn" 
+                    placeholder="Rechercher par ISBN..."
+                    autocomplete="off"
+                >
+            </div>
+            
+            {# Filtre Auteur #}
+            <div class="filter-group">
+                <label for="filter-auteur">
+                    Auteur
+                </label>
+                <input 
+                    type="text" 
+                    id="filter-auteur" 
+                    name="auteur" 
+                    placeholder="Rechercher par auteur..."
+                    autocomplete="off"
+                >
+            </div>
+        </div>
+        
+        {# Indication #}
+        <div style="margin-top: 1rem; padding: 1rem; background-color: rgba(66, 184, 221, 0.1); border-left: 3px solid #42b8dd; border-radius: 4px;">
+            <small style="color: var(--text-light);">
+                <strong>Astuce :</strong> Laissez les champs vides pour afficher tous les livres
+            </small>
+        </div>
+    </form>
+    
+    <div class="modal-filtres-footer">
+        <button type="button" class="btn-effacer-filtres" onclick="reinitialiserFiltres()">
+            Effacer les filtres
+        </button>
+        
+        <div class="btn-group">
+            <button type="button" class="btn-effacer-filtres" onclick="fermerModaleFiltres()">
+                Annuler
+            </button>
+            <button type="button" class="btn-filtrer" onclick="appliquerFiltres()">
+                Appliquer les filtres
+            </button>
+        </div>
+    </div>
+</dialog>
+
+{# Affichage des filtres actifs #}
+<div id="active-filters-container" class="active-filters"></div>
