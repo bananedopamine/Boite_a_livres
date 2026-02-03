@@ -80,23 +80,21 @@
         <button type="button" onclick="document.getElementById('modale_principale').close()" class="btn-modal-close">Fermer</button>
         {% if app.session.get('admin_authenticated') %}
         {# Bouton Modifier #}
-        <a href="{{ path('app_livre_edit', {'id': livre.id}) }}" class="edit-modal-trigger">
-            <button type="button" class="btn btn-primary">
-                Modifier
-            </button>
-        </a>
+
+        <button onclick="window.location.href='{{ path('app_livre_edit', {'id' : livre.id}) }}'" class="btn btn-primary">
+            Modifier
+        </button>
         
         {# Bouton Supprimer #}
         <button type="button" 
                 class="btn btn-danger"
-                onclick="document.getElementById('confirm-delete-modal').showModal()">
-            <i class="fas fa-trash"></i> Supprimer
+                onclick="document.getElementById('confirm-delete-modal').showModal()">Supprimer
         </button>
 
         {# Modale de confirmation de suppression (imbriquée) #}
         <dialog id="confirm-delete-modal" style="border-radius: 8px; border: 1px solid #ccc; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); max-width: 500px;">
             <h3 style="margin-top: 0; color: #d32f2f;">
-                <i class="fas fa-exclamation-triangle"></i> Confirmer la suppression
+                Confirmer la suppression
             </h3>
             <p>Êtes-vous sûr de vouloir supprimer le livre <strong>{{ livre.titre }}</strong> ?</p>
             <p style="color: #d32f2f; font-size: 0.9em;">
