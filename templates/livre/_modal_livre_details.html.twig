@@ -1,95 +1,161 @@
 {# @author : Dufour Marc (marc.dufour@stjosup.com)
- # @version : 1
- # @dateCreate : 19/01/2026
- # @lastUpdate : 19/01/2026
+ # @version : 2.0
+ # @dateCreate : 02/02/2026
+ # @lastUpdate : 02/02/2026 (Largeur adaptative + modale description)
  #}
 
-{# Structure de la Modale #}
-{# Tout en bas du fichier index.html.twig #}
-<dialog id="livre-modal" style="width: 50%; border-radius: 8px; border: 1px solid #ccc; padding: 20px;">
-    <div id="modal-content">
-        </div>
+{# Structure de la Modale Principale #}
+<dialog id="livre-modal" class="modal-livre-details">
+    <div id="modal-content"></div>
     <br>
-    <button type="button" onclick="document.getElementById('livre-modal').close()">Fermer</button>
+    <button type="button" class="btn btn-secondary" onclick="document.getElementById('livre-modal').close()">
+        <i class="fas fa-times"></i> Fermer
+    </button>
+</dialog>
+
+{# Modale secondaire pour la description complète #}
+<dialog id="description-modal" class="modal-description">
+    <div class="modal-description-header">
+        <h3><i class="fas fa-book-open"></i> Description complète</h3>
+    </div>
+    <div id="description-content" class="modal-description-content"></div>
+    <div class="modal-description-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeDescriptionModal()">
+            Fermer
+        </button>
+    </div>
 </dialog>
 
 <script>
-    /**
-     * Fonction utilitaire pour charger du contenu dans la modale
-     */
-    async function loadToModal(url) {
-        const modal = document.getElementById('livre-modal');
-        const content = document.getElementById('modal-content');
+/**
+ * Fonction utilitaire pour charger du contenu dans la modale principale
+ */
+async function loadToModal(url) {
+    const modal = document.getElementById('livre-modal');
+    const content = document.getElementById('modal-content');
 
-        try {
-            const response = await fetch(url, {
-               headers: { 'X-Requested-With': 'XMLHttpRequest' }
-            });
-            const html = await response.text();
-            content.innerHTML = html;
-            
-            if (modal && !modal.open) {
-                modal.showModal();
-            }
-        } catch (err) {
-            console.error('Erreur de chargement :', err);
+    try {
+        const response = await fetch(url, {
+           headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        });
+        const html = await response.text();
+        content.innerHTML = html;
+        
+        // Initialiser les boutons "Voir plus" après chargement du contenu
+        initVoirPlusButtons();
+        
+        if (modal && !modal.open) {
+            modal.showModal();
         }
+    } catch (err) {
+        console.error('Erreur de chargement :', err);
+    }
+}
+
+/**
+ * Ouvre la modale de description
+ */
+function openDescriptionModal(description) {
+    const modal = document.getElementById('description-modal');
+    const content = document.getElementById('description-content');
+    
+    content.textContent = description || 'Aucune description disponible.';
+    modal.showModal();
+}
+
+/**
+ * Ferme la modale de description
+ */
+function closeDescriptionModal() {
+    const modal = document.getElementById('description-modal');
+    modal.close();
+}
+
+/**
+ * Initialise les boutons "Voir plus" pour les descriptions
+ */
+function initVoirPlusButtons() {
+    document.querySelectorAll('.btn-voir-plus').forEach(button => {
+        button.addEventListener('click', function() {
+            const description = this.dataset.fullDescription;
+            openDescriptionModal(description);
+        });
+    });
+}
+
+/**
+ * Ferme la modale description si on clique en dehors
+ */
+document.addEventListener('DOMContentLoaded', function() {
+    const descModal = document.getElementById('description-modal');
+    
+    if (descModal) {
+        descModal.addEventListener('click', function(e) {
+            // Si on clique directement sur la dialog (backdrop), on ferme
+            if (e.target === descModal) {
+                closeDescriptionModal();
+            }
+        });
+    }
+});
+
+// --- GESTION MODALE PRINCIPALE ---
+
+// 1. OUVERTURE : Clic sur le nom (Show) ou sur Modifier (Edit)
+document.addEventListener('click', (e) => {
+    const trigger = e.target.closest('.modal-trigger, .edit-modal-trigger');
+    if (trigger) {
+        e.preventDefault();
+        loadToModal(trigger.href);
+    }
+});
+
+// 2. ENREGISTREMENT : Intercepter la soumission du formulaire
+document.addEventListener('submit', async (e) => {
+    const content = document.getElementById('modal-content');
+    // On vérifie que le formulaire soumis est bien DANS la modale
+    if (!content || !content.contains(e.target)) return;
+
+    const modal = document.getElementById('livre-modal');
+    const form = e.target;
+    
+    e.preventDefault();
+    const formData = new FormData(form);
+
+    // Ajout manuel du bouton de soumission au FormData
+    if (e.submitter && e.submitter.name) {
+        formData.append(e.submitter.name, e.submitter.value);
     }
 
-    // --- 1. OUVERTURE : Clic sur le nom (Show) ou sur Modifier (Edit) ---
-    document.addEventListener('click', (e) => {
-        const trigger = e.target.closest('.modal-trigger, .edit-modal-trigger');
-        if (trigger) {
-            e.preventDefault();
-            loadToModal(trigger.href);
-        }
-    });
+    const actionUrl = form.getAttribute('action') || window.location.href;
 
-    // --- 2. ENREGISTREMENT : Intercepter la soumission du formulaire ---
-    document.addEventListener('submit', async (e) => {
-        const content = document.getElementById('modal-content');
-        // On vérifie que le formulaire soumis est bien DANS la modale
-        if (!content || !content.contains(e.target)) return;
+    try {
+        const response = await fetch(actionUrl, {
+            method: 'POST',
+            body: formData,
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        });
 
-        const modal = document.getElementById('livre-modal');
-        const form = e.target;
-        
-        e.preventDefault();
-        const formData = new FormData(form);
-
-        // --- CORRECTION AJOUTÉE ICI ---
-        // On ajoute manuellement le bouton de soumission au FormData
-        if (e.submitter && e.submitter.name) {
-            formData.append(e.submitter.name, e.submitter.value);
-        }
-
-        const actionUrl = form.getAttribute('action') || window.location.href;
-
-        try {
-            const response = await fetch(actionUrl, {
-                method: 'POST',
-                body: formData,
-                headers: { 'X-Requested-With': 'XMLHttpRequest' }
-            });
-
-            if (response.ok) {
-                try {
-                    const result = await response.json();
-                    if (result.success) {
-                        modal.close();
-                        window.location.reload(); 
-                        return;
-                    }
-                } catch (jsonErr) {
+        if (response.ok) {
+            try {
+                const result = await response.json();
+                if (result.success) {
                     modal.close();
-                    window.location.reload();
+                    window.location.reload(); 
+                    return;
                 }
-            } else if (response.status === 422) {
-                // Erreur de validation : on remplace le formulaire par celui avec les erreurs
-                content.innerHTML = await response.text();
+            } catch (jsonErr) {
+                modal.close();
+                window.location.reload();
             }
-        } catch (err) {
-            console.error("Erreur lors de l'envoi :", err);
+        } else if (response.status === 422) {
+            // Erreur de validation : on remplace le formulaire par celui avec les erreurs
+            content.innerHTML = await response.text();
+            // Réinitialiser les boutons "Voir plus"
+            initVoirPlusButtons();
         }
-    });
+    } catch (err) {
+        console.error("Erreur lors de l'envoi :", err);
+    }
+});
 </script>

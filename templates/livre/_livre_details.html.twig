@@ -1,88 +1,120 @@
 {# @author : Dufour Marc (marc.dufour@stjosup.com)
- # @version : 1.1
- # @lastUpdate : 19/01/2026 (Ajout classe pour interception AJAX)
+ # @version : 2.1
+ # @lastUpdate : 02/02/2026 (Description tronquée avec bouton "Voir plus")
  #}
 
-<h1>Détails du Livre</h1>
-<table>
-    <tbody>
-        <tr>
-            <th>ISBN</th>
-            <td>{{ livre.isbn }}</td> 
-        </tr>
-        <tr>
-            <th>titre</th>
-            <td>{{ livre.titre }}</td>
-        </tr>
-        <tr>
-            <th>Auteur</th>
-            <td>{{ livre.auteur }}</td>
-        </tr>
-        <tr>
-            <th>Description</th>
-            <td>{{ livre.description }}</td>
-        </tr>
-        <tr>
-            <th>LienImg</th>
-            <td>{{ livre.lienImg }}</td>
-        </tr>
-        <tr>
-            <th>NbStock</th>
-            <td>{{ livre.NbStock }}</td>
-        </tr>
-        {% if app.session.get('admin_authenticated') %}
+<div class="table-wrapper-large">
+    <h1 style="margin: 1rem; color: var(--accent);">Détails du Livre</h1>
+    
+    {# Affichage de l'image si disponible #}
+    {% if livre.lienImg %}
+        <div style="text-align: center; margin: 1rem 0;">
+            <img src="{{ livre.lienImg }}" 
+                 alt="Couverture de {{ livre.titre }}" 
+                 style="max-width: 150px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+        </div>
+    {% endif %}
+    
+    <table class="table table-striped">
+        <tbody>
             <tr>
-                <th>actif</th>
+                <th>ISBN</th>
+                <td>{{ livre.isbn }}</td> 
+            </tr>
+            <tr>
+                <th>Titre</th>
+                <td><strong>{{ livre.titre }}</strong></td>
+            </tr>
+            <tr>
+                <th>Auteur</th>
+                <td>{{ livre.auteur }}</td>
+            </tr>
+            <tr>
+                <th>Description</th>
                 <td>
-                    {% if livre.actif %}
-                        <span>Actif</span>
+                    {% set description = livre.description|default('') %}
+                    {% if description|length > 0 %}
+                        <div class="description-preview">
+                            {# Afficher une version tronquée #}
+                            <div class="description-truncated">
+                                {{ description }}
+                            </div>
+                            
+                            {# Bouton "Voir plus" seulement si la description est longue (plus de 150 caractères) #}
+                            {% if description|length > 150 %}
+                                <button type="button" 
+                                        class="btn-voir-plus" 
+                                        data-full-description="{{ description|e('html_attr') }}">
+                                    Voir plus <i class="fas fa-chevron-down"></i>
+                                </button>
+                            {% endif %}
+                        </div>
                     {% else %}
-                        <span>Inactif</span>
+                        <em style="color: var(--text-light);">Aucune description disponible</em>
                     {% endif %}
                 </td>
             </tr>
-        {% endif %}
-    </tbody>
-</table>
-
-<div style="display: flex; gap: 10px;">
-    {# 
-       IMPORTANT : Ajout de la classe 'edit-modal-trigger' 
-       C'est ce qui permet au JavaScript de l'index d'intercepter le clic 
-       et de charger le formulaire dans la même modale.
-    #}
-{% if app.session.get('admin_authenticated') %}
-    <a href="{{ path('app_livre_edit', {'id': livre.id}) }}" class="edit-modal-trigger">
-        <button type="button">Modifier</button>
-    </a>
-    
-    {# On remplace le lien direct par un bouton déclenchant la modale de confirmation #}
-    <button type="button" 
-            style="background-color: #d32f2f; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;"
-            onclick="document.getElementById('confirm-delete-modal').showModal()">
-        Supprimer
-    </button>
-
-    {# Modale de confirmation de suppression (imbriquée) #}
-    <dialog id="confirm-delete-modal" style="border-radius: 8px; border: 1px solid #ccc; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-        <h3 style="margin-top: 0;">Confirmer la suppression</h3>
-        <p>Êtes-vous sûr de vouloir supprimer le livre <strong>{{ livre.titre }}</strong> ?</p>
-        <p style="color: #d32f2f; font-size: 0.9em;">Cette action est irréversible.</p>
-        
-        <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
-            <button type="button" 
-                    onclick="document.getElementById('confirm-delete-modal').close()"
-                    style="background: #ccc; border: none; padding: 5px 15px; border-radius: 4px;">
-                Annuler
-            </button>
-            
-            
-            <a href="{{ path('app_livre_delete', {'id': livre.id})}}">
-                <button></button>
-            </a>
-            {# On inclut le formulaire de suppression réel ici #}
-            {# {{ include('livre/_delete_form.html.twig') }} #}
-        </div>
-    </dialog>
-{% endif %}
+            <tr>
+                <th>Stock</th>
+                <td>
+                    <span class="badge {{ livre.NbStock > 0 ? 'bg-success' : 'bg-danger' }}">
+                        {{ livre.NbStock }} exemplaire(s)
+                    </span>
+                </td>
+            </tr>
+            {% if app.session.get('admin_authenticated') %}
+                <tr>
+                    <th>Statut</th>
+                    <td>
+                        <span class="badge {{ livre.actif ? 'bg-success' : 'bg-secondary' }}">
+                            {{ livre.actif ? 'Actif' : 'Inactif' }}
+                        </span>
+                    </td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
 </div>
+
+{% if app.session.get('admin_authenticated') %}
+    <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 15px;">
+        {# Bouton Modifier #}
+        <a href="{{ path('app_livre_edit', {'id': livre.id}) }}" class="edit-modal-trigger">
+            <button type="button" class="btn btn-primary">
+                Modifier
+            </button>
+        </a>
+        
+        {# Bouton Supprimer #}
+        <button type="button" 
+                class="btn btn-danger"
+                onclick="document.getElementById('confirm-delete-modal').showModal()">
+            <i class="fas fa-trash"></i> Supprimer
+        </button>
+
+        {# Modale de confirmation de suppression (imbriquée) #}
+        <dialog id="confirm-delete-modal" style="border-radius: 8px; border: 1px solid #ccc; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); max-width: 500px;">
+            <h3 style="margin-top: 0; color: #d32f2f;">
+                <i class="fas fa-exclamation-triangle"></i> Confirmer la suppression
+            </h3>
+            <p>Êtes-vous sûr de vouloir supprimer le livre <strong>{{ livre.titre }}</strong> ?</p>
+            <p style="color: #d32f2f; font-size: 0.9em;">
+                <i class="fas fa-info-circle"></i> Cette action marquera le livre comme inactif.
+            </p>
+            
+            <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                <button type="button" 
+                        class="btn btn-secondary"
+                        onclick="document.getElementById('confirm-delete-modal').close()">
+                    Annuler
+                </button>
+                
+                <a href="{{ path('app_livre_delete', {'id': livre.id})}}">
+                    <button type="button" class="btn btn-danger">
+                        Confirmer la suppression
+                    </button>
+                </a>
+            </div>
+        </dialog>
+    </div>
+{% endif %}

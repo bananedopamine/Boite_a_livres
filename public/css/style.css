@@ -1671,3 +1671,191 @@ textarea:focus {
         border-radius: 8px;
     }
 }
+
+/* ========================================
+   STYLES MODALE PRINCIPALE
+   ======================================== */
+
+/* Modale principale - largeur adaptative au tableau */
+.modal-livre-details {
+    width: clamp(600px, 80vw, 1200px); /* Largeur similaire au tableau */
+    max-width: 80vw;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    padding: 0;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    background-color: var(--bg);
+}
+
+.modal-livre-details::backdrop {
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+}
+
+/* Padding pour le contenu de la modale */
+.modal-livre-details > div {
+    padding: 1.5rem;
+}
+
+/* Bouton fermer de la modale principale */
+.modal-livre-details > button {
+    margin: 0 1.5rem 1.5rem 1.5rem;
+    float: right;
+}
+
+/* ========================================
+   STYLES MODALE DESCRIPTION
+   ======================================== */
+
+/* Modale description - centrée, au-dessus de la modale principale */
+.modal-description {
+    width: clamp(400px, 60vw, 800px);
+    max-width: 90vw;
+    max-height: 80vh;
+    border-radius: 12px;
+    border: 2px solid var(--accent);
+    padding: 0;
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4);
+    background-color: var(--bg);
+    z-index: 1000; /* Au-dessus de la modale principale */
+}
+
+.modal-description::backdrop {
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(2px);
+}
+
+/* En-tête de la modale description */
+.modal-description-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 2px solid var(--accent);
+    background: linear-gradient(135deg, rgba(66, 184, 221, 0.1) 0%, rgba(0, 159, 183, 0.1) 100%);
+}
+
+.modal-description-header h3 {
+    margin: 0;
+    color: var(--accent);
+    font-size: 1.5rem;
+}
+
+.btn-close-description {
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--text);
+    padding: 0.5rem;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.btn-close-description:hover {
+    background-color: rgba(211, 47, 47, 0.1);
+    color: #d32f2f;
+}
+
+/* Contenu de la modale description */
+.modal-description-content {
+    padding: 1.5rem;
+    max-height: 60vh;
+    overflow-y: auto;
+    line-height: 1.6;
+    font-size: 1rem;
+}
+
+/* Scrollbar personnalisée pour le contenu */
+.modal-description-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-description-content::-webkit-scrollbar-track {
+    background: var(--accent-bg);
+    border-radius: 4px;
+}
+
+.modal-description-content::-webkit-scrollbar-thumb {
+    background: var(--accent);
+    border-radius: 4px;
+}
+
+.modal-description-content::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-hover);
+}
+
+/* Footer de la modale description */
+.modal-description-footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--border);
+    text-align: right;
+    background-color: var(--accent-bg);
+}
+
+/* ========================================
+   BOUTON "VOIR PLUS"
+   ======================================== */
+
+.description-preview {
+    position: relative;
+}
+
+.description-truncated {
+    max-height: 4.5em; /* Environ 3 lignes */
+    overflow: hidden;
+    position: relative;
+}
+
+.description-truncated::after {
+    content: '...';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    padding-left: 2rem;
+    background: linear-gradient(to right, transparent, var(--bg) 50%);
+}
+
+.btn-voir-plus {
+    display: inline-block;
+    margin-top: 0.5rem;
+    padding: 0.4rem 0.8rem;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.btn-voir-plus:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.btn-voir-plus i {
+    margin-left: 0.3rem;
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+
+@media (max-width: 768px) {
+    .modal-livre-details {
+        width: 95vw;
+        max-width: 95vw;
+    }
+    
+    .modal-description {
+        width: 95vw;
+        max-width: 95vw;
+        max-height: 90vh;
+    }
+    
+    .modal-description-content {
+        max-height: 50vh;
+    }
+}
