@@ -128,6 +128,10 @@ function afficherLivres(livres, isAdmin) {
         // URL pour ce livre
         const urlDetail = urlTemplate.replace('__ID__', livre.id);
 
+        tr.className = 'modal-trigger-livre';
+        tr.dataset.url = urlDetail;
+        
+
         // =========================================================
         // MODIFICATION: Création de liens <a> explicites au lieu de tr.href
         // =========================================================
@@ -135,9 +139,7 @@ function afficherLivres(livres, isAdmin) {
         // 1. Colonne ISBN
         const tdIsbn = document.createElement('td');
         const linkIsbn = document.createElement('a');
-        linkIsbn.href = '#';
-        tdIsbn.className = 'modal-trigger-livre'; // Classe pour l'écouteur
-        tdIsbn.dataset.url = urlDetail; // Stockage de l'URL
+        linkIsbn.href = '#'; // Classe pour l'écouteur
         tdIsbn.textContent = livre.isbn;
         tdIsbn.appendChild(linkIsbn);
         tr.appendChild(tdIsbn);
@@ -146,8 +148,6 @@ function afficherLivres(livres, isAdmin) {
         const tdTitre = document.createElement('td');
         const linkTitre = document.createElement('a');
         tdTitre.href = '#';
-        tdTitre.className = 'modal-trigger-livre';
-        tdTitre.dataset.url = urlDetail;
         tdTitre.style.color = 'inherit'; // Garder le style du texte
         tdTitre.style.textDecoration = 'none';
         tdTitre.textContent = livre.titre;
@@ -156,13 +156,12 @@ function afficherLivres(livres, isAdmin) {
 
         // 3. Colonne Auteur
         const tdAuteur = document.createElement('td');
-        tdAuteur.textContent = livre.auteur;
+        tdAuteur.textContent = livre.auteur;        
         tr.appendChild(tdAuteur);
 
         // 4. Colonne Stock
         const tdStock = document.createElement('td');
         const badgeStock = document.createElement('span');
-        // MODIFICATION: Classes Bootstrap standard + logique couleur
         tdStock.className = livre.stock > 0 ? 'bg-success' : 'bg-danger';
         badgeStock.textContent = livre.stock;
         tdStock.appendChild(badgeStock);
