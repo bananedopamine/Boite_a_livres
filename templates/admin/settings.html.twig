@@ -22,7 +22,7 @@
     {% endif %}
 
     {# Section 1 : Changement du code PIN #}
-    <div class="card" style="margin-bottom: 20px; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+    <div class="card">
         <h2>Modifier le code PIN</h2>
         <p>Le code PIN actuel est : <code>{{ current_pin }}</code></p>
         
@@ -83,23 +83,23 @@
     {# Section 2 : Informations système (optionnel) #}
     <div class="card" style="margin-bottom: 20px; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
         <h2>Informations système</h2>
-        <table class="table">
-            <tr>
-                <th>Version Symfony</th>
-                <td>{{ constant('Symfony\\Component\\HttpKernel\\Kernel::VERSION') }}</td>
-            </tr>
-            <tr>
-                <th>Version PHP</th>
-                <td>{{ constant('PHP_VERSION') }}</td>
-            </tr>
-            <tr>
-                <th>Environnement</th>
-                <td>{{ app.environment }}</td>
-            </tr>
-            <tr>
-                <th>Mode Debug</th>
-                <td>{{ app.debug ? 'Activé' : 'Désactivé' }}</td>
-            </tr>
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th >Version Symfony</th>
+                    <th >Version PHP</th>
+                    <th >Environnement</th>
+                    <th >Mode Debug</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{ constant('Symfony\\Component\\HttpKernel\\Kernel::VERSION') }}</td>
+                    <td>{{ constant('PHP_VERSION') }}</td>
+                    <td>{{ app.environment }}</td>
+                    <td>{{ app.debug ? 'Activé' : 'Désactivé' }}</td>
+                </tr>
+            </tbody>
         </table>
     </div>
 

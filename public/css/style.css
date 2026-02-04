@@ -30,6 +30,7 @@
     --header-bg: #003F4F;
     --bg-blur: #d6ebf7eb;
     --cg-bleu-base: #00264E;
+    --card-bg-blur:8px;
 }
 
 /* Mode sombre */
@@ -208,7 +209,7 @@ header::before {
     bottom: 0;
     background-color: var(--accent-bg);
     opacity:0.4;
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(var(--card-bg-blur));
     z-index: -1;
 }
 
@@ -232,7 +233,7 @@ nav a.btn {
     background-color: rgba(13, 71, 161, 0.3);
     border-color: rgba(13, 71, 161, 0.5);
     color: rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(5px);
+    backdrop-filter: blur(var(--card-bg-blur));
 }
 
 nav a.btn:hover {
@@ -289,7 +290,7 @@ footer {
     font-size: 0.9rem;
     text-align: center;
     border-top: 1px solid var(--border);
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(var(--card-bg-blur));
     grid-column: 1 / -1;
     width: 100%;
 }
@@ -388,7 +389,7 @@ main.table-full-width {
     margin: 2rem auto;
     padding: 2rem;
     background-color: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(5px);
+    backdrop-filter: blur(var(--card-bg-blur));
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
@@ -957,7 +958,7 @@ hr {
 .card {
     position: relative;
     border: 1px solid var(--border);
-    background-color: var(--accent-bg);
+    backdrop-filter: blur(var(--card-bg-blur));
     border-radius: 8px;
     padding: 1.5rem;
     margin-bottom: 1.5rem;
@@ -1106,7 +1107,7 @@ hr {
     position: absolute;
     right: 0;
     background-color: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(var(--card-bg-blur));
     min-width: 220px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
     border-radius: 8px;
@@ -1202,7 +1203,7 @@ dialog#modale_principale {
 /* Backdrop (fond sombre derrière la modale) */
 dialog#modale_principale::backdrop {
     background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(3px);
+    backdrop-filter: blur(var(--card-bg-blur));
 }
 
 /* Contenu de la modale avec scroll interne */
@@ -1287,7 +1288,7 @@ dialog#modale_filtres {
 
 dialog#modale_filtres::backdrop {
     background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(3px);
+    backdrop-filter: blur(var(--card-bg-blur));
 }
 
 /* Animation d'ouverture pour la modale de filtres */
@@ -1502,7 +1503,7 @@ dialog#modale_filtres[open] {
     align-items: center;
     margin-bottom: 1.5rem;
     padding: 1rem;
-    backdrop-filter: blur(8px);
+    backdrop-filter: blur(var(--card-bg-blur));
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
@@ -1904,7 +1905,7 @@ textarea:focus {
     padding: 1rem;
     background-color: rgba(255, 255, 255, 0.7);
     border-radius: 8px;
-    backdrop-filter: blur(5px);
+    backdrop-filter: blur(var(--card-bg-blur));
 }
 
 /*#endregion*/
@@ -2104,7 +2105,7 @@ textarea:focus {
 
 .modal-livre-details::backdrop {
     background-color: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(4px);
+    backdrop-filter: blur(var(--card-bg-blur));
 }
 
 /* Padding pour le contenu de la modale */
@@ -2137,7 +2138,7 @@ textarea:focus {
 
 .modal-description::backdrop {
     background-color: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(2px);
+    backdrop-filter: blur(var(--card-bg-blur));
 }
 
 /* En-tête de la modale description */
