@@ -37,11 +37,11 @@
                         <div class="description-preview">
                             {# Afficher une version tronquée #}
                             <div class="description-truncated">
-                                {{ description }}
+                                {{ description|striptags|slice(0 , 50) ~ '...' }}
                             </div>
-                            
+
                             {# Bouton "Voir plus" seulement si la description est longue (plus de 150 caractères) #}
-                            {% if description|length > 150 %}
+                            {% if description|length > 50 %}
                                 <button type="button" 
                                         class="btn-voir-plus" 
                                         data-full-description="{{ description|e('html_attr') }}">
