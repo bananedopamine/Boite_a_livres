@@ -4,14 +4,6 @@
 
 <form id="form_scan" action="{{ path('app_mouvement_debut') }}" method="post" autocomplete="off">
     <div class="form-group-modal">
-        <label>Type de mouvement :</label>
-        <select name="type_action_select" id="type_action_select" class="input-full">
-            <option value="false" {{ selection_defaut == 'false' ? 'selected' : '' }}> ENTRÉE (Retour)</option>
-            <option value="true"  {{ selection_defaut == 'true'  ? 'selected' : '' }}> SORTIE (Emprunt)</option>
-        </select>
-    </div>
-
-    <div class="form-group-modal">
         <label>Scanner ou entrer l'ISBN :</label>
         {# L'ID 'isbnInput' est crucial car le JS de index.html.twig le surveille #}
         <input type="text" name="isbn" id="isbnInput" placeholder="Ex: 978..." required autofocus 

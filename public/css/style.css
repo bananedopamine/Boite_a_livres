@@ -514,6 +514,7 @@ main.tableau-large {
 /*#region Formulaires*/
 
 form {
+    background: transparent !important;
     border-radius: 6px;
     display: block;
     max-width: 100%;
@@ -534,6 +535,10 @@ button {
     max-width: 100%;
     display: inline-block;
     min-height: 48px;
+}
+
+button {
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
 }
 
 input[type="color"],
@@ -1651,6 +1656,7 @@ dialog#modale_filtres[open] {
 }
 
 .input-isbn-large {
+    background : transparent !important;
     width: 100%;
     font-size: 1.2rem;
     padding: 10px;
@@ -1931,7 +1937,7 @@ textarea:focus {
 
 /* En-tête du tableau avec gradient turquoise */
 .table thead th {
-    background: linear-gradient(135deg, rgba(66, 184, 221, 0.85) 0%, rgba(0, 159, 183, 0.85) 100%) !important;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
     color: white !important;
     font-weight: 600;
     text-transform: uppercase;
@@ -2151,7 +2157,7 @@ textarea:focus {
 }
 
 .btn-close-description {
-    background: transparent;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
     border: none;
     font-size: 1.5rem;
     cursor: pointer;

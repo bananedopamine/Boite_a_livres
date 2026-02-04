@@ -1,21 +1,21 @@
 {# @author : Dufour Marc (marc.dufour@stjosup.com)
- # @version : 2.0
+ # @version : 2.2
  # @dateCreate : 02/02/2026
- # @lastUpdate : 02/02/2026 (Largeur adaptative + modale description)
+ # @lastUpdate : 02/02/2026 (Unification avec modal_handler.js)
  #}
 
-{# Structure de la Modale Principale #}
-<dialog id="livre-modal" class="modal-livre-details">
-    <div id="modal-content"></div>
-    <button type="button" class="btn btn-secondary" onclick="document.getElementById('livre-modal').close()">
-        Fermer
-    </button>
+{# Structure de la Modale Principale - UNIFIÉ avec modal_handler.js #}
+<dialog id="modale_principale" class="modal-livre-details">
+    <div id="contenu_modale"></div>
 </dialog>
 
 {# Modale secondaire pour la description complète #}
 <dialog id="description-modal" class="modal-description">
     <div class="modal-description-header">
         <h3><i class="fas fa-book-open"></i> Description complète</h3>
+        <button type="button" class="btn-close-description" onclick="closeDescriptionModal()">
+            <i class="fas fa-times"></i>
+        </button>
     </div>
     <div id="description-content" class="modal-description-content"></div>
     <div class="modal-description-footer">
@@ -26,31 +26,6 @@
 </dialog>
 
 <script>
-/**
- * Fonction utilitaire pour charger du contenu dans la modale principale
- */
-async function loadToModal(url) {
-    const modal = document.getElementById('livre-modal');
-    const content = document.getElementById('modal-content');
-
-    try {
-        const response = await fetch(url, {
-           headers: { 'X-Requested-With': 'XMLHttpRequest' }
-        });
-        const html = await response.text();
-        content.innerHTML = html;
-        
-        // Initialiser les boutons "Voir plus" après chargement du contenu
-        initVoirPlusButtons();
-        
-        if (modal && !modal.open) {
-            modal.showModal();
-        }
-    } catch (err) {
-        console.error('Erreur de chargement :', err);
-    }
-}
-
 /**
  * Ouvre la modale de description
  */
@@ -80,48 +55,65 @@ function initVoirPlusButtons() {
             openDescriptionModal(description);
         });
     });
+    console.log('initVoirPlusButtons: ' + document.querySelectorAll('.btn-voir-plus').length + ' bouton(s) initialisé(s)');
 }
 
 /**
- * Ferme la modale description si on clique en dehors
+ * Observer pour détecter quand du nouveau contenu est chargé dans la modale
  */
 document.addEventListener('DOMContentLoaded', function() {
-    const descModal = document.getElementById('description-modal');
+    const contenuModale = document.getElementById('contenu_modale');
     
+    if (contenuModale) {
+        console.log('MutationObserver: Attaché à #contenu_modale');
+        
+        // Observer les changements dans le contenu de la modale
+        const observer = new MutationObserver(function(mutations) {
+            // Vérifier si des boutons "Voir plus" ont été ajoutés
+            const voirPlusButtons = document.querySelectorAll('.btn-voir-plus');
+            if (voirPlusButtons.length > 0) {
+                console.log('MutationObserver: Détection de ' + voirPlusButtons.length + ' bouton(s) "Voir plus"');
+                // Attendre un peu que le DOM soit stable
+                setTimeout(function() {
+                    initVoirPlusButtons();
+                }, 100);
+            }
+        });
+        
+        // Observer les changements d'enfants dans le contenu de la modale
+        observer.observe(contenuModale, { 
+            childList: true, 
+            subtree: true 
+        });
+    } else {
+        console.error('ERREUR: #contenu_modale n\'existe pas !');
+    }
+    
+    // Fermeture de la modale description sur clic extérieur
+    const descModal = document.getElementById('description-modal');
     if (descModal) {
         descModal.addEventListener('click', function(e) {
-            // Si on clique directement sur la dialog (backdrop), on ferme
             if (e.target === descModal) {
                 closeDescriptionModal();
             }
         });
+        console.log('Event listener: Fermeture sur clic extérieur attaché à #description-modal');
     }
 });
 
-// --- GESTION MODALE PRINCIPALE ---
-
-// 1. OUVERTURE : Clic sur le nom (Show) ou sur Modifier (Edit)
-document.addEventListener('click', (e) => {
-    const trigger = e.target.closest('.modal-trigger, .edit-modal-trigger');
-    if (trigger) {
-        e.preventDefault();
-        loadToModal(trigger.href);
-    }
-});
-
-// 2. ENREGISTREMENT : Intercepter la soumission du formulaire
+/**
+ * Intercepter la soumission des formulaires dans la modale
+ */
 document.addEventListener('submit', async (e) => {
-    const content = document.getElementById('modal-content');
-    // On vérifie que le formulaire soumis est bien DANS la modale
+    const content = document.getElementById('contenu_modale');
     if (!content || !content.contains(e.target)) return;
 
-    const modal = document.getElementById('livre-modal');
+    const modal = document.getElementById('modale_principale');
     const form = e.target;
     
     e.preventDefault();
     const formData = new FormData(form);
 
-    // Ajout manuel du bouton de soumission au FormData
     if (e.submitter && e.submitter.name) {
         formData.append(e.submitter.name, e.submitter.value);
     }
@@ -139,22 +131,33 @@ document.addEventListener('submit', async (e) => {
             try {
                 const result = await response.json();
                 if (result.success) {
-                    modal.close();
+                    if (typeof fermerModale === 'function') {
+                        fermerModale();
+                    } else {
+                        modal.close();
+                        document.body.classList.remove('modal-open');
+                    }
                     window.location.reload(); 
                     return;
                 }
             } catch (jsonErr) {
-                modal.close();
+                if (typeof fermerModale === 'function') {
+                    fermerModale();
+                } else {
+                    modal.close();
+                    document.body.classList.remove('modal-open');
+                }
                 window.location.reload();
             }
         } else if (response.status === 422) {
-            // Erreur de validation : on remplace le formulaire par celui avec les erreurs
             content.innerHTML = await response.text();
-            // Réinitialiser les boutons "Voir plus"
-            initVoirPlusButtons();
+            // Attendre un peu avant de réinitialiser les boutons
+            setTimeout(function() {
+                initVoirPlusButtons();
+            }, 100);
         }
     } catch (err) {
-        console.error("Erreur lors de l'envoi :", err);
+        console.error("Erreur lors de l'envoi du formulaire:", err);
     }
 });
 </script>
