@@ -48,6 +48,9 @@ class Livre
     #[ORM\Column(nullable: true)]
     private ?bool $actif = true;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $genre = null;
+
     public function __construct()
     {
         $this->mouvements = new ArrayCollection();
@@ -164,6 +167,18 @@ class Livre
     public function setActif(bool $actif): static
     {
         $this->actif = $actif;
+
+        return $this;
+    }
+
+    public function getGenre(): ?string
+    {
+        return $this->genre;
+    }
+
+    public function setGenre(?string $genre): static
+    {
+        $this->genre = $genre;
 
         return $this;
     }
