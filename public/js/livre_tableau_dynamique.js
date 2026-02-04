@@ -162,15 +162,16 @@ function afficherLivres(livres, isAdmin) {
 
         // 4. Colonne Genre (NOUVEAU)
         const tdGenre = document.createElement('td');
+        const badgeGenre = document.createElement('span');
+        badgeGenre.className = 'badge bg-info';
+        badgeGenre.style.fontSize = '0.85em';
+        badgeGenre.textContent = '';
         if (livre.genre) {
-            const badgeGenre = document.createElement('span');
-            badgeGenre.className = 'badge bg-info';
-            badgeGenre.style.fontSize = '0.85em';
             badgeGenre.textContent = livre.genre;
-            tdGenre.appendChild(badgeGenre);
         } else {
-            tdGenre.innerHTML = '<span style="color: var(--text-light); font-style: italic;">Non spécifié</span>';
+            badgeGenre.textContent = 'genre non réferencé';
         }
+        tdGenre.appendChild(badgeGenre);
         tr.appendChild(tdGenre);
 
         // 5. Colonne Stock
