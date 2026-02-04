@@ -20,12 +20,17 @@ class LivreType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-        ->add('isbn', TextType::class, [
-            'label' => 'Numéro ISBN',
-            'attr' => ['placeholder' => 'Ex: 978201...']
-        ])
+            ->add('isbn', TextType::class, [
+                'label' => 'Numéro ISBN',
+                'attr' => ['placeholder' => 'Ex: 978201...']
+            ])
             ->add('titre')
             ->add('auteur')
+            ->add('genre', TextType::class, [
+                'label' => 'Genre',
+                'required' => false,
+                'attr' => ['placeholder' => 'Ex: Fiction, Science-fiction...']
+            ])
             ->add('description')
             ->add('lienImg')
             ->add('NbStock')

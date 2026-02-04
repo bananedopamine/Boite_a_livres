@@ -1,6 +1,6 @@
 {# @author : Dufour Marc (marc.dufour@stjosup.com)
- # @version : 2.1
- # @lastUpdate : 02/02/2026 (Description tronquée avec bouton "Voir plus")
+ # @version : 2.2
+ # @lastUpdate : 04/02/2026 (Ajout du genre)
  #}
 
 <div class="table-wrapper-large">
@@ -29,6 +29,12 @@
                 <th>Auteur</th>
                 <td>{{ livre.auteur }}</td>
             </tr>
+            {% if livre.genre %}
+            <tr>
+                <th>Genre</th>
+                <td>{{ livre.genre }}</td>
+            </tr>
+            {% endif %}
             <tr>
                 <th>Description</th>
                 <td>

@@ -1,7 +1,8 @@
 /**
  * @author : Dufour Marc (marc.dufour@stjosup.com)
- * @version : 2.0
+ * @version : 2.1
  * @dateCreate : 28/01/2026
+ * @lastUpdate : 04/02/2026 (Ajout gestion du genre)
  * @description : Gestion du tableau dynamique des livres avec AJAX
  */
 
@@ -159,7 +160,20 @@ function afficherLivres(livres, isAdmin) {
         tdAuteur.textContent = livre.auteur;        
         tr.appendChild(tdAuteur);
 
-        // 4. Colonne Stock
+        // 4. Colonne Genre (NOUVEAU)
+        const tdGenre = document.createElement('td');
+        if (livre.genre) {
+            const badgeGenre = document.createElement('span');
+            badgeGenre.className = 'badge bg-info';
+            badgeGenre.style.fontSize = '0.85em';
+            badgeGenre.textContent = livre.genre;
+            tdGenre.appendChild(badgeGenre);
+        } else {
+            tdGenre.innerHTML = '<span style="color: var(--text-light); font-style: italic;">Non spécifié</span>';
+        }
+        tr.appendChild(tdGenre);
+
+        // 5. Colonne Stock
         const tdStock = document.createElement('td');
         const badgeStock = document.createElement('span');
         tdStock.className = livre.stock > 0 ? 'bg-success' : 'bg-danger';
@@ -167,7 +181,7 @@ function afficherLivres(livres, isAdmin) {
         tdStock.appendChild(badgeStock);
         tr.appendChild(tdStock);
 
-        // 5. Colonne Actif (Admin)
+        // 6. Colonne Actif (Admin)
         if (isAdmin) {
             const tdActif = document.createElement('td');
             const badgeActif = document.createElement('span');

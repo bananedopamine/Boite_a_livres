@@ -1,4 +1,7 @@
 {# templates/livre/_modal_new.html.twig #}
+{# @version : 1.1
+ # @lastUpdate : 04/02/2026 (Ajout du genre)
+ #}
 
 <h3>Nouveau livre détecté</h3>
 <p>Ce livre n'est pas encore dans votre bibliothèque. Les informations ont été récupérées via Google Books.</p>
@@ -10,7 +13,8 @@
             'titre': form.vars.value.titre, 
             'auteur': form.vars.value.auteur, 
             'description': form.vars.value.description, 
-            'image': form.vars.value.lienImg
+            'image': form.vars.value.lienImg,
+            'genre': form.vars.value.genre
         } : {}),
         'attr': {'id': 'form_nouveau_livre','novalidate': 'novalidate','class': 'form-creation-livre'}
     }) }}
@@ -29,6 +33,14 @@
             {{ form_label(form.isbn) }}
             {{ form_widget(form.isbn, {'attr': {'class': 'input-full', 'readonly': 'readonly'}}) }}
         </div>
+
+        {# Afficher le genre s'il est disponible #}
+        {% if form.genre is defined %}
+        <div class="form-group-modal">
+            {{ form_label(form.genre) }}
+            {{ form_widget(form.genre, {'attr': {'class': 'input-full'}}) }}
+        </div>
+        {% endif %}
 
         {# On cache la description ou l'image si on ne veut pas encombrer la modale, 
            ou on les laisse en "row" selon ton LivreType #}

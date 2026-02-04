@@ -128,7 +128,8 @@ class LivreController extends AbstractController
                 'stock' => $livre->getNbStock(),
                 'actif' => $livre->isActif(),
                 'lienImg' => $livre->getLienImg(),
-                'description' => $livre->getDescription()
+                'description' => $livre->getDescription(),
+                'genre' => $livre->getGenre()
             ];
         }
 
@@ -172,6 +173,14 @@ class LivreController extends AbstractController
         // Si Google trouve le livre
         if (isset($donnees['items']) && $donnees['totalItems'] > 0) {
             $info = $donnees['items'][0]['volumeInfo'];
+            
+            // Récupération du genre (categories)
+            $genre = '';
+            if (isset($info['categories']) && is_array($info['categories']) && count($info['categories']) > 0) {
+                // Prend la première catégorie ou joint toutes les catégories
+                $genre = implode(', ', $info['categories']);
+            }
+            
             return $this->json([
                 'statut' => 'google',
                 'donnees' => [
@@ -179,7 +188,8 @@ class LivreController extends AbstractController
                     'titre'       => $info['title'] ?? '',
                     'auteur'      => isset($info['authors']) ? implode(', ', $info['authors']) : '',
                     'description' => $info['description'] ?? '',
-                    'image'       => $info['imageLinks']['thumbnail'] ?? ''
+                    'image'       => $info['imageLinks']['thumbnail'] ?? '',
+                    'genre'       => $genre
                 ]
             ]);
         }
@@ -205,6 +215,7 @@ class LivreController extends AbstractController
         $isbn = $request->request->get('isbn');
         $titre = $request->request->get('titre');
         $auteur = $request->request->get('auteur', '');
+        $genre = $request->request->get('genre', '');
 
         // Validation
         if (empty($isbn) || empty($titre)) {
@@ -214,7 +225,7 @@ class LivreController extends AbstractController
             ], 400);
         }
 
-        // Vérifier que l'ISBN n'existe pas déjà
+        // Vérifier que l'ISBN n'existe pas déjà 
         $existant = $livreRepository->findOneBy(['isbn' => $isbn]);
         if ($existant) {
             return $this->json([
@@ -230,6 +241,7 @@ class LivreController extends AbstractController
         $livre->setAuteur($auteur ?: 'Auteur inconnu'); // Valeur par défaut si vide
         $livre->setDescription(''); // Valeur par défaut
         $livre->setLienImg(null); // Optionnel
+        $livre->setGenre($genre ?: null); // Genre optionnel
         $livre->setNbStock(0);
         $livre->setActif(true);
 
@@ -265,6 +277,7 @@ class LivreController extends AbstractController
         $livre->setAuteur($requete->query->get('auteur'));
         $livre->setDescription($requete->query->get('description'));
         $livre->setLienImg($requete->query->get('image'));
+        $livre->setGenre($requete->query->get('genre')); // Ajout du genre
         $livre->setNbStock(0); // Initialisation du stock
 
         $formulaire = $this->createForm(LivreType::class, $livre);

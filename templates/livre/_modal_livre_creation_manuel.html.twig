@@ -1,6 +1,6 @@
 {# @author : Dufour Marc (marc.dufour@stjosup.com)
- # @version : 1
- # @lastUpdate : 28/01/2026 (Ajout création rapide de livre)
+ # @version : 1.1
+ # @lastUpdate : 04/02/2026 (Ajout du champ genre)
  #}
 
 <div class="modal-quick-create">
@@ -21,6 +21,11 @@
         <div class="form-group">
             <label for="auteur">Auteur (optionnel)</label>
             <input type="text" id="auteur" name="auteur" class="form-control" placeholder="Nom de l'auteur" autocomplete="off">
+        </div>
+
+        <div class="form-group">
+            <label for="genre-manuel">Genre (optionnel)</label>
+            <input type="text" id="genre-manuel" name="genre" class="form-control" placeholder="Ex: Fiction, Romance, Science-fiction..." autocomplete="off">
         </div>
 
         <div class="modal-actions">
