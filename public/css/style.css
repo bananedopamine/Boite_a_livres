@@ -228,6 +228,10 @@ nav {
     padding: 1rem 0 0 0;
 }
 
+btn {
+    text-color : var(--accent-text);
+}
+
 /* Bouton Admin non connecté avec opacité 30% */
 nav a.btn {
     background-color: rgba(13, 71, 161, 0.3);
@@ -700,7 +704,8 @@ button.btn-outline-secondary,
 .btn-outline-secondary {
     background-color: transparent;
     border-color: var(--cg-bleu-base);
-    color: var(--cg-bleu-base);
+    color: var(--accent-text);
+    
 }
 
 button.btn-outline-secondary:hover,
@@ -763,6 +768,7 @@ button.btn-outline-secondary:hover,
     padding: 1rem;
     margin-bottom: 1.5rem;
     border-radius: 8px;
+    text-align:center;
     border: 1px solid transparent;
 }
 
