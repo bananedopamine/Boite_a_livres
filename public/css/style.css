@@ -517,6 +517,7 @@ main.tableau-large {
 form {
     background: transparent !important;
     border-radius: 6px;
+    text-align:left;
     display: block;
     max-width: 100%;
     padding: 1.5rem;
@@ -1190,7 +1191,7 @@ dialog#modale_principale {
     left: 50% !important;
     transform: translate(-50%, -50%) !important;
     margin: 0 !important;
-    max-width: 500px ;
+    max-width: 60vw ;
     max-height: 90vh;
     overflow: visible; /* Important pour permettre le scroll interne */
     border: none;
@@ -1198,6 +1199,7 @@ dialog#modale_principale {
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
     padding: 0;
     z-index: 1000;
+    text-align : center;
 }
 
 /* Backdrop (fond sombre derrière la modale) */
@@ -1685,6 +1687,7 @@ dialog#modale_filtres[open] {
     display: flex;
     gap: 15px;
     align-items: start;
+    text-align:left;
 }
 
 .img-cover-thumb {
