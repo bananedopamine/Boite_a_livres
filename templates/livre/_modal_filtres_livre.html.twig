@@ -1,4 +1,4 @@
-{# templates/livre/_modal_filtres.html.twig #}
+{# templates/livre/_modal_filtres_livre.html.twig #}
 
 <dialog id="modale_filtres">
     <div class="modal-filtres-header">
@@ -7,7 +7,7 @@
             <span id="filter-count-badge" class="filter-count-badge" style="display: none;">0</span>
         </h3>
         <button type="button" class="btn-close-filtres" onclick="fermerModaleFiltres()" aria-label="Fermer">
-            X
+            ✕
         </button>
     </div>
     
@@ -15,36 +15,59 @@
         <div class="filter-grid">
             {# Filtre ISBN #}
             <div class="filter-group">
-                <label for="filter-isbn">
-                    ISBN
-                </label>
-                <input 
-                    type="text" 
-                    id="filter-isbn" 
-                    name="isbn" 
-                    placeholder="Rechercher par ISBN..."
-                    autocomplete="off"
-                >
+                <label for="filter-isbn">ISBN</label>
+                <input type="text" id="filter-isbn" name="isbn" placeholder="Rechercher par ISBN..." autocomplete="off">
             </div>
             
             {# Filtre Auteur #}
             <div class="filter-group">
-                <label for="filter-auteur">
-                    Auteur
-                </label>
-                <input 
-                    type="text" 
-                    id="filter-auteur" 
-                    name="auteur" 
-                    placeholder="Rechercher par auteur..."
-                    autocomplete="off"
-                >
+                <label for="filter-auteur"><i class="bi bi-person"></i> Auteur</label>
+                <input type="text" id="filter-auteur" name="auteur" placeholder="Rechercher par auteur..." autocomplete="off">
+            </div>
+
+            {# Filtre Titre #}
+            <div class="filter-group">
+                <label for="filter-titre"><i class="bi bi-book"></i> Titre</label>
+                <input type="text" id="filter-titre" name="titre" placeholder="Rechercher par titre..." autocomplete="off">
+            </div>
+
+            {# Filtre Statut (Admin) #}
+            {% if app.session.get('admin_authenticated') %}
+                <div class="filter-group">
+                    <label for="filter-statut-actif"><i class="bi bi-toggle-on"></i> Statut</label>
+                    <select id="filter-statut-actif" name="statut" class="form-select">
+                        <option value="">Aucun filtre</option>
+                        <option value="actif">Actif uniquement</option>
+                        <option value="inactif">Inactif uniquement</option>
+                    </select>
+                </div>
+            {% endif %}
+        </div>
+
+        <hr class="filter-separator">
+
+        {# Section Plage de Stock #}
+        <div class="filter-section">
+            <h4 class="filter-section-title">
+                <i class="bi bi-boxes"></i> Stock disponible
+            </h4>
+            
+            <div class="filter-group">
+                <div class="stock-inputs-container">
+                    <div class="stock-input-wrapper">
+                        <label for="stockMin-input">Minimum</label>
+                        <input type="number" id="stockMin-input" class="form-control stock-input" min="0" value="0">
+                    </div>
+                    <div class="stock-input-wrapper">
+                        <label for="stockMax-input">Maximum</label>
+                        <input type="number" id="stockMax-input" class="form-control stock-input" min="0" value="100">
+                    </div>
+                </div>
             </div>
         </div>
-        
-        {# Indication #}
-        <div style="margin-top: 1rem; padding: 1rem; background-color: rgba(66, 184, 221, 0.1); border-left: 3px solid #42b8dd; border-radius: 4px;">
-            <small style="color: var(--text-light);">
+
+        <div class="filter-hint">
+            <small>
                 <strong>Astuce :</strong> Laissez les champs vides pour afficher tous les livres
             </small>
         </div>

@@ -91,8 +91,13 @@ class LivreController extends AbstractController
     #[Route('/api/liste', name: 'app_livre_api_liste', methods: ['GET'])]
     public function apiListe(Request $request, LivreRepository $livreRepository): JsonResponse
     {
+        // Récupération de tous les paramètres
         $isbn = $request->query->get('isbn', '');
         $auteur = $request->query->get('auteur', '');
+        $titre = $request->query->get('titre', '');
+        $statut = $request->query->get('statut', ''); // 'actif', 'inactif', ou ''
+        $stockMin = $request->query->get('stock_min', 0);
+        $stockMax = $request->query->get('stock_max', 9999);
         $isAdmin = $this->session->get('admin_authenticated', false);
 
         // Construction de la requête
@@ -101,11 +106,36 @@ class LivreController extends AbstractController
         // Filtres de recherche
         if (!empty($isbn)) {
             $qb->andWhere('l.isbn LIKE :isbnVal')
-               ->setParameter('isbnVal', '%' . $isbn . '%');
+            ->setParameter('isbnVal', '%' . $isbn . '%');
         }
         if (!empty($auteur)) {
             $qb->andWhere('l.auteur LIKE :auteurVal')
-               ->setParameter('auteurVal', '%' . $auteur . '%');
+            ->setParameter('auteurVal', '%' . $auteur . '%');
+        }
+        if (!empty($titre)) {
+            $qb->andWhere('l.titre LIKE :titreVal')
+            ->setParameter('titreVal', '%' . $titre . '%');
+        }
+
+        // Filtre par statut actif/inactif/aucun filtres (Admin uniquement)
+        if ($isAdmin && !empty($statut)) {
+            if ($statut === 'actif') {
+                $qb->andWhere('l.actif = :actif')
+                ->setParameter('actif', true);
+            } elseif ($statut === 'inactif') {
+                $qb->andWhere('l.actif = :actif')
+                ->setParameter('actif', false);
+            }
+        }
+
+        // Filtre par plage de stock
+        if ($stockMin > 0) {
+            $qb->andWhere('l.NbStock >= :stockMin')
+            ->setParameter('stockMin', $stockMin);
+        }
+        if ($stockMax < 9999) {
+            $qb->andWhere('l.NbStock <= :stockMax')
+            ->setParameter('stockMax', $stockMax);
         }
 
         // Si pas admin, afficher seulement les livres en stock
@@ -114,8 +144,8 @@ class LivreController extends AbstractController
         }
 
         $livres = $qb->orderBy('l.isbn', 'ASC')
-                     ->getQuery()
-                     ->getResult();
+                    ->getQuery()
+                    ->getResult();
 
         // Transformation en tableau pour JSON
         $data = [];
@@ -367,8 +397,13 @@ class LivreController extends AbstractController
     #[Route('/export', name: 'app_livre_export', methods: ['GET'])]
     public function export(Request $request, LivreRepository $livreRepository, ExportService $exportService): Response
     {
+        // Récupération de tous les paramètres
         $isbn = $request->query->get('isbn', '');
         $auteur = $request->query->get('auteur', '');
+        $titre = $request->query->get('titre', '');
+        $statut = $request->query->get('statut', '');
+        $stockMin = $request->query->get('stock_min', 0);
+        $stockMax = $request->query->get('stock_max', 9999);
         $isAdmin = $this->session->get('admin_authenticated', false);
 
         // Construction de la requête (même logique que apiListe)
@@ -382,6 +417,31 @@ class LivreController extends AbstractController
         if (!empty($auteur)) {
             $qb->andWhere('l.auteur LIKE :auteurVal')
             ->setParameter('auteurVal', '%' . $auteur . '%');
+        }
+        if (!empty($titre)) {
+            $qb->andWhere('l.titre LIKE :titreVal')
+            ->setParameter('titreVal', '%' . $titre . '%');
+        }
+
+        // Filtre par statut actif/inactif/aucun filtres (admin uniquement)
+        if ($isAdmin && !empty($statut)) {
+            if ($statut === 'actif') {
+                $qb->andWhere('l.actif = :actif')
+                ->setParameter('actif', true);
+            } elseif ($statut === 'inactif') {
+                $qb->andWhere('l.actif = :actif')
+                ->setParameter('actif', false);
+            }
+        }
+
+        // Filtre par plage de stock
+        if ($stockMin > 0) {
+            $qb->andWhere('l.NbStock >= :stockMin')
+            ->setParameter('stockMin', $stockMin);
+        }
+        if ($stockMax < 9999) {
+            $qb->andWhere('l.NbStock <= :stockMax')
+            ->setParameter('stockMax', $stockMax);
         }
 
         // Si pas admin, afficher seulement les livres en stock
@@ -400,12 +460,12 @@ class LivreController extends AbstractController
         $response = new BinaryFileResponse($filepath);
         $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 
-        
+
         $response->setContentDisposition(
             ResponseHeaderBag::DISPOSITION_ATTACHMENT,
             basename($filepath)
         );
-
+  
         // Supprimer le fichier après téléchargement
         $response->deleteFileAfterSend(true);
 
