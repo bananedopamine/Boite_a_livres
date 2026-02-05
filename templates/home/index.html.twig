@@ -26,6 +26,8 @@
         </button>
     </nav>
 
+    {% include 'mouvement/_modal_succes.html.twig' %}
+
     
 </div>
 {% endblock %}
@@ -37,12 +39,54 @@
 
     /**
      * 1. Ouvre la première modale (le scan ISBN)
+     * Et active la détection automatique pour le scanner
      */
-    function ouvrirScan(action) {
-        typeActionActuel = action;
-        const url = "{{ path('app_mouvement_debut') }}?action=" + action;
-        chargerModale(url);
+    async function ouvrirScan(action) {
+    // On stocke si c'est une sortie (true) ou une entrée (false)
+    typeActionActuel = action;
+
+    const url = "{{ path('app_mouvement_debut') }}?action=" + action;
+    
+    try {
+        // 1. Charger le contenu HTML dans la modale
+        // On attend que chargerModale ait fini de remplir le DOM
+        await chargerModale(url);
+
+        // 2. Récupérer les éléments fraîchement injectés
+        const inputIsbn = document.getElementById('isbnInput');
+        const formScan = document.getElementById('form_scan');
+
+        if (inputIsbn) {
+            // Focus automatique pour pouvoir scanner tout de suite
+            setTimeout(() => inputIsbn.focus(), 100);
+
+            // ÉCOUTEUR 1 : Détection automatique (Scanner / Douchette)
+            // Dès que l'ISBN atteint 10 ou 13 caractères, on lance la vérification
+            inputIsbn.addEventListener('input', function(e) {
+                const isbn = e.target.value.trim();
+                if (isbn.length === 10 || isbn.length === 13) {
+                    console.log("ISBN détecté par saisie/scan :", isbn);
+                    verifierIsbn(isbn);
+                }
+            });
+        }
+
+        if (formScan) {
+            // ÉCOUTEUR 2 : Validation manuelle (Bouton ou touche Entrée)
+            formScan.addEventListener('submit', function(e) {
+                e.preventDefault(); // Empêche le rechargement de la page
+                const isbn = inputIsbn.value.trim();
+                if (isbn) {
+                    verifierIsbn(isbn);
+                }
+            });
+        }
+
+    } catch (erreur) {
+        console.error("Erreur lors de l'ouverture du scan :", erreur);
+        alert("Impossible de charger la fenêtre de scan.");
     }
+}
 
     /**
      * 2. ÉCOUTEUR GLOBAL DE SOUMISSION (Le Cerveau)
@@ -80,8 +124,12 @@
                     if (resultat.id) {
                         // Si on vient de créer un livre, on passe à la confirmation finale
                         ouvrirConfirmation(resultat.id);
+                    } else if (resultat.livre && resultat.nomPrenom) {
+                        // ✅ Si on a finalisé le mouvement, afficher la modale de succès
+                        modalePrincipale.close();
+                        afficherModaleSucces(resultat);
                     } else {
-                        // Si on a finalisé le mouvement, on ferme tout
+                        // Cas de fallback
                         modalePrincipale.close();
                         window.location.reload();
                     }
@@ -110,61 +158,55 @@
      */
     async function verifierIsbn(isbn) {
         try {
-            // Avant de vérifier, on synchronise le type d'action au cas où l'utilisateur l'a changé dans le select
-            const selectAction = document.getElementById('type_action_select');
-            if (selectAction) {
-                typeActionActuel = selectAction.value;
-            }
-
             const reponse = await fetch(`/livre/api/verif-isbn/${isbn}`);
-            const resultat = await reponse.json();
 
-            if (resultat.statut === 'existe') {
-                // Le livre est en BDD -> Go confirmation
-                ouvrirConfirmation(resultat.id);
-            } 
-            else if (resultat.statut === 'google') {
-                // Trouvé sur Google -> Go formulaire création pré-rempli
-                ouvrirFormulaireNouveau(resultat.donnees);
-            } 
-            else {
-                // Pas trouvé -> Affichage options de création
-                afficherOptionsCreation(isbn);
+            // On regarde ce que le serveur nous a envoyé
+            const contentType = reponse.headers.get("content-type");
+
+            if (contentType && contentType.includes("application/json")) {
+                // CAS 1 : C'est du JSON (Livre trouvé en base ou Google)
+                const resultat = await reponse.json();
+
+                if (resultat.statut === 'existe') {
+                    ouvrirConfirmation(resultat.id);
+                } else if (resultat.statut === 'google') {
+                    ouvrirFormulaireNouveau(resultat.donnees);
+                } else if (resultat.statut === 'inconnu') {
+                    // ✅ AJOUT CRITIQUE : Gérer le livre introuvable
+                    console.log('Livre introuvable, ISBN:', resultat.isbn);
+                    afficherOptionsCreation(resultat.isbn);
+                } else {
+                    console.error('Statut inconnu reçu:', resultat.statut);
+                }
+            } else {
+                // CAS 2 : C'est du HTML (Ton template _modal_not_found)
+                const html = await reponse.text();
+                document.getElementById('contenu_modale').innerHTML = html;
             }
         } catch (erreur) {
-            console.error("Erreur API ISBN:", erreur);
+            console.error("Erreur critique lors de la vérification :", erreur);
         }
     }
 
     /**
-     * 3bis. Affiche les options de création (rapide ou complète)
-     */
-    function afficherOptionsCreation(isbn) {
-        document.getElementById('contenu_modale').innerHTML = `
-            <div class="modal-404">
-                <h3>Livre introuvable</h3>
-                
-                <p>L'ISBN <strong>${isbn}</strong> n'existe pas dans notre base de données et n'a pas pu être identifié sur Google Books.</p>
-                
-                <div class="alert alert-warning" style="margin: 20px 0; padding: 15px; background-color: #fff3cd; border-left: 4px solid #ffc107;">
-                    <strong>Que souhaitez-vous faire ?</strong>
-                </div>
+    * 3bis. Affiche les options de création (rapide ou complète)
+    */
+    async function afficherOptionsCreation(isbn) {
+       const url = `/livre/modal-not-found/${isbn}?typeAction=${typeActionActuel}`;
 
-                <div class="modal-actions-column" style="display: flex; flex-direction: column; gap: 10px;">
-                    <button class="btn btn-primary" onclick="ouvrirCreationRapide('${isbn}')" style="width: 100%;">
-                        Création rapide (ISBN + Titre uniquement)
-                    </button>
-                    
-                    <button class="btn btn-secondary" onclick="ouvrirScan('${typeActionActuel}')" style="width: 100%;">
-                        Réessayer le scan
-                    </button>
-                    
-                    <button class="btn btn-light" onclick="modalePrincipale.close()" style="width: 100%; margin-top: 10px;">
-                        Annuler
-                    </button>
-                </div>
-            </div>
-        `;
+       
+        const reponse = await fetch(url, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        });
+
+        const html = await reponse.text();
+        document.getElementById('contenu_modale').innerHTML = html;
+
+        // S'assurer que la modale est ouverte
+        if (!modalePrincipale.open) {
+            modalePrincipale.showModal();
+        }
+
     }
 
     /**
@@ -208,6 +250,20 @@
                         >
                     </div>
 
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label for="genre" style="display: block; margin-bottom: 5px; font-weight: bold;">
+                            Genre (optionnel)
+                        </label>
+                        <input 
+                            type="text" 
+                            id="genre" 
+                            name="genre" 
+                            class="form-control" 
+                            placeholder="Roman, Essai, Manga..."
+                            style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;"
+                        >
+                    </div>
+
                     <div class="modal-actions" style="display: flex; justify-content: space-between; gap: 10px;">
                         <button type="button" class="btn btn-secondary" onclick="afficherOptionsCreation('${isbn}')" style="flex: 1;">
                             ← Retour
@@ -216,6 +272,7 @@
                             Créer le livre
                         </button>
                         <button class="btn" onclick="ouvrirScan('${typeActionActuel}')">Réessayer</button>
+                        
                     </div>
                 </form>
             </div>
@@ -234,11 +291,13 @@
         const form = event.target;
         const titre = form.titre.value;
         const auteur = form.auteur.value;
+        const genre = form.genre.value;
         
         const formData = new FormData();
         formData.append('isbn', isbn);
         formData.append('titre', titre);
         formData.append('auteur', auteur);
+        formData.append('genre', genre);
         
         try {
             const reponse = await fetch("{{ path('app_livre_creation_manuel') }}", {

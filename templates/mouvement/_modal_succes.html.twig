@@ -1,0 +1,43 @@
+{# templates/mouvement/_modal_succes.html.twig #}
+{# @author : Dufour Marc (marc.dufour@stjosup.com)
+ # @version : 1.0
+ # @dateCreate : 02/02/2026
+ # @description : Modale de confirmation de succès après une opération d'entrée/sortie
+ #}
+
+<dialog id="modale_succes" class="modal-succes">
+    <div class="modal-succes-header">
+        <div class="modal-succes-icon">
+            <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="40" cy="40" r="38" stroke="#5cb85c" stroke-width="4" fill="none"/>
+                <path d="M25 40 L35 50 L55 30" stroke="#5cb85c" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            </svg>
+        </div>
+        <h2 class="modal-succes-title">Opération réussie !</h2>
+    </div>
+
+    <div class="modal-succes-content">
+        <p class="modal-succes-message">
+            <span id="succes-type-action"></span> effectué par <strong id="succes-nom-prenom"></strong> a bien été effectuée.
+        </p>
+        
+        <div class="modal-succes-details">
+            <p><strong>Livre :</strong> <span id="succes-titre-livre"></span></p>
+            <p><strong>ISBN :</strong> <span id="succes-isbn-livre"></span></p>
+            <p><strong>Nouveau stock :</strong> <span id="succes-nouveau-stock" class="badge"></span></p>
+        </div>
+
+        <div class="modal-succes-timer">
+            <p>Fermeture automatique dans <strong id="timer-countdown">8</strong> secondes...</p>
+            <div class="progress-bar">
+                <div id="progress-fill" class="progress-fill"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-succes-footer">
+        <button type="button" class="btn btn-primary" onclick="fermerModaleSucces()">
+            Fermer maintenant
+        </button>
+    </div>
+</dialog>

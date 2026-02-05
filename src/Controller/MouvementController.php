@@ -254,7 +254,18 @@ class MouvementController extends AbstractController
         $em->persist($mouvement);
         $em->flush();
 
-        return $this->json(['success' => true]);
+        return $this->json([
+            'success' => true,
+            'livre' => [
+                'id' => $livre->getId(),
+                'titre' => $livre->gettitre(),
+                'auteur' => $livre->getAuteur(),
+                'isbn' => $livre->getIsbn(),
+                'stock' => $livre->getNbStock()
+            ],
+            'type' => $typeSortie ? 'true' : 'false',
+            'nomPrenom' => $nomUtilisateur
+        ]);
     }
 
     #endregion

@@ -1,7 +1,7 @@
 /* ===============================================
    BOÎTE À LIVRES - STYLESHEET COMPLET (FUSIONNÉ)
    @author : Dufour Marc (marc.dufour@stjosup.com)
-   @version : 2.1 (Fusion avec modal_fixes)
+   @version : 2.2 (Nettoyage doublons)
    @dateCreate : 19/01/2026
    @lastUpdate : 29/01/2026
    @description : Stylesheet autonome basé sur Simple.css avec correctifs de modales
@@ -1190,7 +1190,7 @@ dialog#modale_principale {
     left: 50% !important;
     transform: translate(-50%, -50%) !important;
     margin: 0 !important;
-    max-width: 90vw;
+    max-width: 500px ;
     max-height: 90vh;
     overflow: visible; /* Important pour permettre le scroll interne */
     border: none;
@@ -2267,4 +2267,276 @@ textarea:focus {
 
 .btn-voir-plus i {
     margin-left: 0.3rem;
+}
+/* ========================================
+   STYLES MODALE DE SUCCÈS
+   ======================================== */
+
+/* Modale de succès - centrée et élégante */
+.modal-succes {
+    width: clamp(400px, 50vw, 600px);
+    max-width: 90vw;
+    border-radius: 16px;
+    border: 2px solid #5cb85c;
+    padding: 0;
+    background-color: var(--bg);
+    z-index: 2000;
+    animation: slideInFromTop 0.4s ease-out;
+}
+
+@keyframes slideInFromTop {
+    from {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-succes::backdrop {
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* En-tête de la modale avec icône */
+.modal-succes-header {
+    text-align: center;
+    padding: 2rem 2rem 1rem 2rem;
+    /* background: linear-gradient(135deg, rgba(92, 184, 92, 0.1) 0%, rgba(76, 174, 76, 0.1) 100%); */
+    border-bottom: 2px solid #5cb85c;
+    border-radius: 16px 16px 0 0;
+}
+
+.modal-succes-icon {
+    margin-bottom: 1rem;
+    animation: scaleIn 0.5s ease-out 0.2s backwards;
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.modal-succes-icon svg {
+    display: inline-block;
+}
+
+.modal-succes-title {
+    margin: 0;
+    color: #5cb85c;
+    font-size: 1.8rem;
+    font-weight: 600;
+}
+
+/* Contenu de la modale */
+.modal-succes-content {
+    padding: 2rem;
+}
+
+.modal-succes-message {
+    font-size: 1.2rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: var(--text);
+    line-height: 1.6;
+}
+
+.modal-succes-message strong {
+    color: var(--accent);
+    font-weight: 600;
+}
+
+/* Détails du livre */
+.modal-succes-details {
+    background-color: var(--accent-bg);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border: 4px solid #5cb85c;
+}
+
+.modal-succes-details p {
+}
+
+.modal-succes-details strong {
+    color: var(--text);
+    font-weight: 600;
+    min-width: 120px;
+}
+
+/* Badge pour le stock */
+.modal-succes-details .badge {
+    font-size: 1rem;
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.modal-succes-details .badge.bg-success {
+    background: linear-gradient(135deg, #5cb85c 0%, #4cae4c 100%) !important;
+    color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.modal-succes-details .badge.bg-warning {
+    background: linear-gradient(135deg, #f0ad4e 0%, #ec971f 100%) !important;
+    color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.modal-succes-details .badge.bg-danger {
+    background: linear-gradient(135deg, #d9534f 0%, #c9302c 100%) !important;
+    color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Timer et barre de progression */
+.modal-succes-timer {
+    text-align: center;
+    margin-top: 1.5rem;
+}
+
+.modal-succes-timer p {
+    margin-bottom: 0.8rem;
+    color: var(--text-light);
+    font-size: 0.95rem;
+}
+
+.modal-succes-timer strong {
+    color: var(--accent);
+    font-size: 1.1rem;
+}
+
+/* Barre de progression */
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background-color: var(--accent-bg);
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #5cb85c 0%, #4cae4c 50%, #5cb85c 100%);
+    background-size: 200% 100%;
+    animation: progress 8s linear forwards, shimmer 1.5s infinite;
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+@keyframes progress {
+    from { width: 100%; }
+    to { width: 0%; }
+}
+
+@keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* Footer de la modale */
+.modal-succes-footer {
+    padding: 1rem 2rem 2rem 2rem;
+    text-align: center;
+    border-radius: 0 0 16px 16px;
+}
+
+.modal-succes-footer .btn {
+    min-width: 200px;
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.modal-succes-footer .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Animation de fermeture */
+.modal-succes.closing {
+    animation: slideOutToTop 0.3s ease-in forwards;
+}
+
+@keyframes slideOutToTop {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .modal-succes {
+        width: 95vw;
+    }
+    
+    .modal-succes-header {
+        padding: 1.5rem 1rem 1rem 1rem;
+    }
+    
+    .modal-succes-title {
+        font-size: 1.5rem;
+    }
+    
+    .modal-succes-content {
+        padding: 1.5rem;
+    }
+    
+    .modal-succes-message {
+        font-size: 1rem;
+    }
+    
+    .modal-succes-details {
+        padding: 1rem;
+    }
+    
+    .modal-succes-footer .btn {
+        min-width: 150px;
+        padding: 0.6rem 1rem;
+    }
+}
+
+/* Empêcher le scroll du body quand la modale est ouverte */
+body.modal-succes-open {
+    overflow: hidden !important;
+}
+
+/* Style pour le texte d'action (Entrée/Sortie) */
+#succes-type-action {
+    font-weight: 600;
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+#succes-type-action.action-entree {
+    background-color: rgba(92, 184, 92, 0.2);
+    color: #5cb85c;
+}
+
+#succes-type-action.action-sortie {
+    background-color: rgba(217, 83, 79, 0.2);
+    color: #d9534f;
 }

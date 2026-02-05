@@ -143,7 +143,7 @@ class LivreController extends AbstractController
 
     #endregion
 
-    #region verification 
+    #region verification verifISBN, livre404
 
     /**
      * API : Vérifie l'existence d'un livre (BDD locale puis Google Books).
@@ -200,6 +200,21 @@ class LivreController extends AbstractController
             'isbn' => $isbn
         ]);
     }
+
+    /**
+     * Affiche la modale "livre introuvable"
+     * Interagit avec : Le JavaScript de la page d'accueil
+     */
+    #[Route('/modal-not-found/{isbn}', name: 'app_livre_modal_not_found', methods: ['GET'])]
+    public function modalNotFound(string $isbn, Request $request): Response
+    {
+        $typeAction = $request->query->get('typeAction', 'false');
+        
+        return $this->render('livre/_modal_livre_not_found.html.twig', [
+            'isbn' => $isbn,
+            'typeAction' => $typeAction
+        ]);
+    }
     
     #endregion
 
@@ -241,7 +256,7 @@ class LivreController extends AbstractController
         $livre->setAuteur($auteur ?: 'Auteur inconnu'); // Valeur par défaut si vide
         $livre->setDescription(''); // Valeur par défaut
         $livre->setLienImg(null); // Optionnel
-        $livre->setGenre($genre ?: null); // Genre optionnel
+        $livre->setGenre($genre ?: 'non référencer'); // Genre optionnel
         $livre->setNbStock(0);
         $livre->setActif(true);
 

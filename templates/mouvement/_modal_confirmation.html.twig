@@ -9,7 +9,7 @@
     <div>
         <strong>Titre :</strong> {{ livre.titre }} <br>
         <strong>Auteur :</strong> {{ livre.auteur }} <br>
-        <strong>Genre :</strong> {{ livre.genre }} <br>
+        <strong>Genre :</strong> {{ livre.genre|default('Non spécifié') }} <br>
         <strong>ISBN :</strong> {{ livre.isbn }} <br>
         <strong>Stock actuel :</strong> {{ livre.NbStock }}
     </div>
