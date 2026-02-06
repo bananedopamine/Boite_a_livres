@@ -352,6 +352,7 @@ class LivreController extends AbstractController
     #[Route('/{id}/edit', name: 'app_livre_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Livre $livre, EntityManagerInterface $entityManager): Response
     {
+        // Vérification admin
         if (!$this->session->get('admin_authenticated')) {
             return $this->redirectToRoute('app_admin_login');
         }
@@ -362,15 +363,34 @@ class LivreController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
+            // Si c'est une requête AJAX, retourner JSON
+            if ($request->isXmlHttpRequest()) {
+                return $this->json([
+                    'success' => true,
+                    'message' => 'Le livre a été mis à jour avec succès.'
+                ]);
+            }
+
+            // Sinon, redirection classique
             $this->addFlash('success', 'Le livre a été mis à jour avec succès.');
             return $this->redirectToRoute('app_livre_index', [], Response::HTTP_SEE_OTHER);
         }
 
+        // Si le formulaire a des erreurs et c'est AJAX, retourner le HTML avec status 422
+        if ($form->isSubmitted() && !$form->isValid() && $request->isXmlHttpRequest()) {
+            return $this->render('livre/_modal_edit.html.twig', [
+                'livre' => $livre,
+                'form' => $form,
+            ], new Response(null, 422));
+        }
+
+        // Retourner le template (qui gérera lui-même AJAX vs page complète)
         return $this->render('livre/_modal_edit.html.twig', [
             'livre' => $livre,
             'form' => $form,
         ]);
     }
+
 
     #[Route('/{id}/delete', name: 'app_livre_delete')]
     public function delete(Request $request, Livre $livre, EntityManagerInterface $entityManager): Response
