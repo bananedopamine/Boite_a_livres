@@ -1,6 +1,6 @@
 {# @author : Dufour Marc (marc.dufour@stjosup.com)
- # @version : 1.4
- # @lastUpdate : 28/01/2026 (Ajout création rapide de livre)
+ # @version : 1.5
+ # @lastUpdate : 06/02/2026 (Ajout suggestion de livre)
  #}
 
 {% extends 'base.html.twig' %}
@@ -25,6 +25,17 @@
             Bibliothèque
         </button>
     </nav>
+
+    {# NOUVEAU : Section suggestion de livre #}
+    <div class="suggestion-section">
+        <p class="suggestion-text">
+            <span class="suggestion-icon"></span>
+            Vous ne savez pas quoi choisir ? Laissez-nous décider !
+        </p>
+        <button class="btn btn-suggestion-home" onclick="initialiserSuggestion()">
+            Suggérer un livre
+        </button>
+    </div>
 
     {% include 'mouvement/_modal_succes.html.twig' %}
 
@@ -125,7 +136,7 @@
                         // Si on vient de créer un livre, on passe à la confirmation finale
                         ouvrirConfirmation(resultat.id);
                     } else if (resultat.livre && resultat.nomPrenom) {
-                        // ✅ Si on a finalisé le mouvement, afficher la modale de succès
+                        // Si on a finalisé le mouvement, afficher la modale de succès
                         modalePrincipale.close();
                         afficherModaleSucces(resultat);
                     } else {
@@ -172,7 +183,7 @@
                 } else if (resultat.statut === 'google') {
                     ouvrirFormulaireNouveau(resultat.donnees);
                 } else if (resultat.statut === 'inconnu') {
-                    // ✅ AJOUT CRITIQUE : Gérer le livre introuvable
+                    // AJOUT CRITIQUE : Gérer le livre introuvable
                     console.log('Livre introuvable, ISBN:', resultat.isbn);
                     afficherOptionsCreation(resultat.isbn);
                 } else {
@@ -184,40 +195,57 @@
                 document.getElementById('contenu_modale').innerHTML = html;
             }
         } catch (erreur) {
-            console.error("Erreur critique lors de la vérification :", erreur);
+            console.error("Erreur lors de la vérification ISBN :", erreur);
         }
     }
 
     /**
-    * 3bis. Affiche les options de création (rapide ou complète)
-    */
-    async function afficherOptionsCreation(isbn) {
-       const url = `/livre/modal-not-found/${isbn}?typeAction=${typeActionActuel}`;
-
-       
-        const reponse = await fetch(url, {
-            headers: { 'X-Requested-With': 'XMLHttpRequest' }
-        });
-
-        const html = await reponse.text();
-        document.getElementById('contenu_modale').innerHTML = html;
-
-        // S'assurer que la modale est ouverte
-        if (!modalePrincipale.open) {
-            modalePrincipale.showModal();
-        }
-
-    }
-
-    /**
-     * 3ter. Ouvre la modale de création rapide
+     * 3bis. Affiche le formulaire de choix : API Google ou Saisie Manuelle
      */
-    function ouvrirCreationRapide(isbn) {
+    function afficherOptionsCreation(isbn) {
         document.getElementById('contenu_modale').innerHTML = `
-            <div class="modal-quick-create">
-                <h3>Créer un nouveau livre</h3>
+            <div style="text-align: center; padding: 20px;">
+                <h3 style="color: #d9534f; margin-bottom: 20px;">Livre Introuvable</h3>
+                <p style="margin-bottom: 25px;">
+                    L'ISBN <strong>${isbn}</strong> n'a pas été trouvé dans notre base de données ni sur l'API Google Books.
+                </p>
                 
-                <p>L'ISBN <strong>${isbn}</strong> n'a pas été trouvé. Créez le livre rapidement :</p>
+                <div style="display: flex; flex-direction: column; gap: 15px; max-width: 400px; margin: 0 auto;">
+                    <button 
+                        class="btn btn-primary" 
+                        onclick="afficherFormulaireCreationRapide('${isbn}')"
+                        style="width: 100%; padding: 15px; font-size: 1rem;">
+                        Créer le livre manuellement
+                    </button>
+                    
+                    <button 
+                        class="btn btn-secondary" 
+                        onclick="ouvrirScan('${typeActionActuel}')"
+                        style="width: 100%; padding: 15px; font-size: 1rem;">
+                        Rescanner un autre livre
+                    </button>
+                    
+                    <button 
+                        class="btn btn-light" 
+                        onclick="fermerModale()"
+                        style="width: 100%; padding: 12px; font-size: 0.95rem;">
+                        ✕ Annuler
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+
+    /**
+     * 3ter. Affiche le formulaire de création rapide
+     */
+    function afficherFormulaireCreationRapide(isbn) {
+        document.getElementById('contenu_modale').innerHTML = `
+            <div style="padding: 20px;">
+                <h3 style="margin-bottom: 20px;">Création rapide de livre</h3>
+                <p style="color: var(--text-light); margin-bottom: 20px;">
+                    ISBN : <strong>${isbn}</strong>
+                </p>
                 
                 <form id="form-quick-create" onsubmit="soumettreCreationRapide(event, '${isbn}')">
                     <div class="form-group" style="margin-bottom: 15px;">
@@ -402,4 +430,8 @@
         }
     }
 </script>
+
+{# Chargement du script de suggestion de livres #}
+<script src="{{ asset('js/suggestion_livre_handler.js') }}"></script>
+
 {% endblock %}
