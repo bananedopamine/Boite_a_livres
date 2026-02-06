@@ -90,68 +90,16 @@
             <p>&copy; {{ "now"|date("Y") }} - IES Ingénierie</p>
         </footer>
 
-        <script>
-            document.addEventListener('DOMContentLoaded', () => {
-                const notices = document.querySelectorAll('.flash-message');
+        {# Fonctions communes réutilisables #}
+        <script src="{{ asset('js/fonctions.js') }}"></script>
 
-                notices.forEach((notice) => {
-                    setTimeout(() => {
-                        notice.style.transition = "opacity 0.8s ease-out, transform 0.8s ease-out";
-                        notice.style.opacity = "0";
-                        notice.style.transform = "translateY(-20px)"; 
-
-                        setTimeout(() => {
-                            notice.remove();
-                        }, 800);
-                    }, 5000);
-                });
-
-
-                const dropdownBtn = document.getElementById('adminDropdown');
-    const dropdownMenu = document.getElementById('adminMenu');
-
-    if (dropdownBtn && dropdownMenu) {
-        // Toggle au clic sur le bouton
-        dropdownBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            dropdownMenu.classList.toggle('show');
-        });
-
-        // Fermer si on clique n'importe où ailleurs sur la page
-        document.addEventListener('click', function() {
-            dropdownMenu.classList.remove('show');
-        });
-    }
-            });
-
-                
-            /**
-                * Fonction globale pour ouvrir la modale et charger du contenu
-                * Cette fonction sera utilisée par notre "cerveau" JS dans index.html.twig
-                */
-            async function chargerModale(url) {
-                const modale = document.getElementById('modale_principale');
-                const contenu = document.getElementById('contenu_modale');
-
-                try {
-                    const reponse = await fetch(url, {
-                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
-                    });
-                    const html = await reponse.text();
-                    contenu.innerHTML = html;
-
-                    if (!modale.open) {
-                        modale.showModal();
-                    }
-                } catch (erreur) {
-                    console.error("Erreur de chargement modale :", erreur);
-                }
-            }
-        </script>
+        {# Initialisation de la page de base #}
+        <script src="{{ asset('js/base_initialization.js') }}"></script>
 
         <script src="{{ asset('js/modal_handler.js') }}"></script>
         <script src="{{ asset('js/modal_filtres_handler.js') }}"></script>
         <script src="{{ asset('js/modal_succes_handler.js') }}"></script>
+        
         {# Chargement conditionnel selon la route #}
         {% if app.request.attributes.get('_route') starts with 'app_livre' %}
             <script src="{{ asset('js/modal_filtres_livre_handler.js') }}"></script>
