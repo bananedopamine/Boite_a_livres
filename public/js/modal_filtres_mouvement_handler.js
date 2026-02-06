@@ -1,11 +1,11 @@
 /**
  * @author : Dufour Marc
- * @version : 1.1
- * @description : Gestionnaire de modale de filtres pour les livres
+ * @version : 1.0
+ * @description : Gestionnaire de modale de filtres pour les MOUVEMENTS (sans filtres de stock)
  */
 
 /* ===================================
-   GESTION DE LA MODALE DE FILTRES
+   GESTION DE LA MODALE DE FILTRES MOUVEMENTS
    ================================== */
 
 /**
@@ -44,9 +44,7 @@ function appliquerFiltres() {
     }
     
     // Lancer la recherche
-    if (typeof chargerLivres === 'function') {
-        chargerLivres();
-    } else if (typeof chargerMouvements === 'function') {
+    if (typeof chargerMouvements === 'function') {
         chargerMouvements();
     }
     
@@ -71,16 +69,13 @@ function reinitialiserFiltres() {
     if (typeof critereRecherche !== 'undefined') {
         critereRecherche.isbn = '';
         critereRecherche.auteur = '';
-        critereRecherche.titre = '';
-        critereRecherche.statut = '';
-        critereRecherche.stockMin = '';
-        critereRecherche.stockMax = '';
+        critereRecherche.user = '';
+        critereRecherche.type = '';
+        critereRecherche.tri = 'DESC';
     }
     
     // Recharger les données
-    if (typeof chargerLivres === 'function') {
-        chargerLivres();
-    } else if (typeof chargerMouvements === 'function') {
+    if (typeof chargerMouvements === 'function') {
         chargerMouvements();
     }
     
@@ -97,24 +92,23 @@ function reinitialiserFiltres() {
 function updateCriteresFromForm() {
     const isbn   = document.getElementById('filter-isbn')?.value.trim() || '';
     const auteur = document.getElementById('filter-auteur')?.value.trim() || '';
-    const titre  = document.getElementById('filter-titre')?.value.trim() || '';
-    const statut = document.getElementById('filter-statut-actif')?.value || '';
-    const stockMin = document.getElementById('stockMin-input')?.value.trim() || '';
-    const stockMax = document.getElementById('stockMax-input')?.value.trim() || '';
+    const user   = document.getElementById('filter-user')?.value.trim() || '';
+    const type   = document.getElementById('filter-type')?.value || '';
+    const tri    = document.getElementById('filter-tri')?.value || 'DESC';
     
     // Mettre à jour l'objet global critereRecherche si il existe
     if (typeof critereRecherche !== 'undefined') {
         critereRecherche.isbn = isbn;
         critereRecherche.auteur = auteur;
-        critereRecherche.titre = titre;
-        critereRecherche.statut = statut;
-        critereRecherche.stockMin = stockMin;
-        critereRecherche.stockMax = stockMax;
+        critereRecherche.user = user;
+        critereRecherche.type = type;
+        critereRecherche.tri = tri;
     }
 }
 
 /**
  * Affiche les filtres actuellement actifs sous forme de badges
+ * VERSION MOUVEMENTS : Pas de filtres de stock !
  */
 function afficherFiltresActifs() {
     const container = document.getElementById('active-filters-container');
@@ -136,26 +130,20 @@ function afficherFiltresActifs() {
             count++;
         }
         
-        // Titre
-        if (critereRecherche.titre) {
-            container.innerHTML += createFilterTag('Titre', critereRecherche.titre, 'titre');
+        // Utilisateur/Personne
+        if (critereRecherche.user) {
+            container.innerHTML += createFilterTag('Personne', critereRecherche.user, 'user');
             count++;
         }
         
-        // Statut
-        if (critereRecherche.statut) {
-            const statutLabel = critereRecherche.statut === 'actif' ? 'Actif' : 'Inactif';
-            container.innerHTML += createFilterTag('Statut', statutLabel, 'statut');
+        // Type (Entrée/Sortie)
+        if (critereRecherche.type) {
+            const typeLabel = critereRecherche.type === 'entree' ? 'Entrées' : 'Sorties';
+            container.innerHTML += createFilterTag('Type', typeLabel, 'type');
             count++;
         }
         
-        // Stock Min/Max
-        if (critereRecherche.stockMin !== '' || critereRecherche.stockMax !== '') {
-            const min = critereRecherche.stockMin || '0';
-            const max = critereRecherche.stockMax || '∞';
-            container.innerHTML += createFilterTag('Stock', `${min} - ${max}`, 'stock');
-            count++;
-        }
+        // ✅ PAS DE FILTRE STOCK ICI (contrairement au fichier livres)
     }
     
     // Mettre à jour le badge de compteur
@@ -187,37 +175,25 @@ function createFilterTag(label, value, key) {
  */
 function supprimerFiltre(key) {
     if (typeof critereRecherche !== 'undefined') {
-        if (key === 'stock') {
-            // Réinitialiser les deux champs de stock
-            critereRecherche.stockMin = '';
-            critereRecherche.stockMax = '';
-            const inputMin = document.getElementById('stockMin-input');
-            const inputMax = document.getElementById('stockMax-input');
-            if (inputMin) inputMin.value = '';
-            if (inputMax) inputMax.value = '';
-        } else {
-            critereRecherche[key] = '';
-            
-            // Mettre à jour le champ correspondant dans le formulaire
-            const inputIds = {
-                'isbn': 'filter-isbn',
-                'auteur': 'filter-auteur',
-                'titre': 'filter-titre',
-                'statut': 'filter-statut-actif'
-            };
-            
-            const inputId = inputIds[key];
-            const input = document.getElementById(inputId);
-            if (input) {
-                input.value = '';
-            }
+        critereRecherche[key] = '';
+        
+        // Mettre à jour le champ correspondant dans le formulaire
+        const inputIds = {
+            'isbn': 'filter-isbn',
+            'auteur': 'filter-auteur',
+            'user': 'filter-user',
+            'type': 'filter-type'
+        };
+        
+        const inputId = inputIds[key];
+        const input = document.getElementById(inputId);
+        if (input) {
+            input.value = '';
         }
     }
     
     // Recharger les données
-    if (typeof chargerLivres === 'function') {
-        chargerLivres();
-    } else if (typeof chargerMouvements === 'function') {
+    if (typeof chargerMouvements === 'function') {
         chargerMouvements();
     }
     
@@ -243,28 +219,22 @@ function synchroniserFormulaireFiltres() {
         auteurInput.value = critereRecherche.auteur || '';
     }
     
-    // Titre
-    const titreInput = document.getElementById('filter-titre');
-    if (titreInput) {
-        titreInput.value = critereRecherche.titre || '';
+    // Utilisateur
+    const userInput = document.getElementById('filter-user');
+    if (userInput) {
+        userInput.value = critereRecherche.user || '';
     }
     
-    // Statut
-    const statutSelect = document.getElementById('filter-statut-actif');
-    if (statutSelect) {
-        statutSelect.value = critereRecherche.statut || '';
+    // Type
+    const typeSelect = document.getElementById('filter-type');
+    if (typeSelect) {
+        typeSelect.value = critereRecherche.type || '';
     }
     
-    // Stock Min
-    const stockMinInput = document.getElementById('stockMin-input');
-    if (stockMinInput) {
-        stockMinInput.value = critereRecherche.stockMin || '';
-    }
-    
-    // Stock Max
-    const stockMaxInput = document.getElementById('stockMax-input');
-    if (stockMaxInput) {
-        stockMaxInput.value = critereRecherche.stockMax || '';
+    // Tri
+    const triSelect = document.getElementById('filter-tri');
+    if (triSelect) {
+        triSelect.value = critereRecherche.tri || 'DESC';
     }
 }
 

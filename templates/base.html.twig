@@ -151,7 +151,12 @@
 
         <script src="{{ asset('js/modal_handler.js') }}"></script>
         <script src="{{ asset('js/modal_filtres_handler.js') }}"></script>
-        <script src="{{ asset('js/modal_succes_handler.js') }}"></script>
+        {# Chargement conditionnel selon la route #}
+        {% if app.request.attributes.get('_route') starts with 'app_livre' %}
+            <script src="{{ asset('js/modal_filtres_livre_handler.js') }}"></script>
+        {% elseif app.request.attributes.get('_route') starts with 'app_mouvement' %}
+            <script src="{{ asset('js/modal_filtres_mouvement_handler.js') }}"></script>
+        {% endif %}
 
         {% block javascripts %}{% endblock %}
     </body>

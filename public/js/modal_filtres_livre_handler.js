@@ -1,200 +1,336 @@
 /**
- * @author : Dufour Marc (marc.dufour@stjosup.com)
- * @version : 3.2
- * @description : Gestionnaire de filtres - Version Inputs Numériques sans sliders
+ * @author : Dufour Marc
+ * @version : 1.1
+ * @description : Gestionnaire de modale de filtres pour les livres
  */
 
-let filtresActifs = {
-    isbn: '',
-    auteur: '',
-    titre: '',
-    statut: '',
-    stockMin: 0,
-    stockMax: 100
-};
-
-let stockMaxGlobal = 100; 
-
-document.addEventListener('DOMContentLoaded', function() {
-    initialiserControlesStock();
-    chargerStockMaximum();
-});
+/* ===================================
+   GESTION DE LA MODALE DE FILTRES
+   ================================== */
 
 /**
- * Gère la logique de collision entre Min et Max
+ * Ouvre la modale de filtres
  */
-function initialiserControlesStock() {
-    const inputMin = document.getElementById('stockMin');
-    const inputMax = document.getElementById('stockMax');
-
-    if (!inputMin || !inputMax) return;
-
-    inputMin.addEventListener('change', function() {
-        let val = parseInt(this.value) || 0;
-        let maxVal = parseInt(inputMax.value) || stockMaxGlobal;
-
-        // Condition 1 : Pas en dessous de 0
-        if (val < 0) val = 0;
-        // Condition 2 : Pas au dessus du maximum actuel
-        if (val > maxVal) val = maxVal;
-
-        this.value = val;
-    });
-
-    inputMax.addEventListener('change', function() {
-        let val = parseInt(this.value) || stockMaxGlobal;
-        let minVal = parseInt(inputMin.value) || 0;
-
-        // Condition 1 : Pas au dessus du stock réel de la BDD
-        if (val > stockMaxGlobal) val = stockMaxGlobal;
-        // Condition 2 : Pas en dessous du minimum actuel
-        if (val < minVal) val = minVal;
-
-        this.value = val;
-    });
-}
-
-/**
- * Récupère dynamiquement le plus gros stock en BDD pour brider le champ "Max"
- */
-async function chargerStockMaximum() {
-    const zoneTableau = document.getElementById('zone-tableau');
-    if (!zoneTableau) return;
-    
-    const urlBase = zoneTableau.dataset.apiUrl;
-
-    try {
-        const response = await fetch(urlBase);
-        const data = await response.json();
-
-        if (data.success && data.livres && data.livres.length > 0) {
-            stockMaxGlobal = Math.max(...data.livres.map(livre => livre.stock || 0));
-            
-            const inputMax = document.getElementById('stockMax');
-            const inputMin = document.getElementById('stockMin');
-            
-            inputMax.max = stockMaxGlobal;
-            inputMin.max = stockMaxGlobal;
-            
-            // Initialisation par défaut au max réel
-            inputMax.value = stockMaxGlobal;
-            filtresActifs.stockMax = stockMaxGlobal;
-        }
-    } catch (error) {
-        console.error('Erreur API Stock:', error);
-    }
-}
-
 function ouvrirModaleFiltres() {
-    const modale = document.getElementById('modale_filtres');
-    if (!modale) return;
-
-    document.getElementById('filter-isbn').value = filtresActifs.isbn;
-    document.getElementById('filter-auteur').value = filtresActifs.auteur;
-    document.getElementById('filter-titre').value = filtresActifs.titre;
-    
-    const sel = document.getElementById('filter-statut-actif');
-    if (sel) sel.value = filtresActifs.statut;
-
-    document.getElementById('stockMin').value = filtresActifs.stockMin;
-    document.getElementById('stockMax').value = filtresActifs.stockMax;
-
-    modale.showModal();
+    const modal = document.getElementById('modale_filtres');
+    if (modal) {
+        // Bloquer le scroll du body
+        document.body.classList.add('modal-open');
+        modal.showModal();
+    }
 }
 
+/**
+ * Ferme la modale de filtres
+ */
+function fermerModaleFiltres() {
+    const modal = document.getElementById('modale_filtres');
+    if (modal) {
+        modal.close();
+        document.body.classList.remove('modal-open');
+    }
+}
+
+/**
+ * Applique les filtres et ferme la modale
+ */
 function appliquerFiltres() {
-    filtresActifs.isbn = document.getElementById('filter-isbn').value.trim();
-    filtresActifs.auteur = document.getElementById('filter-auteur').value.trim();
-    filtresActifs.titre = document.getElementById('filter-titre').value.trim();
-    
-    const sel = document.getElementById('filter-statut-actif');
-    filtresActifs.statut = sel ? sel.value : '';
-
-    filtresActifs.stockMin = parseInt(document.getElementById('stockMin').value) || 0;
-    filtresActifs.stockMax = parseInt(document.getElementById('stockMax').value) || stockMaxGlobal;
-
-    afficherFiltresActifs();
-
-    // Envoi vers le tableau dynamique
-    if (typeof window.appliquerFiltresAvances === 'function') {
-        window.appliquerFiltresAvances(filtresActifs);
+    // Mettre à jour les critères de recherche depuis les champs du formulaire
+    if (typeof majCriteres === 'function') {
+        majCriteres();
+    } else {
+        // Mise à jour manuelle si la fonction n'existe pas
+        updateCriteresFromForm();
     }
     
+    // Lancer la recherche
+    if (typeof chargerLivres === 'function') {
+        chargerLivres();
+    } else if (typeof chargerMouvements === 'function') {
+        chargerMouvements();
+    }
+    
+    // Mettre à jour l'affichage des filtres actifs
+    afficherFiltresActifs();
+    
+    // Fermer la modale
     fermerModaleFiltres();
 }
 
+/**
+ * Réinitialise tous les filtres
+ */
 function reinitialiserFiltres() {
-    filtresActifs = {
-        isbn: '', auteur: '', titre: '', statut: '',
-        stockMin: 0,
-        stockMax: stockMaxGlobal
-    };
-
-    document.getElementById('form-filtres').reset();
-    document.getElementById('stockMin').value = 0;
-    document.getElementById('stockMax').value = stockMaxGlobal;
-
-    afficherFiltresActifs();
-
-    if (typeof window.appliquerFiltresAvances === 'function') {
-        window.appliquerFiltresAvances(filtresActifs);
+    // Réinitialiser le formulaire
+    const form = document.getElementById('form-filtres');
+    if (form) {
+        form.reset();
     }
-}
-
-function fermerModaleFiltres() {
-    const modale = document.getElementById('modale_filtres');
-    if (modale) modale.close();
+    
+    // Réinitialiser l'objet critereRecherche
+    if (typeof critereRecherche !== 'undefined') {
+        critereRecherche.isbn = '';
+        critereRecherche.auteur = '';
+        critereRecherche.titre = '';
+        critereRecherche.statut = '';
+        critereRecherche.stockMin = '';
+        critereRecherche.stockMax = '';
+    }
+    
+    // Recharger les données
+    if (typeof chargerLivres === 'function') {
+        chargerLivres();
+    } else if (typeof chargerMouvements === 'function') {
+        chargerMouvements();
+    }
+    
+    // Mettre à jour l'affichage des filtres actifs
+    afficherFiltresActifs();
+    
+    // Fermer la modale
+    fermerModaleFiltres();
 }
 
 /**
- * Gestion des badges sous le bouton "Filtres"
+ * Mise à jour manuelle des critères depuis le formulaire
+ */
+function updateCriteresFromForm() {
+    const isbn   = document.getElementById('filter-isbn')?.value.trim() || '';
+    const auteur = document.getElementById('filter-auteur')?.value.trim() || '';
+    const titre  = document.getElementById('filter-titre')?.value.trim() || '';
+    const statut = document.getElementById('filter-statut-actif')?.value || '';
+    const stockMin = document.getElementById('stockMin-input')?.value.trim() || '';
+    const stockMax = document.getElementById('stockMax-input')?.value.trim() || '';
+    
+    // Mettre à jour l'objet global critereRecherche si il existe
+    if (typeof critereRecherche !== 'undefined') {
+        critereRecherche.isbn = isbn;
+        critereRecherche.auteur = auteur;
+        critereRecherche.titre = titre;
+        critereRecherche.statut = statut;
+        critereRecherche.stockMin = stockMin;
+        critereRecherche.stockMax = stockMax;
+    }
+}
+
+/**
+ * Affiche les filtres actuellement actifs sous forme de badges
  */
 function afficherFiltresActifs() {
     const container = document.getElementById('active-filters-container');
     if (!container) return;
-
-    container.innerHTML = '';
-    let nb = 0;
-
-    const createBadge = (txt, key) => {
-        const span = document.createElement('span');
-        span.className = 'filter-badge';
-        span.innerHTML = `${txt} <button onclick="retirerFiltre('${key}')">✕</button>`;
-        container.appendChild(span);
-        nb++;
-    };
-
-    if (filtresActifs.isbn) createBadge(`ISBN: ${filtresActifs.isbn}`, 'isbn');
-    if (filtresActifs.auteur) createBadge(`Auteur: ${filtresActifs.auteur}`, 'auteur');
-    if (filtresActifs.titre) createBadge(`Titre: ${filtresActifs.titre}`, 'titre');
-    if (filtresActifs.statut) createBadge(`Statut: ${filtresActifs.statut}`, 'statut');
     
-    if (filtresActifs.stockMin > 0 || filtresActifs.stockMax < stockMaxGlobal) {
-        createBadge(`Stock: ${filtresActifs.stockMin}-${filtresActifs.stockMax}`, 'stock');
+    container.innerHTML = '';
+    let count = 0;
+    
+    if (typeof critereRecherche !== 'undefined') {
+        // ISBN
+        if (critereRecherche.isbn) {
+            container.innerHTML += createFilterTag('ISBN', critereRecherche.isbn, 'isbn');
+            count++;
+        }
+        
+        // Auteur
+        if (critereRecherche.auteur) {
+            container.innerHTML += createFilterTag('Auteur', critereRecherche.auteur, 'auteur');
+            count++;
+        }
+        
+        // Titre
+        if (critereRecherche.titre) {
+            container.innerHTML += createFilterTag('Titre', critereRecherche.titre, 'titre');
+            count++;
+        }
+        
+        // Statut
+        if (critereRecherche.statut) {
+            const statutLabel = critereRecherche.statut === 'actif' ? 'Actif' : 'Inactif';
+            container.innerHTML += createFilterTag('Statut', statutLabel, 'statut');
+            count++;
+        }
+        
+        // Stock Min/Max
+        if (critereRecherche.stockMin || critereRecherche.stockMax) {
+            const min = critereRecherche.stockMin || '0';
+            const max = critereRecherche.stockMax || '∞';
+            container.innerHTML += createFilterTag('Stock', `${min} - ${max}`, 'stock');
+            count++;
+        }
     }
-
-    const badgeNum = document.getElementById('filter-count-badge');
-    if (badgeNum) {
-        badgeNum.textContent = nb;
-        badgeNum.style.display = nb > 0 ? 'inline-block' : 'none';
+    
+    // Mettre à jour le badge de compteur
+    const badge = document.getElementById('filter-count-badge');
+    if (badge) {
+        if (count > 0) {
+            badge.textContent = count;
+            badge.style.display = 'inline-block';
+        } else {
+            badge.style.display = 'none';
+        }
     }
 }
 
-function retirerFiltre(key) {
-    if (key === 'stock') {
-        filtresActifs.stockMin = 0;
-        filtresActifs.stockMax = stockMaxGlobal;
-    } else {
-        filtresActifs[key] = '';
+/**
+ * Crée un badge de filtre actif
+ */
+function createFilterTag(label, value, key) {
+    return `
+        <span class="filter-tag">
+            <strong>${label}:</strong> ${value}
+            <button onclick="supprimerFiltre('${key}')" title="Supprimer ce filtre">×</button>
+        </span>
+    `;
+}
+
+/**
+ * Supprime un filtre spécifique
+ */
+function supprimerFiltre(key) {
+    if (typeof critereRecherche !== 'undefined') {
+        if (key === 'stock') {
+            // Réinitialiser les deux champs de stock
+            critereRecherche.stockMin = '';
+            critereRecherche.stockMax = '';
+            // const inputMin = document.getElementById('stockMin-input');
+            // const inputMax = document.getElementById('stockMax-input');
+            if (inputMin) inputMin.value = '';
+            if (inputMax) inputMax.value = '';
+        } else {
+            critereRecherche[key] = '';
+            
+            // Mettre à jour le champ correspondant dans le formulaire
+            const inputIds = {
+                'isbn': 'filter-isbn',
+                'auteur': 'filter-auteur',
+                'titre': 'filter-titre',
+                'statut': 'filter-statut-actif'
+            };
+            
+            const inputId = inputIds[key];
+            const input = document.getElementById(inputId);
+            if (input) {
+                input.value = '';
+            }
+        }
     }
+    
+    // Recharger les données
+    if (typeof chargerLivres === 'function') {
+        chargerLivres();
+    } else if (typeof chargerMouvements === 'function') {
+        chargerMouvements();
+    }
+    
+    // Mettre à jour l'affichage
     afficherFiltresActifs();
-    if (typeof window.appliquerFiltresAvances === 'function') {
-        window.appliquerFiltresAvances(filtresActifs);
+}
+
+/**
+ * Synchronise les valeurs du formulaire avec critereRecherche au chargement
+ */
+function synchroniserFormulaireFiltres() {
+    if (typeof critereRecherche === 'undefined') return;
+    
+    // ISBN
+    const isbnInput = document.getElementById('filter-isbn');
+    if (isbnInput) {
+        isbnInput.value = critereRecherche.isbn || '';
+    }
+    
+    // Auteur
+    const auteurInput = document.getElementById('filter-auteur');
+    if (auteurInput) {
+        auteurInput.value = critereRecherche.auteur || '';
+    }
+    
+    // Titre
+    const titreInput = document.getElementById('filter-titre');
+    if (titreInput) {
+        titreInput.value = critereRecherche.titre || '';
+    }
+    
+    // Statut
+    const statutSelect = document.getElementById('filter-statut-actif');
+    if (statutSelect) {
+        statutSelect.value = critereRecherche.statut || '';
+    }
+    
+    // Stock Min
+    const stockMinInput = document.getElementById('stockMin-input');
+    if (stockMinInput) {
+        stockMinInput.value = critereRecherche.stockMin || '';
+    }
+    
+    // Stock Max
+    const stockMaxInput = document.getElementById('stockMax-input');
+    if (stockMaxInput) {
+        stockMaxInput.value = critereRecherche.stockMax || '';
     }
 }
 
+/* ===================================
+   INITIALISATION
+   ================================== */
+
+document.addEventListener('DOMContentLoaded', function() {
+    const modalFiltres = document.getElementById('modale_filtres');
+    
+    if (modalFiltres) {
+        // Gestion de la fermeture de la modale
+        modalFiltres.addEventListener('close', function() {
+            document.body.classList.remove('modal-open');
+        });
+        
+        // Observer les changements d'attribut "open"
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.attributeName === 'open') {
+                    if (modalFiltres.hasAttribute('open')) {
+                        document.body.classList.add('modal-open');
+                        // Synchroniser le formulaire avec les valeurs actuelles
+                        synchroniserFormulaireFiltres();
+                    } else {
+                        document.body.classList.remove('modal-open');
+                    }
+                }
+            });
+        });
+        
+        observer.observe(modalFiltres, { attributes: true });
+        
+        // Fermeture en cliquant sur le backdrop
+        modalFiltres.addEventListener('click', function(event) {
+            const rect = modalFiltres.getBoundingClientRect();
+            const isInDialog = (
+                rect.top <= event.clientY &&
+                event.clientY <= rect.top + rect.height &&
+                rect.left <= event.clientX &&
+                event.clientX <= rect.left + rect.width
+            );
+            
+            if (!isInDialog) {
+                fermerModaleFiltres();
+            }
+        });
+    }
+    
+    // Gestion du formulaire de filtres
+    const formFiltres = document.getElementById('form-filtres');
+    if (formFiltres) {
+        formFiltres.addEventListener('submit', function(e) {
+            e.preventDefault();
+            appliquerFiltres();
+        });
+    }
+    
+    // Afficher les filtres actifs au chargement
+    afficherFiltresActifs();
+});
+
+// Export des fonctions pour utilisation globale
 window.ouvrirModaleFiltres = ouvrirModaleFiltres;
 window.fermerModaleFiltres = fermerModaleFiltres;
 window.appliquerFiltres = appliquerFiltres;
 window.reinitialiserFiltres = reinitialiserFiltres;
-window.retirerFiltre = retirerFiltre;
+window.supprimerFiltre = supprimerFiltre;
+window.afficherFiltresActifs = afficherFiltresActifs;
