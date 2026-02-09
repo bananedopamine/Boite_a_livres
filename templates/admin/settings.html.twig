@@ -123,18 +123,5 @@
 {% endblock %}
 
 {% block javascripts %}
-
-<script>
-    // Validation côté client pour vérifier que les deux PINs correspondent
-    document.querySelector('form').addEventListener('submit', function(e) {
-        const newPin = document.getElementById('new_pin').value;
-        const confirmPin = document.getElementById('confirm_pin').value;
-
-        if (newPin !== confirmPin) {
-            e.preventDefault();
-            alert('Les deux codes PIN ne correspondent pas !');
-            return false;
-        }
-    });
-</script>
+    <script src="{{ asset('js/settings_validation.js') }}"></script>
 {% endblock %}

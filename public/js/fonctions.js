@@ -1,11 +1,15 @@
 /**
  * fonctions.js
- * Fichier contenant les fonctions JavaScript réutilisables dans l'application
+ * Fichier contenant toutes les fonctions JavaScript réutilisables dans l'application
  * 
  * @author Dufour Marc (marc.dufour@stjosup.com)
- * @version 1.0
- * @date 06/02/2026
+ * @version 3.0
+ * @date 09/02/2026
  */
+
+// ==========================================
+// GESTION DES MODALES PRINCIPALES
+// ==========================================
 
 /**
  * Fonction globale pour ouvrir la modale et charger du contenu
@@ -44,6 +48,60 @@ function fermerModale() {
     }
 }
 
+// ==========================================
+// GESTION DES MODALES SPÉCIFIQUES
+// ==========================================
+
+/**
+ * Charge du contenu dans la modale de mouvement
+ * 
+ * @param {string} url - URL à charger
+ * @returns {Promise<void>}
+ */
+async function loadToMouvementModal(url) {
+    const modal = document.getElementById('mouvement-modal');
+    const content = document.getElementById('mouvement-modal-content');
+    
+    try {
+        const response = await fetch(url, {
+           headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        });
+        
+        const html = await response.text();
+        content.innerHTML = html;
+        
+        if (modal && !modal.open) {
+            modal.showModal();
+        }
+    } catch (err) {
+        console.error('Erreur de chargement Mouvement :', err);
+    }
+}
+
+/**
+ * Ouvre la modale de filtres
+ */
+function ouvrirModaleFiltres() {
+    const modale = document.getElementById('modale_filtres');
+    if (modale) {
+        modale.showModal();
+    }
+}
+
+/**
+ * Ferme la modale de filtres
+ */
+function fermerModaleFiltres() {
+    const modale = document.getElementById('modale_filtres');
+    if (modale) {
+        modale.close();
+    }
+}
+
+// ==========================================
+// GESTION DES DESCRIPTIONS
+// ==========================================
+
 /**
  * Ouvre la modale de description complète d'un livre
  * 
@@ -53,8 +111,10 @@ function openDescriptionModal(description) {
     const modal = document.getElementById('description-modal');
     const content = document.getElementById('description-content');
     
-    content.textContent = description || 'Aucune description disponible.';
-    modal.showModal();
+    if (modal && content) {
+        content.textContent = description || 'Aucune description disponible.';
+        modal.showModal();
+    }
 }
 
 /**
@@ -80,6 +140,10 @@ function initVoirPlusButtons() {
     });
     console.log('initVoirPlusButtons: ' + document.querySelectorAll('.btn-voir-plus').length + ' bouton(s) initialisé(s)');
 }
+
+// ==========================================
+// GESTION DES FORMULAIRES
+// ==========================================
 
 /**
  * Gère l'interception et la soumission des formulaires dans la modale
@@ -123,7 +187,6 @@ function initFormulairesModale() {
                 }
             } else if (response.status === 422) {
                 content.innerHTML = await response.text();
-                // Réinitialiser les boutons "Voir plus" après rechargement du contenu
                 setTimeout(function() {
                     initVoirPlusButtons();
                 }, 100);
@@ -134,9 +197,12 @@ function initFormulairesModale() {
     });
 }
 
+// ==========================================
+// OBSERVERS ET ÉVÉNEMENTS
+// ==========================================
+
 /**
  * Configure un MutationObserver pour détecter les changements dans la modale
- * Réinitialise les boutons "Voir plus" quand du nouveau contenu est chargé
  */
 function initObservateurModale() {
     const contenuModale = document.getElementById('contenu_modale');
@@ -179,3 +245,183 @@ function initFermetureClicExterieur(modalId) {
         console.log(`Event listener: Fermeture sur clic extérieur attaché à #${modalId}`);
     }
 }
+
+// ==========================================
+// GESTION DES FOCUS
+// ==========================================
+
+/**
+ * Met le focus sur un élément après un court délai
+ * Utilisé pour les inputs dans les modales
+ * 
+ * @param {string} elementId - ID de l'élément à focus
+ * @param {number} delay - Délai en ms (défaut: 100)
+ */
+function autoFocus(elementId, delay = 100) {
+    setTimeout(() => {
+        const element = document.getElementById(elementId);
+        if (element) {
+            element.focus();
+        }
+    }, delay);
+}
+
+// ==========================================
+// FILTRES
+// ==========================================
+
+/**
+ * Réinitialise tous les filtres
+ */
+function reinitialiserFiltres() {
+    const form = document.getElementById('form-filtres');
+    if (form) {
+        form.reset();
+        if (typeof appliquerFiltres === 'function') {
+            appliquerFiltres();
+        }
+    }
+}
+
+/**
+ * Met à jour le badge du compteur de filtres actifs
+ * 
+ * @param {number} count - Nombre de filtres actifs
+ */
+function updateFilterBadge(count) {
+    const badges = document.querySelectorAll('#filter-count-badge, .filter-count-badge');
+    badges.forEach(badge => {
+        if (count > 0) {
+            badge.textContent = count;
+            badge.style.display = 'inline-block';
+        } else {
+            badge.style.display = 'none';
+        }
+    });
+}
+
+/**
+ * Compte le nombre de filtres actifs dans un formulaire
+ * 
+ * @returns {number} - Nombre de filtres actifs
+ */
+function compterFiltresActifs() {
+    const form = document.getElementById('form-filtres');
+    if (!form) return 0;
+    
+    let count = 0;
+    const inputs = form.querySelectorAll('input[type="text"], input[type="number"], select');
+    
+    inputs.forEach(input => {
+        if (input.value && input.value.trim() !== '') {
+            count++;
+        }
+    });
+    
+    return count;
+}
+
+// ==========================================
+// UTILITAIRES D'AFFICHAGE
+// ==========================================
+
+/**
+ * Affiche un message d'erreur
+ * 
+ * @param {string} message - Message à afficher
+ * @param {string} containerId - ID du conteneur d'erreur
+ */
+function afficherErreur(message, containerId = 'message-erreur') {
+    const container = document.getElementById(containerId);
+    const textContainer = document.getElementById('texte-' + containerId);
+    
+    if (container && textContainer) {
+        textContainer.textContent = message;
+        container.style.display = 'block';
+    } else {
+        console.error('Conteneur d\'erreur non trouvé:', containerId);
+    }
+}
+
+/**
+ * Masque le message d'erreur
+ * 
+ * @param {string} containerId - ID du conteneur d'erreur
+ */
+function masquerErreur(containerId = 'message-erreur') {
+    const container = document.getElementById(containerId);
+    if (container) {
+        container.style.display = 'none';
+    }
+}
+
+/**
+ * Affiche/masque un indicateur de chargement
+ * 
+ * @param {boolean} show - true pour afficher, false pour masquer
+ * @param {string} loaderId - ID de l'indicateur de chargement
+ */
+function toggleLoading(show, loaderId = 'loading-indicator') {
+    const loader = document.getElementById(loaderId);
+    if (loader) {
+        loader.style.display = show ? 'block' : 'none';
+    }
+}
+
+// ==========================================
+// UTILITAIRES DE FORMATAGE
+// ==========================================
+
+/**
+ * Formatte une date au format français
+ * 
+ * @param {Date|string} date - Date à formater
+ * @returns {string} - Date formatée (JJ/MM/AAAA HH:MM)
+ */
+function formatDateFr(date) {
+    const d = new Date(date);
+    const jour = String(d.getDate()).padStart(2, '0');
+    const mois = String(d.getMonth() + 1).padStart(2, '0');
+    const annee = d.getFullYear();
+    const heures = String(d.getHours()).padStart(2, '0');
+    const minutes = String(d.getMinutes()).padStart(2, '0');
+    
+    return `${jour}/${mois}/${annee} ${heures}:${minutes}`;
+}
+
+/**
+ * Échappe les caractères HTML pour éviter les injections XSS
+ * 
+ * @param {string} text - Texte à échapper
+ * @returns {string} - Texte échappé
+ */
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+/**
+ * Débounce une fonction (évite les appels trop fréquents)
+ * 
+ * @param {Function} func - Fonction à débouncer
+ * @param {number} wait - Délai en millisecondes
+ * @returns {Function} - Fonction debouncée
+ */
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// ==========================================
+// EXPORT & INITIALISATION
+// ==========================================
+
+console.log('✅ fonctions.js chargé - Version 3.0');
