@@ -1,8 +1,14 @@
 /**
  * @author : Dufour Marc
- * @version : 1.0
+ * @version : 2.0
+ * @lastUpdate : 09/02/2026 (Extraction HTML dans templates)
  * @description : Gestionnaire de modale de filtres pour les MOUVEMENTS (sans filtres de stock)
+ * 
+ * MODIFICATIONS v2.0 :
+ * - Utilisation de createFilterTagFromTemplate() au lieu de string HTML
+ * - Code plus propre et maintenable
  */
+
 
 /* ===================================
    GESTION DE LA MODALE DE FILTRES MOUVEMENTS
@@ -109,6 +115,7 @@ function updateCriteresFromForm() {
 /**
  * Affiche les filtres actuellement actifs sous forme de badges
  * VERSION MOUVEMENTS : Pas de filtres de stock !
+ * ✅ UTILISE MAINTENANT createFilterTagFromTemplate() au lieu de string HTML
  */
 function afficherFiltresActifs() {
     const container = document.getElementById('active-filters-container');
@@ -118,28 +125,40 @@ function afficherFiltresActifs() {
     let count = 0;
     
     if (typeof critereRecherche !== 'undefined') {
+        // Vérifier que la fonction est disponible
+        if (typeof createFilterTagFromTemplate !== 'function') {
+            console.error('❌ createFilterTagFromTemplate() non disponible !');
+            console.error('Vérifiez que template_helpers.js est bien chargé');
+            console.error('Et que _templates_global.html.twig est inclus dans base.html.twig');
+            return;
+        }
+        
         // ISBN
         if (critereRecherche.isbn) {
-            container.innerHTML += createFilterTag('ISBN', critereRecherche.isbn, 'isbn');
+            const badge = createFilterTagFromTemplate('ISBN', critereRecherche.isbn, 'isbn');
+            appendFilterBadge(container, badge);
             count++;
         }
         
         // Auteur
         if (critereRecherche.auteur) {
-            container.innerHTML += createFilterTag('Auteur', critereRecherche.auteur, 'auteur');
+            const badge = createFilterTagFromTemplate('Auteur', critereRecherche.auteur, 'auteur');
+            appendFilterBadge(container, badge);
             count++;
         }
         
         // Utilisateur/Personne
         if (critereRecherche.user) {
-            container.innerHTML += createFilterTag('Personne', critereRecherche.user, 'user');
+            const badge = createFilterTagFromTemplate('Personne', critereRecherche.user, 'user');
+            appendFilterBadge(container, badge);
             count++;
         }
         
         // Type (Entrée/Sortie)
         if (critereRecherche.type) {
             const typeLabel = critereRecherche.type === 'entree' ? 'Entrées' : 'Sorties';
-            container.innerHTML += createFilterTag('Type', typeLabel, 'type');
+            const badge = createFilterTagFromTemplate('Type', typeLabel, 'type');
+            appendFilterBadge(container, badge);
             count++;
         }
         
@@ -156,18 +175,6 @@ function afficherFiltresActifs() {
             badge.style.display = 'none';
         }
     }
-}
-
-/**
- * Crée un badge de filtre actif
- */
-function createFilterTag(label, value, key) {
-    return `
-        <span class="filter-tag">
-            <strong>${label}:</strong> ${value}
-            <button onclick="supprimerFiltre('${key}')" title="Supprimer ce filtre">×</button>
-        </span>
-    `;
 }
 
 /**

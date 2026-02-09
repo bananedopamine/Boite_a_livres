@@ -1,0 +1,131 @@
+{# 
+ # _templates_suggestion.html.twig
+ # Templates HTML5 pour le système de suggestion de livres
+ # 
+ # @author Dufour Marc (marc.dufour@stjosup.com)
+ # @version 1.0
+ # @date 09/02/2026
+ # 
+ # ⚠️ INCLUSION : À inclure dans la page qui contient le bouton de suggestion
+ #               Probablement :
+ #               - templates/home/index.html.twig (page d'accueil)
+ #               - templates/mouvement/confirmation.html.twig
+ #               Placer à la fin du {% block body %} ou juste avant {% endblock %}
+ #}
+
+{# ========================================
+   TEMPLATE 1 : Carte de suggestion de livre
+   Utilisé par : suggestion_livre_handler.js → afficherLivreSuggestion()
+   ======================================== #}
+<template id="suggestion-card-template">
+    <div class="suggestion-livre-container">
+        <h3>Suggestion de livre</h3>
+        <p class="suggestion-subtitle">Laissez-nous vous proposer une lecture !</p>
+        
+        <div class="suggestion-livre-card">
+            {# Image de couverture #}
+            <img data-slot="cover" 
+                 src="/extras/images/unknown_book.jpg" 
+                 alt="Couverture" 
+                 class="suggestion-cover" 
+                 onerror="this.src='/extras/images/unknown_book.jpg'">
+            
+            <div class="suggestion-details">
+                {# Titre #}
+                <h4 class="suggestion-titre" data-slot="titre"></h4>
+                
+                {# Auteur #}
+                <p class="suggestion-auteur">
+                    <strong>Auteur :</strong> <span data-slot="auteur"></span>
+                </p>
+                
+                {# Genre (badge) #}
+                <p class="suggestion-genre" data-slot="genre-container" style="display: none;">
+                    <span class="badge bg-info" data-slot="genre"></span>
+                </p>
+                
+                {# ISBN #}
+                <p class="suggestion-isbn">
+                    <strong>ISBN :</strong> <span data-slot="isbn"></span>
+                </p>
+                
+                {# Stock #}
+                <p class="suggestion-stock">
+                    <strong>Stock disponible :</strong> 
+                    <span class="badge" data-slot="stock"></span>
+                </p>
+            </div>
+        </div>
+        
+        {# Boutons d'action #}
+        <div class="suggestion-actions">
+            <button type="button" 
+                    class="btn btn-success btn-suggestion" 
+                    data-action="emprunter">
+                ✔ Emprunter ce livre
+            </button>
+            <button type="button" 
+                    class="btn btn-secondary btn-suggestion" 
+                    data-action="suivant">
+                → Suggérer un autre
+            </button>
+            <button type="button" 
+                    class="btn btn-light btn-suggestion" 
+                    data-action="fermer">
+                ✕ Fermer
+            </button>
+        </div>
+        
+        {# Compteur #}
+        <div class="suggestion-compteur" data-slot="compteur">
+            Livre <span data-slot="index-actuel"></span> sur <span data-slot="total"></span>
+        </div>
+    </div>
+</template>
+
+{# ========================================
+   TEMPLATE 2 : Message de fin de liste
+   Utilisé par : suggestion_livre_handler.js → afficherModaleFinListe()
+   ======================================== #}
+<template id="suggestion-fin-template">
+    <div class="suggestion-fin-container">
+        <h3>Fin de la liste</h3>
+        <p>Vous avez parcouru tous les livres disponibles !</p>
+        <p class="suggestion-fin-message">
+            Nous avons actuellement <strong data-slot="total-livres"></strong> livre(s) en stock.
+        </p>
+        
+        <div class="suggestion-fin-actions">
+            <button type="button" 
+                    class="btn btn-primary" 
+                    data-action="recommencer">
+                Recommencer depuis le début
+            </button>
+            <button type="button" 
+                    class="btn btn-secondary" 
+                    data-action="fermer">
+                Fermer
+            </button>
+        </div>
+    </div>
+</template>
+
+{# ========================================
+   TEMPLATE 3 : Message "Aucun livre disponible"
+   Utilisé par : suggestion_livre_handler.js → afficherModalePasLivres()
+   ======================================== #}
+<template id="suggestion-vide-template">
+    <div class="suggestion-fin-container">
+        <h3>Aucun livre disponible</h3>
+        <p>Désolé, il n'y a actuellement aucun livre en stock à suggérer.</p>
+        <p class="suggestion-fin-message">Revenez plus tard ou consultez la bibliothèque pour voir tous les livres.</p>
+        
+        <div class="suggestion-fin-actions">
+            <button type="button" 
+                    class="btn btn-primary" 
+                    data-action="fermer">
+                Fermer
+            </button>
+        </div>
+    </div>
+</template>

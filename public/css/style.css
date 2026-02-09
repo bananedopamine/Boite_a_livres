@@ -2084,12 +2084,16 @@ textarea:focus {
 
 /* Conteneur pour centrer le contenu du breakout */
 .breakout-inner {
-    max-width: 80%;
-    margin: 0 auto;
+    max-width: 90vw !important;    
+    width: fit-content !important;
+    min-width: min-content !important;
+    margin: 0 auto !important;
     background-color: rgba(255, 255, 255, 0.95);
     border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+
 }
 
 /* Responsive : sur petits écrans, revenir à la largeur normale */

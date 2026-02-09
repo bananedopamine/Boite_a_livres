@@ -6,8 +6,9 @@
  #}
 
 {# Zone d'affichage du tableau avec attributs data pour le JavaScript #}
-{# ========================================
-       CONTRÔLES DU TABLEAU (Filtres + Export)
+
+    {# ========================================
+       CONTRÔLES DU TABLEAU
        ======================================== #}
     <div class="table-controls">
         <div class="table-controls-left">
@@ -26,52 +27,67 @@
             </button>
         </div>
     </div>
+    
+    {# Zone d'affichage du tableau avec attributs data pour le JavaScript #}
+    <div id="zone-tableau" class="breakout-grid"
+         data-api-url="{{ path('app_livre_api_liste') }}"
+         data-show-url="{{ path('app_livre_show', {id: '99999'})|replace({'99999': '__ID__'}) }}"
+         data-export-url="{{ path('app_livre_export') }}">
+        
+        {# Affichage des filtres actifs #}
+        <div id="active-filters-container" class="active-filters"></div>
+        
+        {# ========================================
+           INDICATEURS ET MESSAGES
+           ======================================== #}
 
-<div id="zone-tableau" class="breakout-grid"
-     data-api-url="{{ path('app_livre_api_liste') }}"
-     data-show-url="{{ path('app_livre_show', {id: 99999})|replace({'99999': '__ID__'}) }}"
-     data-export-url="{{ path('app_livre_export') }}">
-    
-    {# Affichage des filtres actifs #}
-    <div id="active-filters-container" class="active-filters"></div>
-    
-    {# ========================================
-       INDICATEURS ET MESSAGES
-       ======================================== #}
-    
-    {# Indicateur de chargement #}
-    <div id="loading-indicator" class="text-center py-5" style="display: none;">
-        <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Chargement...</span>
+        {# Indicateur de chargement #}
+        <div id="loading-indicator" class="text-center py-5" style="display: none;">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Chargement...</span>
+            </div>
+            <p class="mt-2">Chargement des livres...</p>
         </div>
-        <p class="mt-2">Chargement des livres...</p>
-    </div>
 
-    {# Message d'erreur (caché par défaut) #}
-    <div id="message-erreur" class="alert alert-warning mt-3" style="display: none;">
-        <span id="texte-erreur"></span>
-    </div>
+        {# Message d'erreur (caché par défaut) #}
+        <div id="message-erreur" class="alert alert-warning mt-3" style="display: none;">
+            <span id="texte-erreur"></span>
+        </div>
 
-    {# ========================================
-       TABLEAU DES LIVRES
-       ======================================== #}
-
-    {# Tableau des livres #}
-    <div id="conteneur-tableau" class="breakout-inner" style="display: none;">
-        <table class="table table-striped table-hover">
-            <thead class="table-dark">
-                <tr>
-                    <th>ISBN</th>
-                    <th>Titre</th>
-                    <th>Auteur</th>
-                    <th>Genre</th>
-                    <th>Stock</th>
-                    <th id="colonne-actif" style="display: none;">Actif</th>
-                </tr>
-            </thead>
-            <tbody id="tbody-livres">
-                {# Contenu généré dynamiquement par JavaScript #}
-            </tbody>
-        </table>
+        {# ========================================
+           TABLEAU DES LIVRES
+           ======================================== #}
+           
+        {# Tableau des livres #}
+        <div id="conteneur-tableau" class="breakout-inner" style="display: none;">
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ISBN</th>
+                        <th>Titre</th>
+                        <th>Auteur</th>
+                        <th>Genre</th>
+                        <th>Stock</th>
+                        {% if app.session.get('admin_authenticated') %}
+                            <th id="colonne-actif">Actif</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody id="tbody-livres">
+                    {# Contenu généré dynamiquement par JavaScript #}
+                </tbody>
+            </table>
+        </div>
     </div>
+    
+    {# INCLUSION DES TEMPLATES HTML5 POUR LES LIVRES #}
+    {% include 'partials/_templates_livre.html.twig' %}
+    
 </div>
+
+{% block javascripts %}
+    {# Chargement de template_helpers.js en premier #}
+    <script src="{{ asset('js/template_helpers.js') }}"></script>
+    {# Puis le script du tableau dynamique #}
+    <script src="{{ asset('js/livre_tableau_dynamique.js') }}"></script>
+{% endblock %}

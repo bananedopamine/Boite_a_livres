@@ -1,6 +1,7 @@
 {# @author : Dufour Marc (marc.dufour@stjosup.com)
- # @version : 3.0
+ # @version : 4.0
  # @dateCreate : 03/02/2026
+ # @lastUpdate : 09/02/2026 (Ajout du template HTML5)
  # @description : Structure du tableau dynamique des mouvements avec modale de filtres
  #}
 
@@ -77,4 +78,8 @@
             </tbody>
         </table>
     </div>
+    
+    {# INCLUSION DU TEMPLATE HTML5 POUR LES MOUVEMENTS #}
+    {% include 'partials/_templates_mouvement.html.twig' %}
+    
 </div>

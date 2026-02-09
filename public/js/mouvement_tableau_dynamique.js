@@ -1,8 +1,13 @@
 /**
  * @author : Dufour Marc (marc.dufour@stjosup.com)
- * @version : 2.1
- * @lastUpdate : 02/02/2026 (Support exportation excel)
+ * @version : 3.0
+ * @lastUpdate : 09/02/2026 (Extraction HTML dans templates)
  * @description : Gestion du tableau dynamique des mouvements avec AJAX
+ * 
+ * MODIFICATIONS v3.0 :
+ * - Extraction de la génération HTML dans template HTML5
+ * - Utilisation de createMouvementRowFromTemplate() de template_helpers.js
+ * - Code plus propre et maintenable
  */
 
 // Variables globales
@@ -156,107 +161,39 @@ async function chargerMouvements() {
 
 /**
  * Affiche les mouvements dans le tableau
+ * ✅ UTILISE MAINTENANT createMouvementRowFromTemplate() au lieu de createElement()
  */
 function afficherMouvements(mouvements, isAdmin) {
     const tbody = document.getElementById('tbody-mouvements');
-    tbody.innerHTML = ''; // Vider le tableau
+    tbody.innerHTML = '';
 
     if (mouvements.length === 0) {
-        // Aucun mouvement trouvé
         afficherMessageVide();
         return;
     }
 
-    // Afficher le tableau et le compteur
     document.getElementById('conteneur-tableau-mouvement').style.display = 'block';
     document.getElementById('message-erreur-mouvement').style.display = 'none';
 
-    // Récupérer l'URL template pour les liens
     const livreUrlTemplate = document.getElementById('zone-tableau-mouvement').dataset.livreShowUrl;
 
-    // Générer les lignes du tableau
+    // ✅ NOUVELLE APPROCHE : Utilisation du template au lieu de createElement()
     mouvements.forEach(mouvement => {
-        const tr = document.createElement('tr');
+        // Vérifier que la fonction est disponible
+        if (typeof createMouvementRowFromTemplate !== 'function') {
+            console.error('❌ createMouvementRowFromTemplate() non disponible !');
+            console.error('Vérifiez que template_helpers.js est bien chargé');
+            console.error('Et que _templates_mouvement.html.twig est inclus dans la page');
+            return;
+        }
         
-        // ====================================
-        // Colonne ISBN (avec lien modal ou "Livre supprimé")
-        // ====================================
-        const tdIsbn = document.createElement('td');
-        if (mouvement.livre) {
-            const linkIsbn = document.createElement('a');
-            linkIsbn.href = '#';
-            linkIsbn.className = 'modal-trigger-livre';
-            linkIsbn.dataset.livreId = mouvement.livre.id;
-            linkIsbn.textContent = mouvement.livre.isbn;
-            tdIsbn.appendChild(linkIsbn);
+        const fragment = createMouvementRowFromTemplate(mouvement, livreUrlTemplate);
+        
+        if (fragment) {
+            tbody.appendChild(fragment);
         } else {
-            const spanSuppr = document.createElement('span');
-            spanSuppr.className = 'text-danger';
-            spanSuppr.textContent = 'Livre supprimé';
-            tdIsbn.appendChild(spanSuppr);
+            console.warn('⚠️ Impossible de créer la ligne pour le mouvement:', mouvement);
         }
-        tr.appendChild(tdIsbn);
-
-        // ====================================
-        // Colonne Titre
-        // ====================================
-        const tdTitre = document.createElement('td');
-        if (mouvement.livre) {
-            tdTitre.textContent = mouvement.livre.titre;
-        } else {
-            const spanSuppr = document.createElement('span');
-            spanSuppr.className = 'text-danger';
-            spanSuppr.textContent = 'Livre supprimé';
-            tdTitre.appendChild(spanSuppr);
-        }
-        tr.appendChild(tdTitre);
-
-        // ====================================
-        // Colonne Auteur
-        // ====================================
-        const tdAuteur = document.createElement('td');
-        if (mouvement.livre) {
-            tdAuteur.textContent = mouvement.livre.auteur;
-        } else {
-            const spanSuppr = document.createElement('span');
-            spanSuppr.className = 'text-danger';
-            spanSuppr.textContent = 'Livre supprimé';
-            tdAuteur.appendChild(spanSuppr);
-        }
-        tr.appendChild(tdAuteur);
-
-        // ====================================
-        // Colonne Type (Badge Entrée/Sortie)
-        // ====================================
-        const tdType = document.createElement('td');
-        const badgeType = document.createElement('span');
-        badgeType.className = 'badge';
-        // Note: l'API renvoie souvent un booléen ou '1'/'0' pour le type
-        if (mouvement.type || mouvement.type == '1') {
-            tdType.classList.add('bg-danger');
-            badgeType.textContent = 'Sortie';
-        } else {
-            tdType.classList.add('bg-success');
-            badgeType.textContent = 'Entrée';
-        }
-        tdType.appendChild(badgeType);
-        tr.appendChild(tdType);
-
-        // ====================================
-        // Colonne Date/Heure
-        // ====================================
-        const tdDate = document.createElement('td');
-        tdDate.textContent = mouvement.dateHeure;
-        tr.appendChild(tdDate);
-
-        // ====================================
-        // Colonne Utilisateur
-        // ====================================
-        const tdUser = document.createElement('td');
-        tdUser.textContent = mouvement.nomPrenom || '';
-        tr.appendChild(tdUser);
-
-        tbody.appendChild(tr);
     });
 
     // Attacher les événements pour les modales de livres

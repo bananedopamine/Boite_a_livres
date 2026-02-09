@@ -1,0 +1,27 @@
+{# 
+ # _templates_global.html.twig
+ # Templates HTML5 réutilisables globalement
+ # 
+ # @author Dufour Marc (marc.dufour@stjosup.com)
+ # @version 1.0
+ # @date 09/02/2026
+ # 
+ # ⚠️ INCLUSION : À inclure dans base.html.twig juste avant la fermeture de </main>
+ #}
+
+{# ========================================
+   TEMPLATE : Badge de filtre actif
+   Utilisé par : modal_filtres_livre_handler.js et modal_filtres_mouvement_handler.js
+   ======================================== #}
+<template id="filter-tag-template">
+    <span class="filter-tag">
+        <strong data-slot="label"></strong> 
+        <span data-slot="value"></span>
+        <button type="button" 
+                data-action="remove" 
+                class="filter-tag-remove"
+                title="Supprimer ce filtre">
+            ×
+        </button>
+    </span>
+</template>

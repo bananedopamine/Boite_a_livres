@@ -1,10 +1,16 @@
 /**
  * @author : Dufour Marc (marc.dufour@stjosup.com)
- * @version : 2.3
+ * @version : 3.0
  * @dateCreate : 28/01/2026
- * @lastUpdate : 05/02/2026 (Correction complète des filtres)
+ * @lastUpdate : 09/02/2026 (Extraction HTML dans templates)
  * @description : Gestion du tableau dynamique des livres avec AJAX
+ * 
+ * MODIFICATIONS v3.0 :
+ * - Extraction de la génération HTML dans template HTML5
+ * - Utilisation de createLivreRowFromTemplate() de template_helpers.js
+ * - Code plus propre et maintenable
  */
+
 
 // Variables globales
 let critereRecherche = {
@@ -145,6 +151,11 @@ async function chargerLivres() {
     }
 }
 
+
+/**
+ * Affiche les livres dans le tableau
+ * utilise createLivreRowFromTemplate() au lieu de createElement()
+ */
 function afficherLivres(livres, isAdmin) {
     const tbody = document.getElementById('tbody-livres');
     tbody.innerHTML = '';
@@ -164,75 +175,26 @@ function afficherLivres(livres, isAdmin) {
 
     const urlTemplate = document.getElementById('zone-tableau').dataset.showUrl;
 
+    // Utilisation du template au lieu de createElement()
     livres.forEach(livre => {
-        const tr = document.createElement('tr');
+        // Vérifier que la fonction est disponible
+        if (typeof createLivreRowFromTemplate !== 'function') {
+            console.error('❌ createLivreRowFromTemplate() non disponible !');
+            console.error('Vérifiez que template_helpers.js est bien chargé');
+            console.error('Et que _templates_livre.html.twig est inclus dans la page');
+            return;
+        }
         
-        // URL pour ce livre
-        const urlDetail = urlTemplate.replace('__ID__', livre.id);
-
-        tr.className = 'modal-trigger-livre';
-        tr.dataset.url = urlDetail;
-
-        // 1. Colonne ISBN
-        const tdIsbn = document.createElement('td');
-        const linkIsbn = document.createElement('a');
-        linkIsbn.href = '#';
-        tdIsbn.textContent = livre.isbn;
-        tdIsbn.appendChild(linkIsbn);
-        tr.appendChild(tdIsbn);
-
-        // 2. Colonne Titre
-        const tdTitre = document.createElement('td');
-        const linkTitre = document.createElement('a');
-        tdTitre.href = '#';
-        tdTitre.style.color = 'inherit';
-        tdTitre.style.textDecoration = 'none';
-        tdTitre.textContent = livre.titre;
-        tdTitre.appendChild(linkTitre);
-        tr.appendChild(tdTitre);
-
-        // 3. Colonne Auteur
-        const tdAuteur = document.createElement('td');
-        tdAuteur.textContent = livre.auteur;        
-        tr.appendChild(tdAuteur);
-
-        // 4. Colonne Genre
-        const tdGenre = document.createElement('td');
-        const badgeGenre = document.createElement('span');
-        badgeGenre.className = 'badge bg-info';
-        badgeGenre.style.fontSize = '0.85em';
-        if (livre.genre) {
-            badgeGenre.textContent = livre.genre;
+        const fragment = createLivreRowFromTemplate(livre, isAdmin, urlTemplate);
+        
+        if (fragment) {
+            tbody.appendChild(fragment);
         } else {
-            badgeGenre.textContent = 'genre non référencé';
+            console.warn('⚠️ Impossible de créer la ligne pour le livre:', livre);
         }
-        tdGenre.appendChild(badgeGenre);
-        tr.appendChild(tdGenre);
-
-        // 5. Colonne Stock - CORRECTION : className sur td au lieu de badge
-        const tdStock = document.createElement('td');
-        const badgeStock = document.createElement('span');
-        badgeStock.className = 'badge';
-        tdStock.className = livre.stock > 0 ? 'bg-success' : 'bg-danger';
-        badgeStock.textContent = livre.stock;
-        tdStock.appendChild(badgeStock);
-        tr.appendChild(tdStock);
-
-        // 6. Colonne Actif (Admin) - CORRECTION : className sur td au lieu de badge
-        if (isAdmin) {
-            const tdActif = document.createElement('td');
-            const badgeActif = document.createElement('span');
-            badgeActif.className = 'badge';
-            tdActif.className = livre.actif ? 'bg-success' : 'bg-secondary';
-            badgeActif.textContent = livre.actif ? 'Actif' : 'Inactif';
-            tdActif.appendChild(badgeActif);
-            tr.appendChild(tdActif);
-        }
-
-        tbody.appendChild(tr);
     });
 
-    // Appel de la fonction pour attacher les événements après génération DOM
+    // Attacher les événements pour les modales
     attacherEvenementsModales();
 }
 

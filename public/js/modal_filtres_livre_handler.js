@@ -115,6 +115,7 @@ function updateCriteresFromForm() {
 
 /**
  * Affiche les filtres actuellement actifs sous forme de badges
+ * ✅ UTILISE MAINTENANT createFilterTagFromTemplate() au lieu de string HTML
  */
 function afficherFiltresActifs() {
     const container = document.getElementById('active-filters-container');
@@ -124,28 +125,40 @@ function afficherFiltresActifs() {
     let count = 0;
     
     if (typeof critereRecherche !== 'undefined') {
+        // Vérifier que la fonction est disponible
+        if (typeof createFilterTagFromTemplate !== 'function') {
+            console.error('❌ createFilterTagFromTemplate() non disponible !');
+            console.error('Vérifiez que template_helpers.js est bien chargé');
+            console.error('Et que _templates_global.html.twig est inclus dans base.html.twig');
+            return;
+        }
+        
         // ISBN
         if (critereRecherche.isbn) {
-            container.innerHTML += createFilterTag('ISBN', critereRecherche.isbn, 'isbn');
+            const badge = createFilterTagFromTemplate('ISBN', critereRecherche.isbn, 'isbn');
+            appendFilterBadge(container, badge);
             count++;
         }
         
         // Auteur
         if (critereRecherche.auteur) {
-            container.innerHTML += createFilterTag('Auteur', critereRecherche.auteur, 'auteur');
+            const badge = createFilterTagFromTemplate('Auteur', critereRecherche.auteur, 'auteur');
+            appendFilterBadge(container, badge);
             count++;
         }
         
         // Titre
         if (critereRecherche.titre) {
-            container.innerHTML += createFilterTag('Titre', critereRecherche.titre, 'titre');
+            const badge = createFilterTagFromTemplate('Titre', critereRecherche.titre, 'titre');
+            appendFilterBadge(container, badge);
             count++;
         }
         
         // Statut
         if (critereRecherche.statut) {
             const statutLabel = critereRecherche.statut === 'actif' ? 'Actif' : 'Inactif';
-            container.innerHTML += createFilterTag('Statut', statutLabel, 'statut');
+            const badge = createFilterTagFromTemplate('Statut', statutLabel, 'statut');
+            appendFilterBadge(container, badge);
             count++;
         }
         
@@ -153,7 +166,8 @@ function afficherFiltresActifs() {
         if (critereRecherche.stockMin || critereRecherche.stockMax) {
             const min = critereRecherche.stockMin || '0';
             const max = critereRecherche.stockMax || '∞';
-            container.innerHTML += createFilterTag('Stock', `${min} - ${max}`, 'stock');
+            const badge = createFilterTagFromTemplate('Stock', `${min} - ${max}`, 'stock');
+            appendFilterBadge(container, badge);
             count++;
         }
     }
@@ -168,18 +182,6 @@ function afficherFiltresActifs() {
             badge.style.display = 'none';
         }
     }
-}
-
-/**
- * Crée un badge de filtre actif
- */
-function createFilterTag(label, value, key) {
-    return `
-        <span class="filter-tag">
-            <strong>${label}:</strong> ${value}
-            <button onclick="supprimerFiltre('${key}')" title="Supprimer ce filtre">×</button>
-        </span>
-    `;
 }
 
 /**

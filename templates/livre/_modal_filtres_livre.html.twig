@@ -1,5 +1,3 @@
-{# templates/livre/_modal_filtres_livre.html.twig #}
-
 <dialog id="modale_filtres">
     <div class="modal-filtres-header">
         <h3>
@@ -16,35 +14,47 @@
             {# Filtre ISBN #}
             <div class="filter-group">
                 <label for="filter-isbn">ISBN</label>
-                <input type="text" id="filter-isbn" name="isbn" placeholder="Rechercher par ISBN..." autocomplete="off">
+                                <input type="text" id="filter-isbn" name="isbn" placeholder="Rechercher par ISBN..." autocomplete="off">
             </div>
             
             {# Filtre Auteur #}
             <div class="filter-group">
-                <label for="filter-auteur"><i class="bi bi-person"></i> Auteur</label>
-                <input type="text" id="filter-auteur" name="auteur" placeholder="Rechercher par auteur..." autocomplete="off">
+                <label for="filter-auteur">Auteur</label>
+                                <input type="text" id="filter-auteur" name="auteur" placeholder="Rechercher par auteur..." autocomplete="off">
             </div>
-
+            
             {# Filtre Titre #}
             <div class="filter-group">
-                <label for="filter-titre"><i class="bi bi-book"></i> Titre</label>
-                <input type="text" id="filter-titre" name="titre" placeholder="Rechercher par titre..." autocomplete="off">
+                <label for="filter-titre">Titre</label>
+                                <input type="text" id="filter-titre" name="titre" placeholder="Rechercher par titre..." autocomplete="off">
             </div>
-
-            {# Filtre Statut (Admin) #}
+            
+            {# Filtre Statut (Admin uniquement) #}
             {% if app.session.get('admin_authenticated') %}
                 <div class="filter-group">
-                    <label for="filter-statut-actif"><i class="bi bi-toggle-on"></i> Statut</label>
-                    <select id="filter-statut-actif" name="statut" class="form-select">
-                        <option value="">Aucun filtre</option>
-                        <option value="actif">Actif uniquement</option>
-                        <option value="inactif">Inactif uniquement</option>
+                    <label for="filter-statut-actif">Statut</label>
+                    <select id="filter-statut-actif" name="statut">
+                        <option value="">Tous les statuts</option>
+                        <option value="actif">Actifs uniquement</option>
+                        <option value="inactif">Inactifs uniquement</option>
                     </select>
                 </div>
             {% endif %}
-        </div>
+            
+            {# Filtre Stock Min/Max #}
+            <div class="filter-group">
+                <label for="stockMin-input">Stock minimum</label>
+                <input 
+                    type="number" 
+                    id="stockMin-input" 
+                    name="stockMin" 
+                    placeholder="0"
+                    min="0"
+                    autocomplete="off"
+                >
+            </div>
 
-        <hr class="filter-separator">
+            <hr class="filter-separator">
 
         {# Section Plage de Stock #}
         <div class="filter-section">
@@ -65,8 +75,8 @@
                 </div>
             </div>
         </div>
-
-        <div class="filter-hint">
+        
+         <div class="filter-hint">
             <small>
                 <strong>Astuce :</strong> Laissez les champs vides pour afficher tous les livres
             </small>

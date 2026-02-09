@@ -1,0 +1,48 @@
+{# 
+ # _templates_mouvement.html.twig
+ # Templates HTML5 pour la gestion des mouvements
+ # 
+ # @author Dufour Marc (marc.dufour@stjosup.com)
+ # @version 1.0
+ # @date 09/02/2026
+ # 
+ # ⚠️ INCLUSION : À inclure dans templates/mouvement/index.html.twig
+ #               OU directement dans mouvement_tableau_structure_html.twig
+ #               Placer juste avant </div> de fermeture de #zone-tableau-mouvement
+ #}
+
+{# ========================================
+   TEMPLATE : Ligne de tableau pour un mouvement
+   Utilisé par : mouvement_tableau_dynamique.js → createMouvementRowFromTemplate()
+   ======================================== #}
+<template id="mouvement-row-template">
+    <tr>
+        {# Colonne ISBN (avec lien modal ou "Livre supprimé") #}
+        <td data-slot="isbn">
+            {# Le contenu sera généré dynamiquement :
+                 - <a> pour livre existant
+                 - <span class="text-danger"> pour livre supprimé #}
+        </td>
+        
+        {# Colonne Titre #}
+        <td data-slot="titre">
+            {# Texte du titre ou "Livre supprimé" en rouge #}
+        </td>
+        
+        {# Colonne Auteur #}
+        <td data-slot="auteur">
+            {# Nom de l'auteur ou "Livre supprimé" en rouge #}
+        </td>
+        
+        {# Colonne Type (badge Entrée/Sortie) #}
+        <td data-slot="type">
+            {# Badge dynamique + classe bg-success ou bg-danger #}
+        </td>
+        
+        {# Colonne Date/Heure #}
+        <td data-slot="date"></td>
+        
+        {# Colonne Utilisateur #}
+        <td data-slot="user"></td>
+    </tr>
+</template>

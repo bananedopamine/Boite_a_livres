@@ -1,14 +1,16 @@
 /**
  * @author : Dufour Marc (marc.dufour@stjosup.com)
- * @version : 1.1
+ * @version : 2.0
  * @dateCreate : 06/02/2026
- * @lastUpdate : 07/02/2026
+ * @lastUpdate : 09/02/2026
  * @description : Gestionnaire de suggestion de livres aléatoires
  * 
- * CORRECTIONS v1.1 :
- * - Fix : Le bouton "Emprunter" retourne maintenant sur la modal de scan ISBN
- * - Fix : La modale de fin de tour s'affiche correctement à chaque tour complet
+ * MODIFICATIONS v2.0 :
+ * - Extraction de tout le HTML dans des templates HTML5
+ * - Utilisation de templates au lieu de innerHTML
+ * - Code plus maintenable et séparation HTML/JS
  */
+
 
 // Variables globales pour la suggestion
 let indexLivreSuggestion = 0;
@@ -45,9 +47,8 @@ async function initialiserSuggestion() {
  * Affiche le livre actuel dans la modale de suggestion
  */
 function afficherLivreSuggestion() {
-    // FIX : Vérifier si on a atteint la fin AVANT d'afficher
+    // Vérifier si on a atteint la fin AVANT d'afficher
     if (indexLivreSuggestion >= listeLivresSuggestion.length) {
-        // Fin de liste
         afficherModaleFinListe();
         return;
     }
@@ -56,44 +57,74 @@ function afficherLivreSuggestion() {
     const modale = document.getElementById('modale_principale');
     const contenu = document.getElementById('contenu_modale');
     
-    // Construire le HTML de la modale de suggestion
-    contenu.innerHTML = `
-        <div class="suggestion-livre-container">
-            <h3>Suggestion de livre</h3>
-            <p class="suggestion-subtitle">Laissez-nous vous proposer une lecture !</p>
-            
-            <div class="suggestion-livre-card">
-                ${livre.lienImg ? 
-                    `<img src="${livre.lienImg}" alt="Couverture" class="suggestion-cover" onerror="this.src='/extras/images/unknown_book.jpg'">` : 
-                    `<img src="/extras/images/unknown_book.jpg" alt="Couverture" class="suggestion-cover">`
-                }
-                
-                <div class="suggestion-details">
-                    <h4 class="suggestion-titre">${livre.titre}</h4>
-                    <p class="suggestion-auteur"><strong>Auteur :</strong> ${livre.auteur || 'Non renseigné'}</p>
-                    ${livre.genre ? `<p class="suggestion-genre"><span class="badge bg-info">${livre.genre}</span></p>` : ''}
-                    <p class="suggestion-isbn"><strong>ISBN :</strong> ${livre.isbn}</p>
-                    <p class="suggestion-stock"><strong>Stock disponible :</strong> <span class="badge">${livre.stock}</span></p>
-                </div>
-            </div>
-            
-            <div class="suggestion-actions">
-                <button type="button" class="btn btn-success btn-suggestion" onclick="emprunterLivreSuggestion('${livre.isbn}')">
-                    ✓ Emprunter ce livre
-                </button>
-                <button type="button" class="btn btn-secondary btn-suggestion" onclick="suggererAutreLivre()">
-                    → Suggérer un autre
-                </button>
-                <button type="button" class="btn btn-light btn-suggestion" onclick="fermerSuggestion()">
-                    ✕ Fermer
-                </button>
-            </div>
-            
-            <div class="suggestion-compteur">
-                Livre ${indexLivreSuggestion + 1} sur ${listeLivresSuggestion.length}
-            </div>
-        </div>
-    `;
+    // ✅ UTILISATION DU TEMPLATE au lieu de innerHTML
+    const template = document.getElementById('suggestion-card-template');
+    
+    if (!template) {
+        console.error('❌ Template suggestion-card-template non trouvé !');
+        console.error('Assurez-vous d\'avoir inclus _templates_suggestion.html.twig dans votre page');
+        return;
+    }
+    
+    // Cloner le template
+    const clone = template.content.cloneNode(true);
+    
+    // Remplir les données du livre
+    // Image de couverture
+    const cover = clone.querySelector('[data-slot="cover"]');
+    if (cover && livre.lienImg) {
+        cover.src = livre.lienImg;
+        cover.alt = `Couverture de ${livre.titre}`;
+    }
+    
+    // Titre
+    const titre = clone.querySelector('[data-slot="titre"]');
+    if (titre) titre.textContent = livre.titre;
+    
+    // Auteur
+    const auteur = clone.querySelector('[data-slot="auteur"]');
+    if (auteur) auteur.textContent = livre.auteur || 'Non renseigné';
+    
+    // Genre (si présent)
+    if (livre.genre) {
+        const genreContainer = clone.querySelector('[data-slot="genre-container"]');
+        const genreBadge = clone.querySelector('[data-slot="genre"]');
+        if (genreContainer) genreContainer.style.display = '';
+        if (genreBadge) genreBadge.textContent = livre.genre;
+    }
+    
+    // ISBN
+    const isbn = clone.querySelector('[data-slot="isbn"]');
+    if (isbn) isbn.textContent = livre.isbn;
+    
+    // Stock
+    const stock = clone.querySelector('[data-slot="stock"]');
+    if (stock) stock.textContent = livre.stock;
+    
+    // Compteur
+    const indexActuel = clone.querySelector('[data-slot="index-actuel"]');
+    const total = clone.querySelector('[data-slot="total"]');
+    if (indexActuel) indexActuel.textContent = indexLivreSuggestion + 1;
+    if (total) total.textContent = listeLivresSuggestion.length;
+    
+    // Attacher les événements aux boutons
+    const btnEmprunter = clone.querySelector('[data-action="emprunter"]');
+    const btnSuivant = clone.querySelector('[data-action="suivant"]');
+    const btnFermer = clone.querySelector('[data-action="fermer"]');
+    
+    if (btnEmprunter) {
+        btnEmprunter.addEventListener('click', () => emprunterLivreSuggestion(livre.isbn));
+    }
+    if (btnSuivant) {
+        btnSuivant.addEventListener('click', suggererAutreLivre);
+    }
+    if (btnFermer) {
+        btnFermer.addEventListener('click', fermerSuggestion);
+    }
+    
+    // Vider le contenu et insérer le clone
+    contenu.innerHTML = '';
+    contenu.appendChild(clone);
     
     // Bloquer le scroll du body et ouvrir la modale
     document.body.classList.add('modal-open');
@@ -194,35 +225,45 @@ function fermerSuggestion() {
 }
 
 /**
- * FIX : Affiche la modale de fin de liste
- * Le problème était que cette fonction ne s'appelait que si indexLivreSuggestion >= length
- * mais l'index n'était jamais réinitialisé correctement
+ * Affiche la modale de fin de liste
  */
 function afficherModaleFinListe() {
     const modale = document.getElementById('modale_principale');
     const contenu = document.getElementById('contenu_modale');
     
-    contenu.innerHTML = `
-        <div class="suggestion-fin-container">
-            <h3>Fin de la liste</h3>
-            <p>Vous avez parcouru tous les livres disponibles !</p>
-            <p class="suggestion-fin-message">Nous avons actuellement <strong>${listeLivresSuggestion.length}</strong> livre(s) en stock.</p>
-            
-            <div class="suggestion-fin-actions">
-                <button type="button" class="btn btn-primary" onclick="recommencerSuggestion()">
-                    Recommencer depuis le début
-                </button>
-                <button type="button" class="btn btn-secondary" onclick="fermerSuggestion()">
-                    Fermer
-                </button>
-            </div>
-        </div>
-    `;
+    // ✅ UTILISATION DU TEMPLATE au lieu de innerHTML
+    const template = document.getElementById('suggestion-fin-template');
     
-    // Annuler le timer de reset
+    if (!template) {
+        console.error('❌ Template suggestion-fin-template non trouvé !');
+        return;
+    }
+    
+    const clone = template.content.cloneNode(true);
+    
+    // Remplir le nombre total de livres
+    const totalLivres = clone.querySelector('[data-slot="total-livres"]');
+    if (totalLivres) {
+        totalLivres.textContent = listeLivresSuggestion.length;
+    }
+    
+    // Attacher les événements
+    const btnRecommencer = clone.querySelector('[data-action="recommencer"]');
+    const btnFermer = clone.querySelector('[data-action="fermer"]');
+    
+    if (btnRecommencer) {
+        btnRecommencer.addEventListener('click', recommencerSuggestion);
+    }
+    if (btnFermer) {
+        btnFermer.addEventListener('click', fermerSuggestion);
+    }
+    
+    // Vider et insérer
+    contenu.innerHTML = '';
+    contenu.appendChild(clone);
+    
+    // Annuler le timer et ouvrir la modale
     annulerTimerResetSuggestion();
-    
-    // Bloquer le scroll du body et ouvrir la modale
     document.body.classList.add('modal-open');
     if (!modale.open) {
         modale.showModal();
@@ -236,26 +277,33 @@ function afficherModalePasLivres() {
     const modale = document.getElementById('modale_principale');
     const contenu = document.getElementById('contenu_modale');
     
-    contenu.innerHTML = `
-        <div class="suggestion-fin-container">
-            <h3>Aucun livre disponible</h3>
-            <p>Désolé, il n'y a actuellement aucun livre en stock à suggérer.</p>
-            <p class="suggestion-fin-message">Revenez plus tard ou consultez la bibliothèque pour voir tous les livres.</p>
-            
-            <div class="suggestion-fin-actions">
-                <button type="button" class="btn btn-primary" onclick="fermerSuggestion()">
-                    Fermer
-                </button>
-            </div>
-        </div>
-    `;
+    // ✅ UTILISATION DU TEMPLATE au lieu de innerHTML
+    const template = document.getElementById('suggestion-vide-template');
     
-    // Bloquer le scroll du body et ouvrir la modale
+    if (!template) {
+        console.error('❌ Template suggestion-vide-template non trouvé !');
+        return;
+    }
+    
+    const clone = template.content.cloneNode(true);
+    
+    // Attacher l'événement au bouton fermer
+    const btnFermer = clone.querySelector('[data-action="fermer"]');
+    if (btnFermer) {
+        btnFermer.addEventListener('click', fermerSuggestion);
+    }
+    
+    // Vider et insérer
+    contenu.innerHTML = '';
+    contenu.appendChild(clone);
+    
+    // Ouvrir la modale
     document.body.classList.add('modal-open');
     if (!modale.open) {
         modale.showModal();
     }
 }
+
 
 /**
  * Recommence la suggestion depuis le début

@@ -1,0 +1,48 @@
+{# 
+ # _templates_livre.html.twig
+ # Templates HTML5 pour la gestion des livres
+ # 
+ # @author Dufour Marc (marc.dufour@stjosup.com)
+ # @version 1.0
+ # @date 09/02/2026
+ # 
+ # ⚠️ INCLUSION : À inclure dans templates/livre/index.html.twig 
+ #               (ou dans la page qui affiche le tableau des livres)
+ #               Placer juste avant le tableau ou à la fin du {% block body %}
+ #}
+
+{# ========================================
+   TEMPLATE : Ligne de tableau pour un livre
+   Utilisé par : livre_tableau_dynamique.js → createLivreRowFromTemplate()
+   ======================================== #}
+<template id="livre-row-template">
+    <tr class="modal-trigger-livre">
+        {# Colonne ISBN #}
+        <td>
+            <a href="#" data-slot="isbn"></a>
+        </td>
+        
+        {# Colonne Titre #}
+        <td>
+            <a href="#" style="color: inherit; text-decoration: none;" data-slot="titre"></a>
+        </td>
+        
+        {# Colonne Auteur #}
+        <td data-slot="auteur"></td>
+        
+        {# Colonne Genre (badge dynamique) #}
+        <td data-slot="genre">
+            {# Le badge sera créé dynamiquement par le JS #}
+        </td>
+        
+        {# Colonne Stock (badge dynamique + couleur de fond) #}
+        <td data-slot="stock">
+            {# La classe bg-success ou bg-danger sera ajoutée dynamiquement #}
+        </td>
+        
+        {# Colonne Actif (Admin uniquement - sera supprimée si non admin) #}
+        <td data-slot="actif" style="display: none;">
+            {# La classe bg-success ou bg-secondary sera ajoutée dynamiquement #}
+        </td>
+    </tr>
+</template>
