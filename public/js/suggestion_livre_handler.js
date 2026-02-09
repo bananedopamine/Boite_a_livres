@@ -101,6 +101,17 @@ function afficherLivreSuggestion() {
     const stock = clone.querySelector('[data-slot="stock"]');
     if (stock) stock.textContent = livre.stock;
     
+    // Description (pour le bouton "Voir plus")
+    const descriptionBtn = clone.querySelector('[data-slot="description-btn"]');
+    if (descriptionBtn) {
+        if (livre.description) {
+            descriptionBtn.setAttribute('data-full-description', livre.description);
+        } else {
+            // Si pas de description, cacher le bouton
+            descriptionBtn.style.display = 'none';
+        }
+    }
+    
     // Compteur
     const indexActuel = clone.querySelector('[data-slot="index-actuel"]');
     const total = clone.querySelector('[data-slot="total"]');
@@ -120,6 +131,42 @@ function afficherLivreSuggestion() {
     }
     if (btnFermer) {
         btnFermer.addEventListener('click', fermerSuggestion);
+    }
+    
+    // Gestionnaire pour le bouton "Voir plus" - Ouverture de la modale Description
+    if (descriptionBtn && livre.description) {
+        // On s'assure que le bouton a bien la description stockée
+        descriptionBtn.setAttribute('data-full-description', livre.description);
+
+        // Remplacement de l'ancien listener par la logique "Modale Détails"
+        descriptionBtn.addEventListener('click', function() {
+            const modalDesc = document.getElementById('description-modal');
+            const contentDesc = document.getElementById('description-content');
+            
+            if (modalDesc && contentDesc) {
+                // 1. Injecter le contenu (la description complète)
+                contentDesc.innerHTML = `<p>${livre.description}</p>`;
+                
+                // 2. Ouvrir la modale (compatible avec le fonctionnement natif <dialog>)
+                if (typeof modalDesc.showModal === "function") {
+                    modalDesc.showModal();
+                } else {
+                    // Fallback si dialog n'est pas supporté (rare aujourd'hui)
+                    modalDesc.setAttribute('open', true);
+                }
+
+                // 3. Gestion de la fermeture (Optionnel si modal_livre_details.js est chargé, mais sécurité ici)
+                // On s'assure que le bouton fermer fonctionne même si le script externe n'est pas prêt
+                const closeBtns = modalDesc.querySelectorAll('.btn-close-description, .btn-secondary');
+                closeBtns.forEach(btn => {
+                    btn.onclick = function() {
+                        modalDesc.close();
+                    };
+                });
+            } else {
+                console.error("Erreur : La modale 'description-modal' est introuvable dans le DOM.");
+            }
+        });
     }
     
     // Vider le contenu et insérer le clone
