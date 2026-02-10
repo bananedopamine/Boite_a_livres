@@ -1371,6 +1371,14 @@ dialog#modale_filtres[open] {
     margin-bottom: 1.5rem;
 }
 
+.filter-hint {
+    margin-top: 1rem; 
+    padding: 1rem; 
+    background-color: rgba(66, 184, 221, 0.1); 
+    border-left: 3px solid #42b8dd; 
+    border-radius: 4px;
+}
+
 .filter-group label {
     display: block;
     margin-bottom: 0.5rem;
