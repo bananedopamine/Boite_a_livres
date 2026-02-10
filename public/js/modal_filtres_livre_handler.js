@@ -115,7 +115,7 @@ function updateCriteresFromForm() {
 
 /**
  * Affiche les filtres actuellement actifs sous forme de badges
- * ✅ UTILISE MAINTENANT createFilterTagFromTemplate() au lieu de string HTML
+ * UTILISE MAINTENANT createFilterTagFromTemplate() au lieu de string HTML
  */
 function afficherFiltresActifs() {
     const container = document.getElementById('active-filters-container');
@@ -193,8 +193,8 @@ function supprimerFiltre(key) {
             // Réinitialiser les deux champs de stock
             critereRecherche.stockMin = '';
             critereRecherche.stockMax = '';
-            // const inputMin = document.getElementById('stockMin-input');
-            // const inputMax = document.getElementById('stockMax-input');
+            const inputMin = document.getElementById('stockMin-input');
+            const inputMax = document.getElementById('stockMax-input');
             if (inputMin) inputMin.value = '';
             if (inputMax) inputMax.value = '';
         } else {

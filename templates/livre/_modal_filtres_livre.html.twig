@@ -53,30 +53,24 @@
                     autocomplete="off"
                 >
             </div>
-
-            <hr class="filter-separator">
-
-        {# Section Plage de Stock #}
-        <div class="filter-section">
-            <h4 class="filter-section-title">
-                <i class="bi bi-boxes"></i> Stock disponible
-            </h4>
             
             <div class="filter-group">
-                <div class="stock-inputs-container">
-                    <div class="stock-input-wrapper">
-                        <label for="stockMin-input">Minimum</label>
-                        <input type="number" id="stockMin-input" class="form-control stock-input" min="0" value="0">
-                    </div>
-                    <div class="stock-input-wrapper">
-                        <label for="stockMax-input">Maximum</label>
-                        <input type="number" id="stockMax-input" class="form-control stock-input" min="0" value="100">
-                    </div>
-                </div>
+                <label for="stockMax-input">Stock maximum</label>
+                <input 
+                    type="number" 
+                    id="stockMax-input" 
+                    name="stockMax" 
+                    placeholder="0"
+                    min="0"
+                    max="100"
+                    autocomplete="off"
+                >
             </div>
-        </div>
+        </div> 
+
+        <hr>
         
-         <div class="filter-hint">
+        <div class="filter-hint">
             <small>
                 <strong>Astuce :</strong> Laissez les champs vides pour afficher tous les livres
             </small>
