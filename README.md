@@ -56,6 +56,44 @@ PIN_ADMIN=[Code pin à 6 chiffres]
 
 ---
 
+## Suppression d'un livre dans la base
+
+#### SI ISBN dans la base :
+Trouver l'id du livre depuis l'isbn (disponible dans la bibliothèque de l'application):
+```bash
+php bin/console dbal:run-sql "select id, titre from livre where isbn=[ISBN du livre]
+```
+
+Exemple de résultat : 
+```bash
+php bin/console dbal:run-sql "select id, titre from livre where isbn=9782950045119"
+ ---- --------------------------------------
+  id   titre
+ ---- --------------------------------------
+  23   100 Rezepte für das Mikrowellengerät
+ ---- --------------------------------------
+```
+
+#### SI ISBN non présent
+Recuperer l'identifiant en regardant avec les autres paramètres du livre <br>
+(On enlève la description et lien image car trop long)
+
+```bash
+php bin/console dbal:run-sql "select id,isbn, titre, auteur, nb_stock, actif, genre from livre"
+```
+
+#### suppression :
+
+Supprimer le livre de la base de données : 
+```bash
+php bin/console dbal:run-sql "delete from livre where id = [ID du livre]"
+```
+Puis suppression de tout les mouvements qui sont raccordés au livre :
+```bash
+php bin/console dbal:run-sql "delete from mouvement where livre_id = [ID du livre]"
+```
+
+
 ## Balise perso GitHub
 
 [Projet GitHub](https://github.com/bananedopamine/Boite_a_livres) 
