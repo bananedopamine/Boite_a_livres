@@ -70,7 +70,7 @@ php bin/console dbal:run-sql "select id, titre from livre where isbn=97822663057
  ---- ----------------------------------------------- 
   id   titre                                          
  ---- ----------------------------------------------- 
-  21   La ballade du serpent et de l'oiseau chanteur  
+  21  "La ballade du serpent et de l'oiseau chanteur"  
  ---- -----------------------------------------------
 ```
 
