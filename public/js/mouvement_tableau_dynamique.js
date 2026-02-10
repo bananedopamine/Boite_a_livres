@@ -181,7 +181,7 @@ function afficherMouvements(mouvements, isAdmin) {
     mouvements.forEach(mouvement => {
         // Vérifier que la fonction est disponible
         if (typeof createMouvementRowFromTemplate !== 'function') {
-            console.error('❌ createMouvementRowFromTemplate() non disponible !');
+            console.error(' createMouvementRowFromTemplate() non disponible !');
             console.error('Vérifiez que template_helpers.js est bien chargé');
             console.error('Et que _templates_mouvement.html.twig est inclus dans la page');
             return;
@@ -192,7 +192,7 @@ function afficherMouvements(mouvements, isAdmin) {
         if (fragment) {
             tbody.appendChild(fragment);
         } else {
-            console.warn('⚠️ Impossible de créer la ligne pour le mouvement:', mouvement);
+            console.warn(' Impossible de créer la ligne pour le mouvement:', mouvement);
         }
     });
 

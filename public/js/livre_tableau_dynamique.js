@@ -179,7 +179,7 @@ function afficherLivres(livres, isAdmin) {
     livres.forEach(livre => {
         // Vérifier que la fonction est disponible
         if (typeof createLivreRowFromTemplate !== 'function') {
-            console.error('❌ createLivreRowFromTemplate() non disponible !');
+            console.error(' createLivreRowFromTemplate() non disponible !');
             console.error('Vérifiez que template_helpers.js est bien chargé');
             console.error('Et que _templates_livre.html.twig est inclus dans la page');
             return;
@@ -190,7 +190,7 @@ function afficherLivres(livres, isAdmin) {
         if (fragment) {
             tbody.appendChild(fragment);
         } else {
-            console.warn('⚠️ Impossible de créer la ligne pour le livre:', livre);
+            console.warn(' Impossible de créer la ligne pour le livre:', livre);
         }
     });
 

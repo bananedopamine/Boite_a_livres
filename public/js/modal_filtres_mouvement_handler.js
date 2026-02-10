@@ -127,7 +127,7 @@ function afficherFiltresActifs() {
     if (typeof critereRecherche !== 'undefined') {
         // Vérifier que la fonction est disponible
         if (typeof createFilterTagFromTemplate !== 'function') {
-            console.error('❌ createFilterTagFromTemplate() non disponible !');
+            console.error(' createFilterTagFromTemplate() non disponible !');
             console.error('Vérifiez que template_helpers.js est bien chargé');
             console.error('Et que _templates_global.html.twig est inclus dans base.html.twig');
             return;

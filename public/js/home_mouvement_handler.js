@@ -116,14 +116,11 @@ async function ouvrirScan(action) {
 
     const url = baseUrl + "?action=" + action;
 
-    console.log('🔍 Ouverture scan - URL:', url, 'Action:', action);
-
     try {
         // Charger la modale
         await chargerModale(url);
-        console.log('✅ Modale chargée (HTML reçu)');
 
-        // ⭐ NOUVEAU : Attendre que les éléments soient vraiment dans le DOM
+        //  NOUVEAU : Attendre que les éléments soient vraiment dans le DOM
         const contenuModale = document.getElementById('contenu_modale');
         
         try {
@@ -131,28 +128,17 @@ async function ouvrirScan(action) {
             const formScan = await attendreElement('#form_scan', contenuModale, 3000);
             const inputIsbn = await attendreElement('#isbnInput', contenuModale, 3000);
 
-            console.log('✅ Éléments trouvés:', {
-                formScan: formScan ? '✓' : '✗',
-                inputIsbn: inputIsbn ? '✓' : '✗'
-            });
-
             // Initialiser le formulaire de scan
             initialiserFormulaireScan(formScan, inputIsbn);
 
         } catch (erreurAttente) {
-            console.error('❌ Erreur d\'attente des éléments:', erreurAttente);
-            console.log('🔍 Contenu actuel de la modale:', contenuModale?.innerHTML);
-            
-            // Afficher les formulaires disponibles pour débugger
-            const formulairesDisponibles = Array.from(contenuModale.querySelectorAll('form'))
-                .map(f => ({ id: f.id || 'sans-id', classes: f.className }));
-            console.log('🔍 Formulaires disponibles:', formulairesDisponibles);
-            
+            console.error(' Erreur d\'attente des éléments:', erreurAttente);
+                        
             alert('Erreur : le formulaire de scan n\'a pas pu être chargé. Veuillez réessayer.');
         }
 
     } catch (erreur) {
-        console.error("❌ Erreur lors de l'ouverture du scan :", erreur);
+        console.error(" Erreur lors de l'ouverture du scan :", erreur);
         alert("Impossible de charger la fenêtre de scan.");
     }
 }
@@ -164,33 +150,19 @@ async function ouvrirScan(action) {
  * @param {HTMLInputElement} inputIsbn - L'input ISBN
  */
 function initialiserFormulaireScan(formScan, inputIsbn) {
-    console.log('🎯 Initialisation du formulaire de scan');
 
     // Focus automatique sur le champ ISBN
     if (inputIsbn) {
         setTimeout(() => {
             inputIsbn.focus();
-            console.log('✅ Focus mis sur le champ ISBN');
         }, 100);
-
-        // // Détection automatique (Scanner)
-        // // Dès qu'un ISBN de 10 ou 13 caractères est détecté, on le vérifie
-        // inputIsbn.addEventListener('input', function(e) {
-        //     const isbn = e.target.value.trim();
-        //     console.log('📝 Saisie ISBN:', isbn, 'Longueur:', isbn.length);
-            
-        //     if (isbn.length === 10 || isbn.length === 13) {
-                console.log("✅ ISBN détecté par saisie/scan :", isbn);
-                verifierIsbn(isbn);
-            // }
-        // });
+        
+        verifierIsbn(isbn);
     }
 
-    // ⚠️ PAS de gestionnaire submit ici !
+    // PAS de gestionnaire submit ici !
     // Le formulaire est géré par le gestionnaire global (document.addEventListener('submit'))
     // Voir ligne ~330+
-
-    console.log('✅ Formulaire de scan initialisé');
 }
 
 // ==========================================
@@ -205,12 +177,11 @@ function initialiserFormulaireScan(formScan, inputIsbn) {
 async function verifierIsbn(isbn) {
     // Protection anti-spam : empêcher les appels multiples
     if (verificationEnCours) {
-        console.warn('⏳ Vérification déjà en cours, requête ignorée');
+        console.warn(' Vérification déjà en cours, requête ignorée');
         return;
     }
 
     verificationEnCours = true;
-    console.log('🔍 Vérification ISBN:', isbn);
 
     try {
         const reponse      = await fetch(`/livre/api/verif-isbn/${isbn}`);
@@ -219,24 +190,22 @@ async function verifierIsbn(isbn) {
         if (contentType && contentType.includes("application/json")) {
             const resultat = await reponse.json();
 
-            console.log('📊 Résultat vérification:', resultat);
 
             if (resultat.statut === 'existe') {
                 ouvrirConfirmation(resultat.id);
             } else if (resultat.statut === 'google') {
                 ouvrirFormulaireNouveau(resultat.donnees);
             } else if (resultat.statut === 'inconnu') {
-                console.log('📕 Livre introuvable, ISBN:', resultat.isbn);
                 afficherOptionsCreation(resultat.isbn);
             } else {
-                console.error('⚠️ Statut inconnu reçu:', resultat.statut);
+                console.error(' Statut inconnu reçu:', resultat.statut);
             }
         } else {
             const html = await reponse.text();
             document.getElementById('contenu_modale').innerHTML = html;
         }
     } catch (erreur) {
-        console.error("❌ Erreur lors de la vérification ISBN :", erreur);
+        console.error(" Erreur lors de la vérification ISBN :", erreur);
         alert("Erreur lors de la vérification de l'ISBN. Veuillez réessayer.");
     } finally {
         // Réinitialiser le flag après un court délai
@@ -329,8 +298,6 @@ async function soumettreCreationRapide(event, isbn) {
     formData.append('auteur', auteur);
     formData.append('genre',  genre);
 
-    console.log('📝 Soumission création rapide:', { isbn, titre, auteur, genre });
-
     try {
         const reponse = await fetch('/livre/creation-manuel', {
             method: 'POST',
@@ -351,7 +318,7 @@ async function soumettreCreationRapide(event, isbn) {
             alert(data.message || 'Erreur lors de la création du livre');
         }
     } catch (erreur) {
-        console.error('❌ Erreur:', erreur);
+        console.error(' Erreur:', erreur);
         alert('Une erreur est survenue lors de la création du livre');
     }
 }
@@ -389,8 +356,6 @@ function ouvrirFormulaireNouveau(donnees) {
 async function ouvrirConfirmation(livreId) {
     const url = `/mouvement/confirmation/${livreId}?type_action=${typeActionActuel}`;
 
-    console.log('✅ Ouverture confirmation pour livre ID:', livreId);
-
     try {
         await chargerModale(url);
         
@@ -402,7 +367,7 @@ async function ouvrirConfirmation(livreId) {
         autoFocus('nomPrenom');
         
     } catch (erreur) {
-        console.error("❌ Erreur lors de la récupération de la confirmation :", erreur);
+        console.error(" Erreur lors de la récupération de la confirmation :", erreur);
         alert("Impossible de charger la confirmation. Veuillez réessayer.");
     }
 }
@@ -415,38 +380,29 @@ document.addEventListener('submit', async (e) => {
     const formulaire    = e.target;
     const contenuModale = document.getElementById('contenu_modale');
 
-    console.log('📋 Submit event détecté sur:', formulaire.id || formulaire.className || 'formulaire sans ID');
 
     // Vérifier si c'est un formulaire dans la modale
     if (!contenuModale || !contenuModale.contains(formulaire)) {
-        console.log('➡️ Formulaire hors modale, laisser passer');
         return; // Pas dans la modale, laisser passer
     }
 
-    // ⚠️ CRITIQUE : Empêcher la soumission normale IMMÉDIATEMENT
+    //  CRITIQUE : Empêcher la soumission normale IMMÉDIATEMENT
     e.preventDefault();
     e.stopPropagation();
     
-    console.log('🛑 Soumission interceptée (preventDefault appelé)');
-    console.log('📝 Formulaire intercepté dans la modale');
-
     const actionUrl = formulaire.action || window.location.href;
     const formData  = new FormData(formulaire);
-
-    console.log('📤 Soumission formulaire:', actionUrl);
 
     // CAS A : Soumission du SCAN ISBN
     // Vérifier si c'est le formulaire de scan en cherchant #isbnInput
     const isbnInput = formulaire.querySelector('#isbnInput');
     
     if (formulaire.id === 'form_scan' || isbnInput || actionUrl.includes('debut')) {
-        console.log('🔍 Détection formulaire de SCAN ISBN');
         const isbn = isbnInput?.value.trim();
         if (isbn) {
-            console.log('📖 ISBN saisi:', isbn);
             verifierIsbn(isbn);
         } else {
-            console.warn('⚠️ ISBN vide');
+            console.warn(' ISBN vide');
             alert('Veuillez scanner ou saisir un ISBN');
         }
         return; // Important : sortir de la fonction
@@ -464,8 +420,6 @@ document.addEventListener('submit', async (e) => {
 
         if (contentType && contentType.includes('application/json')) {
             const resultat = await reponse.json();
-
-            console.log('📊 Résultat soumission:', resultat);
 
             if (resultat.success) {
                 if (resultat.id) {
@@ -490,9 +444,7 @@ document.addEventListener('submit', async (e) => {
             }
         }
     } catch (erreur) {
-        console.error("❌ Erreur soumission formulaire:", erreur);
+        console.error(" Erreur soumission formulaire:", erreur);
         alert("Une erreur est survenue. Veuillez réessayer.");
     }
-}, true); // ⚠️ IMPORTANT : true = capture phase (s'exécute AVANT les gestionnaires normaux)
-
-console.log('✅ home_mouvement_handler.js v1.3 chargé');
+}, true); //  IMPORTANT : true = capture phase (s'exécute AVANT les gestionnaires normaux)

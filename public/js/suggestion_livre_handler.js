@@ -61,7 +61,7 @@ function afficherLivreSuggestion() {
     const template = document.getElementById('suggestion-card-template');
     
     if (!template) {
-        console.error('❌ Template suggestion-card-template non trouvé !');
+        console.error(' Template suggestion-card-template non trouvé !');
         console.error('Assurez-vous d\'avoir inclus _templates_suggestion.html.twig dans votre page');
         return;
     }
@@ -281,7 +281,7 @@ function afficherModaleFinListe() {
     const template = document.getElementById('suggestion-fin-template');
     
     if (!template) {
-        console.error('❌ Template suggestion-fin-template non trouvé !');
+        console.error(' Template suggestion-fin-template non trouvé !');
         return;
     }
     
@@ -327,7 +327,7 @@ function afficherModalePasLivres() {
     const template = document.getElementById('suggestion-vide-template');
     
     if (!template) {
-        console.error('❌ Template suggestion-vide-template non trouvé !');
+        console.error(' Template suggestion-vide-template non trouvé !');
         return;
     }
     

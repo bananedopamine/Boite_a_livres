@@ -76,7 +76,7 @@
         const contenu = document.getElementById('contenu_modale');
         
         if (!modale || !contenu) {
-            console.warn('⚠️ Modale ou contenu_modale non trouvé - Auto-resize désactivé');
+            console.warn(' Modale ou contenu_modale non trouvé - Auto-resize désactivé');
             return;
         }
         
