@@ -1,0 +1,203 @@
+{# 
+ # _templates_mouvement_modal.html.twig
+ # Templates HTML5 pour le flux d'entrée/sortie de livres (home_mouvement_handler.js)
+ # 
+ # @author Dufour Marc (marc.dufour@stjosup.com)
+ # @version 1.0
+ # @date 09/02/2026
+ # 
+ # ⚠️ INCLUSION : À inclure dans templates/home/index.html.twig
+ #               Placer à la fin du {% block body %}, juste avant {% endblock %}
+ #
+ # Templates contenus :
+ #   1. modal-livre-introuvable-template  → afficherOptionsCreation()
+ #   2. modal-creation-rapide-template    → afficherFormulaireCreationRapide()
+ #   3. modal-creation-succes-template    → soumettreCreationRapide() (message transitoire)
+ #   4. modal-confirmation-template       → ouvrirConfirmation()
+ #}
+
+{# ========================================
+   TEMPLATE 1 : Livre introuvable
+   Proposé quand l'ISBN est absent de la DB locale ET de Google Books
+   Données dynamiques : [isbn], [typeAction]
+   ======================================== #}
+<template id="modal-livre-introuvable-template">
+    <div style="text-align: center; padding: 20px;">
+        <h3 style="color: #d9534f; margin-bottom: 20px;">Livre Introuvable</h3>
+        <p style="margin-bottom: 25px;">
+            L'ISBN <strong data-slot="isbn"></strong> n'a pas été trouvé
+            dans notre base de données ni sur l'API Google Books.
+        </p>
+
+        <div style="display: flex; flex-direction: column; gap: 15px; max-width: 400px; margin: 0 auto;">
+            <button
+                class="btn btn-primary"
+                data-action="creer"
+                style="width: 100%; padding: 15px; font-size: 1rem;">
+                Créer le livre manuellement
+            </button>
+
+            <button
+                class="btn btn-secondary"
+                data-action="rescanner"
+                style="width: 100%; padding: 15px; font-size: 1rem;">
+                Rescanner un autre livre
+            </button>
+
+            <button
+                class="btn btn-light"
+                data-action="annuler"
+                style="width: 100%; padding: 12px; font-size: 0.95rem;">
+                ✕ Annuler
+            </button>
+        </div>
+    </div>
+</template>
+
+
+{# ========================================
+   TEMPLATE 2 : Formulaire de création rapide
+   Affiché quand l'utilisateur choisit "Créer manuellement"
+   Données dynamiques : [isbn]
+   ======================================== #}
+<template id="modal-creation-rapide-template">
+    <div style="padding: 20px;">
+        <h3 style="margin-bottom: 20px;">Création rapide de livre</h3>
+        <p style="color: var(--text-light); margin-bottom: 20px;">
+            ISBN : <strong data-slot="isbn"></strong>
+        </p>
+
+        <form id="form-quick-create" autocomplete="off">
+            {# Champ caché pour transporter l'ISBN vers le handler JS #}
+            <input type="hidden" name="isbn" data-slot="isbn-hidden" value="">
+
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label for="quick-titre" style="display: block; margin-bottom: 5px; font-weight: bold;">
+                    Titre du livre *
+                </label>
+                <input
+                    type="text"
+                    id="quick-titre"
+                    name="titre"
+                    class="form-control"
+                    required
+                    placeholder="Entrez le titre du livre"
+                    style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;"
+                    autofocus
+                >
+            </div>
+
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label for="quick-auteur" style="display: block; margin-bottom: 5px; font-weight: bold;">
+                    Auteur (optionnel)
+                </label>
+                <input
+                    type="text"
+                    id="quick-auteur"
+                    name="auteur"
+                    class="form-control"
+                    placeholder="Nom de l'auteur"
+                    style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;"
+                >
+            </div>
+
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label for="quick-genre" style="display: block; margin-bottom: 5px; font-weight: bold;">
+                    Genre (optionnel)
+                </label>
+                <input
+                    type="text"
+                    id="quick-genre"
+                    name="genre"
+                    class="form-control"
+                    placeholder="Roman, Essai, Manga..."
+                    style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;"
+                >
+            </div>
+
+            <div class="modal-actions" style="display: flex; justify-content: space-between; gap: 10px;">
+                <button
+                    type="button"
+                    class="btn btn-secondary"
+                    data-action="retour"
+                    style="flex: 1;">
+                    ← Retour
+                </button>
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                    style="flex: 1;">
+                    Créer le livre
+                </button>
+                <button
+                    type="button"
+                    class="btn"
+                    data-action="rescanner">
+                    Réessayer
+                </button>
+            </div>
+        </form>
+    </div>
+</template>
+
+
+{# ========================================
+   TEMPLATE 3 : Succès de la création rapide
+   Affiché ~1 seconde avant de passer à la confirmation
+   Données dynamiques : aucune
+   ======================================== #}
+<template id="modal-creation-succes-template">
+    <div style="text-align: center; padding: 20px;">
+        <div style="font-size: 48px; color: #5cb85c;">✓</div>
+        <h3 style="color: #5cb85c;">Livre créé avec succès !</h3>
+        <p>Passage à l'étape de confirmation...</p>
+    </div>
+</template>
+
+
+{# ========================================
+   TEMPLATE 4 : Confirmation finale (Étape Nom/Prénom)
+   Données dynamiques : [cover src], [titre], [auteur], [isbn], [stock],
+                        [form action URL], [type_action], [couleur label], [label action], [btn class], [btn texte]
+   ======================================== #}
+<template id="modal-confirmation-template">
+    <h3>Étape Finale : Confirmation</h3>
+
+    <div class="book-summary-box" autocomplete="off">
+        <img
+            data-slot="cover"
+            src="/extras/images/unknown_book.jpg"
+            alt="Couverture"
+            class="img-cover-thumb"
+            onerror="this.src='/extras/images/unknown_book.jpg'">
+
+        <div>
+            <strong>Titre :</strong>   <span data-slot="titre"></span><br>
+            <strong>Auteur :</strong>  <span data-slot="auteur"></span><br>
+            <strong>ISBN :</strong>    <span data-slot="isbn"></span><br>
+            <strong>Stock actuel :</strong> <span data-slot="stock"></span>
+        </div>
+    </div>
+
+    <form data-slot="form" method="post" autocomplete="off">
+        <input type="hidden" name="type_action" data-slot="type-action">
+
+        <div class="form-group-modal">
+            <label for="nomPrenom">Votre Nom et Prénom :</label>
+            <input
+                type="text"
+                id="nomPrenom"
+                name="nomPrenom"
+                placeholder="Qui effectue l'opération ?"
+                required
+                autofocus
+                class="input-full"
+                autocomplete="off">
+        </div>
+
+        <div class="modal-actions-between">
+            <p style="margin: 0; font-weight: bold;" data-slot="label-action"></p>
+            <button type="submit" class="btn" data-slot="btn-submit"></button>
+        </div>
+    </form>
+</template>
