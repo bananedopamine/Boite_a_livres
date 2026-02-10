@@ -61,17 +61,17 @@ PIN_ADMIN=[Code pin à 6 chiffres]
 #### SI ISBN dans la base :
 Trouver l'id du livre depuis l'isbn (disponible dans la bibliothèque de l'application):
 ```bash
-php bin/console dbal:run-sql "select id, titre from livre where isbn=[ISBN du livre]
+php bin/console dbal:run-sql "select id, titre from livre where isbn=[ISBN du livre]"
 ```
 
 Exemple de résultat : 
 ```bash
-php bin/console dbal:run-sql "select id, titre from livre where isbn=9782950045119"
- ---- --------------------------------------
-  id   titre
- ---- --------------------------------------
-  23   100 Rezepte für das Mikrowellengerät
- ---- --------------------------------------
+php bin/console dbal:run-sql "select id, titre from livre where isbn=9782266305754" 
+ ---- ----------------------------------------------- 
+  id   titre                                          
+ ---- ----------------------------------------------- 
+  21   La ballade du serpent et de l'oiseau chanteur  
+ ---- -----------------------------------------------
 ```
 
 #### SI ISBN non présent
