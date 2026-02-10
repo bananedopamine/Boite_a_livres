@@ -1,7 +1,7 @@
 {# @author : Dufour Marc (marc.dufour@stjosup.com)
- # @version : 1.3
+ # @version : 2.0
  # @dateCreate : 12/01/2026
- # @lastUpdate : 09/02/2026 (Ajout template global)
+ # @lastUpdate : 10/02/2026 (Centralisation des templates HTML5)
  #}
 
 <!DOCTYPE html>
@@ -73,11 +73,29 @@
 
             {% block body %}{% endblock %}
 
-            {# AJOUT : Templates HTML5 globaux (utilisés partout) #}
+            {# =========================================
+               TEMPLATES HTML5 GLOBAUX
+               Disponibles sur toutes les pages
+               ========================================= #}
+            
+            {# Templates globaux (filtres, etc.) #}
             {% include 'partials/_templates_global.html.twig' %}
+            
+            {# Templates pour les mouvements (scan ISBN, création livre) #}
+            {% include 'partials/_templates_mouvement_modal.html.twig' %}
+            
+            {# Templates pour les suggestions de livres #}
+            {% include 'partials/_templates_suggestion.html.twig' %}
+            
+            {# Templates pour l'affichage des livres (si vous en avez) #}
+            {% include 'partials/_templates_livre.html.twig' %}
+            
+            {# Templates pour les mouvements (si différents des modaux) #}
+            {% include 'partials/_templates_mouvement.html.twig' %}
         
         </main>
         
+        {# Modale principale pour le contenu dynamique (AJAX) #}
         <dialog id="modale_principale" class="modal-main">
             <div id="contenu_modale">
                 

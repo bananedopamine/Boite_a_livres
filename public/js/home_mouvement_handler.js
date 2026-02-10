@@ -3,8 +3,8 @@
  * Gestion complète du flux d'entrée/sortie de livres depuis la page d'accueil
  * 
  * @author Dufour Marc (marc.dufour@stjosup.com)
- * @version 1.2
- * @date 09/02/2026
+ * @version 1.3
+ * @date 10/02/2026
  * 
  * Dépendances: fonctions.js (chargerModale, fermerModale, autoFocus, escapeHtml)
 */
@@ -14,9 +14,10 @@
 // ==========================================
 const modalePrincipale = document.getElementById('modale_principale');
 let typeActionActuel = 'false'; // Garde en mémoire si c'est Entrée ou Sortie
+let verificationEnCours = false; // Protection anti-spam pour la vérification ISBN
 
 // ==========================================
-// UTILITAIRE : Cloner un template HTML5
+// UTILITAIRES DE TEMPLATE
 // ==========================================
 
 /**
@@ -32,7 +33,6 @@ function clonerTemplate(templateId) {
         throw new Error(`Template introuvable : #${templateId}`);
     }
     const fragment = tpl.content.cloneNode(true);
-    // Premier enfant réel du fragment (ignore les nœuds texte)
     const root = fragment.firstElementChild;
     return { fragment, root };
 }
@@ -49,6 +49,51 @@ function afficherDansModale(fragment) {
 }
 
 // ==========================================
+// UTILITAIRE D'ATTENTE DOM
+// ==========================================
+
+/**
+ * Attend qu'un élément apparaisse dans le DOM
+ * Utilise un MutationObserver pour être notifié dès que l'élément est ajouté
+ * 
+ * @param {string} selector - Sélecteur CSS de l'élément à attendre
+ * @param {HTMLElement} container - Conteneur dans lequel chercher (défaut: document)
+ * @param {number} timeout - Timeout en ms (défaut: 5000)
+ * @returns {Promise<HTMLElement>}
+ */
+function attendreElement(selector, container = document, timeout = 5000) {
+    return new Promise((resolve, reject) => {
+        // Vérifier si l'élément existe déjà
+        const element = container.querySelector(selector);
+        if (element) {
+            resolve(element);
+            return;
+        }
+
+        // Créer un observer pour détecter l'ajout de l'élément
+        const observer = new MutationObserver((mutations) => {
+            const element = container.querySelector(selector);
+            if (element) {
+                observer.disconnect();
+                resolve(element);
+            }
+        });
+
+        // Observer les changements dans le container
+        observer.observe(container, {
+            childList: true,
+            subtree: true
+        });
+
+        // Timeout
+        setTimeout(() => {
+            observer.disconnect();
+            reject(new Error(`Timeout : élément "${selector}" non trouvé après ${timeout}ms`));
+        }, timeout);
+    });
+}
+
+// ==========================================
 // FONCTION PRINCIPALE : OUVERTURE DU SCAN
 // ==========================================
 
@@ -61,9 +106,8 @@ function afficherDansModale(fragment) {
 async function ouvrirScan(action) {
     typeActionActuel = action;
 
-    // Construction de l'URL - CORRIGÉ
-    // Le template Twig doit définir window.ROUTES.mouvementDebut ou on utilise le fallback
-    let baseUrl = '/mouvement/';
+    // Construction de l'URL
+    let baseUrl = '/mouvement/debut';
 
     // Vérifier si les routes sont définies dans window.ROUTES    
     if (typeof window.ROUTES !== 'undefined' && window.ROUTES.mouvementDebut) {
@@ -72,44 +116,81 @@ async function ouvrirScan(action) {
 
     const url = baseUrl + "?action=" + action;
 
+    console.log('🔍 Ouverture scan - URL:', url, 'Action:', action);
+
     try {
+        // Charger la modale
         await chargerModale(url);
+        console.log('✅ Modale chargée (HTML reçu)');
 
-        const inputIsbn = document.getElementById('isbnInput');
-        const formScan  = document.getElementById('form_scan');
+        // ⭐ NOUVEAU : Attendre que les éléments soient vraiment dans le DOM
+        const contenuModale = document.getElementById('contenu_modale');
+        
+        try {
+            // Attendre que le formulaire soit présent dans le DOM
+            const formScan = await attendreElement('#form_scan', contenuModale, 3000);
+            const inputIsbn = await attendreElement('#isbnInput', contenuModale, 3000);
 
-        if (inputIsbn) {
-            autoFocus('isbnInput');
-
-            // ÉCOUTEUR 1 : Détection automatique (Scanner)
-            inputIsbn.addEventListener('input', function(e) {
-                const isbn = e.target.value.trim();
-                if (isbn.length === 10 || isbn.length === 13) {
-                    console.log("ISBN détecté par saisie/scan :", isbn);
-                    verifierIsbn(isbn);
-                }
+            console.log('✅ Éléments trouvés:', {
+                formScan: formScan ? '✓' : '✗',
+                inputIsbn: inputIsbn ? '✓' : '✗'
             });
-        } else {
-            console.warn('⚠️ Input ISBN non trouvé dans la modale');
-        }
 
-        if (formScan) {
-            // ÉCOUTEUR 2 : Validation manuelle
-            formScan.addEventListener('submit', function(e) {
-                e.preventDefault();
-                const isbn = inputIsbn.value.trim();
-                if (isbn) {
-                    verifierIsbn(isbn);
-                }
-            });
-        } else {
-            console.warn('⚠️ Formulaire de scan non trouvé dans la modale');
+            // Initialiser le formulaire de scan
+            initialiserFormulaireScan(formScan, inputIsbn);
+
+        } catch (erreurAttente) {
+            console.error('❌ Erreur d\'attente des éléments:', erreurAttente);
+            console.log('🔍 Contenu actuel de la modale:', contenuModale?.innerHTML);
+            
+            // Afficher les formulaires disponibles pour débugger
+            const formulairesDisponibles = Array.from(contenuModale.querySelectorAll('form'))
+                .map(f => ({ id: f.id || 'sans-id', classes: f.className }));
+            console.log('🔍 Formulaires disponibles:', formulairesDisponibles);
+            
+            alert('Erreur : le formulaire de scan n\'a pas pu être chargé. Veuillez réessayer.');
         }
 
     } catch (erreur) {
         console.error("❌ Erreur lors de l'ouverture du scan :", erreur);
         alert("Impossible de charger la fenêtre de scan.");
     }
+}
+
+/**
+ * Initialise les événements du formulaire de scan
+ * 
+ * @param {HTMLFormElement} formScan - Le formulaire de scan
+ * @param {HTMLInputElement} inputIsbn - L'input ISBN
+ */
+function initialiserFormulaireScan(formScan, inputIsbn) {
+    console.log('🎯 Initialisation du formulaire de scan');
+
+    // Focus automatique sur le champ ISBN
+    if (inputIsbn) {
+        setTimeout(() => {
+            inputIsbn.focus();
+            console.log('✅ Focus mis sur le champ ISBN');
+        }, 100);
+
+        // // Détection automatique (Scanner)
+        // // Dès qu'un ISBN de 10 ou 13 caractères est détecté, on le vérifie
+        // inputIsbn.addEventListener('input', function(e) {
+        //     const isbn = e.target.value.trim();
+        //     console.log('📝 Saisie ISBN:', isbn, 'Longueur:', isbn.length);
+            
+        //     if (isbn.length === 10 || isbn.length === 13) {
+                console.log("✅ ISBN détecté par saisie/scan :", isbn);
+                verifierIsbn(isbn);
+            // }
+        // });
+    }
+
+    // ⚠️ PAS de gestionnaire submit ici !
+    // Le formulaire est géré par le gestionnaire global (document.addEventListener('submit'))
+    // Voir ligne ~330+
+
+    console.log('✅ Formulaire de scan initialisé');
 }
 
 // ==========================================
@@ -122,6 +203,13 @@ async function ouvrirScan(action) {
  * @param {string} isbn - ISBN à vérifier
  */
 async function verifierIsbn(isbn) {
+    // Protection anti-spam : empêcher les appels multiples
+    if (verificationEnCours) {
+        console.warn('⏳ Vérification déjà en cours, requête ignorée');
+        return;
+    }
+
+    verificationEnCours = true;
     console.log('🔍 Vérification ISBN:', isbn);
 
     try {
@@ -150,6 +238,11 @@ async function verifierIsbn(isbn) {
     } catch (erreur) {
         console.error("❌ Erreur lors de la vérification ISBN :", erreur);
         alert("Erreur lors de la vérification de l'ISBN. Veuillez réessayer.");
+    } finally {
+        // Réinitialiser le flag après un court délai
+        setTimeout(() => {
+            verificationEnCours = false;
+        }, 500);
     }
 }
 
@@ -299,56 +392,15 @@ async function ouvrirConfirmation(livreId) {
     console.log('✅ Ouverture confirmation pour livre ID:', livreId);
 
     try {
-        const reponse = await fetch(url, {
-            headers: { 'X-Requested-With': 'XMLHttpRequest' }
-        });
-        const data = await reponse.json();
-
-        if (data.success) {
-            const livre         = data.livre;
-            const estSortie     = data.estSortie;
-            const couleurAction = estSortie ? '#d9534f' : '#5cb85c';
-            const labelAction   = estSortie ? 'SORTIE'  : 'ENTRÉE';
-            const texteBouton   = estSortie ? "l'emprunt" : "le retour";
-            const classeBouton  = estSortie ? 'btn-warning' : 'btn-success';
-
-            const { fragment } = clonerTemplate('modal-confirmation-template');
-
-            // Image de couverture
-            const imgEl = fragment.querySelector('[data-slot="cover"]');
-            if (livre.lienImg) {
-                imgEl.src = livre.lienImg;
-            }
-
-            // Informations du livre
-            fragment.querySelector('[data-slot="titre"]').textContent  = livre.titre;
-            fragment.querySelector('[data-slot="auteur"]').textContent = livre.auteur;
-            fragment.querySelector('[data-slot="isbn"]').textContent   = livre.isbn;
-            fragment.querySelector('[data-slot="stock"]').textContent  = livre.stock;
-
-            // Formulaire
-            const formEl = fragment.querySelector('[data-slot="form"]');
-            formEl.action = data.urlFinaliser;
-
-            fragment.querySelector('[data-slot="type-action"]').value = String(estSortie);
-
-            // Label action (couleur dynamique)
-            const labelEl = fragment.querySelector('[data-slot="label-action"]');
-            labelEl.textContent = `Action : ${labelAction}`;
-            labelEl.style.color = couleurAction;
-
-            // Bouton de validation
-            const btnEl = fragment.querySelector('[data-slot="btn-submit"]');
-            btnEl.textContent = `Valider ${texteBouton}`;
-            btnEl.classList.add(classeBouton);
-
-            afficherDansModale(fragment);
-
-            if (!modalePrincipale.open) {
-                modalePrincipale.showModal();
-            }
-            autoFocus('nomPrenom');
+        await chargerModale(url);
+        
+        if (!modalePrincipale.open) {
+            modalePrincipale.showModal();
         }
+        
+        // Focus automatique sur le champ nom/prénom
+        autoFocus('nomPrenom');
+        
     } catch (erreur) {
         console.error("❌ Erreur lors de la récupération de la confirmation :", erreur);
         alert("Impossible de charger la confirmation. Veuillez réessayer.");
@@ -363,23 +415,41 @@ document.addEventListener('submit', async (e) => {
     const formulaire    = e.target;
     const contenuModale = document.getElementById('contenu_modale');
 
+    console.log('📋 Submit event détecté sur:', formulaire.id || formulaire.className || 'formulaire sans ID');
+
     // Vérifier si c'est un formulaire dans la modale
     if (!contenuModale || !contenuModale.contains(formulaire)) {
+        console.log('➡️ Formulaire hors modale, laisser passer');
         return; // Pas dans la modale, laisser passer
     }
 
+    // ⚠️ CRITIQUE : Empêcher la soumission normale IMMÉDIATEMENT
     e.preventDefault();
+    e.stopPropagation();
+    
+    console.log('🛑 Soumission interceptée (preventDefault appelé)');
+    console.log('📝 Formulaire intercepté dans la modale');
 
-    const actionUrl = formulaire.action;
+    const actionUrl = formulaire.action || window.location.href;
     const formData  = new FormData(formulaire);
 
     console.log('📤 Soumission formulaire:', actionUrl);
 
     // CAS A : Soumission du SCAN ISBN
-    if (actionUrl.includes('verification') || formulaire.querySelector('#isbnInput')) {
-        const isbn = formulaire.querySelector('#isbnInput').value;
-        verifierIsbn(isbn);
-        return;
+    // Vérifier si c'est le formulaire de scan en cherchant #isbnInput
+    const isbnInput = formulaire.querySelector('#isbnInput');
+    
+    if (formulaire.id === 'form_scan' || isbnInput || actionUrl.includes('debut')) {
+        console.log('🔍 Détection formulaire de SCAN ISBN');
+        const isbn = isbnInput?.value.trim();
+        if (isbn) {
+            console.log('📖 ISBN saisi:', isbn);
+            verifierIsbn(isbn);
+        } else {
+            console.warn('⚠️ ISBN vide');
+            alert('Veuillez scanner ou saisir un ISBN');
+        }
+        return; // Important : sortir de la fonction
     }
 
     // CAS B : Soumission du NOUVEAU LIVRE ou CONFIRMATION
@@ -423,6 +493,6 @@ document.addEventListener('submit', async (e) => {
         console.error("❌ Erreur soumission formulaire:", erreur);
         alert("Une erreur est survenue. Veuillez réessayer.");
     }
-});
+}, true); // ⚠️ IMPORTANT : true = capture phase (s'exécute AVANT les gestionnaires normaux)
 
-console.log('✅ home_mouvement_handler.js v1.2 chargé');
+console.log('✅ home_mouvement_handler.js v1.3 chargé');

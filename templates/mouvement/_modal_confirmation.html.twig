@@ -3,9 +3,13 @@
 <h3>Étape Finale : Confirmation</h3>
 
 <div class="book-summary-box">
-    {% if livre.lienImg %}
-        <img src="{{ livre.lienImg }}" alt="Couverture" class="img-cover-thumb">
-    {% endif %}
+    <div class="book-summary-img">
+        {% if livre.lienImg %}
+            <img src="{{ livre.lienImg }}" alt="Couverture" class="img-cover-thumb">
+        {% else %}
+            <img data-slot="cover" src="/extras/images/unknown_book.jpg" alt="Couverture" class="img-cover-thumb">
+        {% endif %}
+    </div>
     <div>
         <strong>Titre :</strong> {{ livre.titre }} <br>
         <strong>Auteur :</strong> {{ livre.auteur }} <br>

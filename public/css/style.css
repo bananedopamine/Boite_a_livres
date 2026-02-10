@@ -20,6 +20,7 @@
     --text: #212121;
     --text-light: #585858;
     --border: #898EA4;
+    --border-light: #b4b8c9 ;
     --accent: #0d47a1;
     --accent-hover: #1266e2;
     --accent-text: white;
@@ -1694,6 +1695,13 @@ dialog#modale_filtres[open] {
     gap: 15px;
     align-items: start;
     text-align:left;
+}
+.book-summary-img {
+    background: linear-gradient(to right, var(--border-light) 0%, var(--accent-bg) 80%);
+    padding: 15px;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    margin-bottom: 20px;
 }
 
 .img-cover-thumb {

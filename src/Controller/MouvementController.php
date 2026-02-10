@@ -188,7 +188,7 @@ class MouvementController extends AbstractController
     }
 
     /**
-     * Retourne le formulaire de confirmation ( HTML pour modale).
+     * Retourne le formulaire de confirmation (HTML pour modale).
      * Interagit avec : _modal_confirmation.html.twig
      */
     #[Route('/confirmation/{id<\d+>}', name: 'app_mouvement_confirmation')]
@@ -202,18 +202,10 @@ class MouvementController extends AbstractController
     
         $estUneSortie = $requete->query->get('type_action') === 'true';
     
-        return $this->json([
-            'success'   => true,
-            'livre' => [
-                'id'      => $livre->getId(),
-                'titre'   => $livre->gettitre(),
-                'auteur'  => $livre->getAuteur(),
-                'isbn'    => $livre->getIsbn(),
-                'stock'   => $livre->getNbStock(),
-                'lienImg' => $livre->getLienImg(),
-            ],
-            'estSortie'    => $estUneSortie,
-            'urlFinaliser' => $this->generateUrl('app_mouvement_finaliser', ['id' => $livre->getId()])
+        // Renvoyer le template HTML directement
+        return $this->render('mouvement/_modal_confirmation.html.twig', [
+            'livre' => $livre,
+            'estSortie' => $estUneSortie
         ]);
     }
 
