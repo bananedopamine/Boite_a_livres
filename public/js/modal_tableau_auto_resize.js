@@ -38,14 +38,12 @@
         
         // Vérifier si le contenu contient un tableau
         if (contientTableau(contenu)) {
-            console.log('📊 Tableau détecté dans la modale - Application des styles adaptés');
             modale.classList.add('modale-tableau');
             
             // Vérifier si le contenu nécessite un scroll horizontal
             setTimeout(() => {
                 if (contenu.scrollWidth > contenu.clientWidth) {
                     contenu.classList.add('has-horizontal-scroll');
-                    console.log('↔️ Scroll horizontal activé');
                 } else {
                     contenu.classList.remove('has-horizontal-scroll');
                 }
@@ -145,8 +143,6 @@
                 }
             }, 200);
         });
-        
-        console.log('✅ Auto-resize des modales avec tableaux initialisé');
     }
     
     // Initialiser au chargement du DOM

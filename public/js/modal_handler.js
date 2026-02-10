@@ -81,11 +81,6 @@ function attacherEvenementBoutonModifier() {
             });
         }
     });
-    
-    // Log pour debug (optionnel, à retirer en production)
-    if (boutonsModifier.length > 0) {
-        console.log(`[Modal Handler] ${boutonsModifier.length} bouton(s) "Modifier" intercepté(s)`);
-    }
 }
 
 /* ===================================
@@ -193,8 +188,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }, { passive: false });
     }
-    
-    console.log('[Modal Handler] Initialisé avec succès');
 });
 
 /* ===================================

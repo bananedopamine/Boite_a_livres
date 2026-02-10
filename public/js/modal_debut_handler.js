@@ -35,5 +35,3 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
-
-console.log('✅ modal_debut_handler.js chargé');

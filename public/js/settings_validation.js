@@ -32,5 +32,3 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
-
-console.log('✅ settings_validation.js chargé');

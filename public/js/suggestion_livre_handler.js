@@ -202,7 +202,6 @@ function suggererAutreLivre() {
  * MODIFICATION : On retourne maintenant sur la modal de scan ISBN au lieu d'aller directement à la confirmation
  */
 function emprunterLivreSuggestion(isbn) {
-    console.log('[Suggestion] Emprunt du livre ISBN:', isbn);
     
     // Annuler le timer de reset
     annulerTimerResetSuggestion();
@@ -358,7 +357,6 @@ function afficherModalePasLivres() {
 function recommencerSuggestion() {
     // FIX : Reset explicite de l'index à 0
     indexLivreSuggestion = 0;
-    console.log('[Suggestion] Recommencer - Index réinitialisé à 0');
     
     // Afficher le premier livre
     afficherLivreSuggestion();
@@ -373,7 +371,6 @@ function demarrerTimerResetSuggestion() {
     
     // Créer un nouveau timer (30 secondes)
     timerResetSuggestion = setTimeout(() => {
-        console.log('[Suggestion] Timer expiré - Réinitialisation automatique');
         indexLivreSuggestion = 0;
         listeLivresSuggestion = [];
         
@@ -418,7 +415,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         const contenu = document.getElementById('contenu_modale');
                         if (contenu && (contenu.innerHTML.includes('suggestion-livre-container') ||
                                        contenu.innerHTML.includes('suggestion-fin-container'))) {
-                            console.log('[Suggestion] Modale fermée - Réinitialisation');
                             annulerTimerResetSuggestion();
                             // FIX : Reset complet uniquement si la modale est fermée par l'utilisateur
                             indexLivreSuggestion = 0;

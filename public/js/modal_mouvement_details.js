@@ -79,5 +79,3 @@ document.addEventListener('submit', async (e) => {
         console.error("Erreur lors de l'envoi Mouvement :", err);
     }
 });
-
-console.log('✅ modal_mouvement_details.js chargé');

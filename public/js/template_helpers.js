@@ -267,5 +267,3 @@ window.createFilterTagFallback = createFilterTagFallback;
 window.appendFilterBadge = appendFilterBadge;
 window.createLivreRowFromTemplate = createLivreRowFromTemplate;
 window.createMouvementRowFromTemplate = createMouvementRowFromTemplate;
-
-console.log('✅ template_helpers.js chargé');

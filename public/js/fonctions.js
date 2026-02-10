@@ -138,7 +138,6 @@ function initVoirPlusButtons() {
             openDescriptionModal(description);
         });
     });
-    console.log('initVoirPlusButtons: ' + document.querySelectorAll('.btn-voir-plus').length + ' bouton(s) initialisé(s)');
 }
 
 // ==========================================
@@ -208,12 +207,10 @@ function initObservateurModale() {
     const contenuModale = document.getElementById('contenu_modale');
     
     if (contenuModale) {
-        console.log('MutationObserver: Attaché à #contenu_modale');
         
         const observer = new MutationObserver(function(mutations) {
             const voirPlusButtons = document.querySelectorAll('.btn-voir-plus');
             if (voirPlusButtons.length > 0) {
-                console.log('MutationObserver: Détection de ' + voirPlusButtons.length + ' bouton(s) "Voir plus"');
                 setTimeout(function() {
                     initVoirPlusButtons();
                 }, 100);
@@ -242,7 +239,6 @@ function initFermetureClicExterieur(modalId) {
                 modal.close();
             }
         });
-        console.log(`Event listener: Fermeture sur clic extérieur attaché à #${modalId}`);
     }
 }
 
@@ -419,9 +415,3 @@ function debounce(func, wait) {
         timeout = setTimeout(later, wait);
     };
 }
-
-// ==========================================
-// EXPORT & INITIALISATION
-// ==========================================
-
-console.log('✅ fonctions.js chargé - Version 3.0');

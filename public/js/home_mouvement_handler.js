@@ -72,12 +72,8 @@ async function ouvrirScan(action) {
 
     const url = baseUrl + "?action=" + action;
 
-    console.log('🔍 Ouverture scan - URL:', url, 'Action:', action);
-
     try {
         await chargerModale(url);
-
-        console.log('✅ Modale chargée');
 
         const inputIsbn = document.getElementById('isbnInput');
         const formScan  = document.getElementById('form_scan');
