@@ -116,31 +116,17 @@ async function ouvrirScan(action) {
 
     const url = baseUrl + "?action=" + action;
 
-    try {
         // Charger la modale
         await chargerModale(url);
 
-        //  NOUVEAU : Attendre que les éléments soient vraiment dans le DOM
         const contenuModale = document.getElementById('contenu_modale');
+
+        const formScan = await attendreElement('#form_scan', contenuModale, 3000);
+        const inputIsbn = await attendreElement('#isbnInput', contenuModale, 3000);
         
-        try {
-            // Attendre que le formulaire soit présent dans le DOM
-            const formScan = await attendreElement('#form_scan', contenuModale, 3000);
-            const inputIsbn = await attendreElement('#isbnInput', contenuModale, 3000);
+        // Initialiser le formulaire de scan
+        initialiserFormulaireScan(formScan,inputIsbn);
 
-            // Initialiser le formulaire de scan
-            initialiserFormulaireScan(formScan, inputIsbn);
-
-        } catch (erreurAttente) {
-            console.error(' Erreur d\'attente des éléments:', erreurAttente);
-                        
-            alert('Erreur : le formulaire de scan n\'a pas pu être chargé. Veuillez réessayer.');
-        }
-
-    } catch (erreur) {
-        console.error(" Erreur lors de l'ouverture du scan :", erreur);
-        alert("Impossible de charger la fenêtre de scan.");
-    }
 }
 
 /**
@@ -149,7 +135,7 @@ async function ouvrirScan(action) {
  * @param {HTMLFormElement} formScan - Le formulaire de scan
  * @param {HTMLInputElement} inputIsbn - L'input ISBN
  */
-function initialiserFormulaireScan(formScan, inputIsbn) {
+function initialiserFormulaireScan(formScan,inputIsbn) {
 
     // Focus automatique sur le champ ISBN
     if (inputIsbn) {
