@@ -1,5 +1,11 @@
 <?php
 
+/* @author : Dufour Marc (marc.dufour@stjosup.com)
+ * @version : 1
+ * @dateCreate : 13/01/2026
+ * @lastUpdate : 11/02/2026
+ */
+
 namespace App\Controller;
 
 use App\Entity\Livre;
