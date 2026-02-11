@@ -20,7 +20,6 @@ function mettreAJourHorloge() {
     
     if (bouton) {
         bouton.textContent = heureFormatee;
-        console.log('Horloge mise à jour:', heureFormatee);
     } else {
         console.error('Bouton #btn-horloge non trouvé !');
     }
@@ -28,13 +27,11 @@ function mettreAJourHorloge() {
 
 // Démarrer l'horloge au chargement de la page
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Script horloge chargé');
     
     // Vérifier que le bouton existe
     const bouton = document.getElementById('btn-horloge');
     
     if (bouton) {
-        console.log('Bouton horloge trouvé:', bouton);
         
         // Afficher l'heure immédiatement
         mettreAJourHorloge();
@@ -43,6 +40,5 @@ document.addEventListener('DOMContentLoaded', function() {
         setInterval(mettreAJourHorloge, 1000);
     } else {
         console.error('ERREUR: Le bouton #btn-horloge n\'a pas été trouvé !');
-        console.log('Vérifiez que le bouton Admin a bien l\'attribut id="btn-horloge"');
     }
 });
