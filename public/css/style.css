@@ -2646,9 +2646,71 @@ dialog#modale_filtres[open] {
 
 /* #endregion */
 
-/* #region 25. ACCESSIBILITÉ */
+/* #region 25. PAGES D'ADMINISTRATION */
 /* ===============================================
-   25. ACCESSIBILITÉ
+   25. PAGES D'ADMINISTRATION (LOGIN & SETTINGS)
+   =============================================== */
+
+/* --- PAGE DE CONNEXION (LOGIN) --- */
+
+/* Conteneur principal de la page de connexion */
+.login-container {
+    max-width: 400px;
+    margin: auto;
+    text-align: center;
+}
+
+/* Champ de saisie du PIN */
+.login-pin-input {
+    text-align: center;
+    font-size: 2rem;
+}
+
+/* Bouton de validation du formulaire de connexion */
+.login-submit-btn {
+    margin-top: 1rem;
+    width: 100%;
+}
+
+/* --- PAGE DES PARAMÈTRES (SETTINGS) --- */
+
+/* Espacement des groupes de formulaire dans les paramètres */
+.settings-form-group {
+    margin-bottom: 15px;
+}
+
+/* Texte d'aide / Note sous les champs dans les paramètres */
+.settings-help-text {
+    color: var(--color-gray-600);
+}
+
+/* Carte d'information avec bordure dans les paramètres */
+.settings-info-card {
+    margin-bottom: 20px;
+    padding: 20px;
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+}
+
+/* Carte d'actions sans marge en bas dans les paramètres */
+.settings-actions-card {
+    padding: 20px;
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+}
+
+/* Container des boutons d'actions rapides dans les paramètres */
+.settings-quick-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* #endregion */
+
+/* #region 26. ACCESSIBILITÉ */
+/* ===============================================
+   26. ACCESSIBILITÉ
    =============================================== */
 
 :focus {
@@ -2684,9 +2746,9 @@ textarea:focus {
 
 /* #endregion */
 
-/* #region 26. RESPONSIVE */
+/* #region 27. RESPONSIVE */
 /* ===============================================
-   26. RESPONSIVE
+   27. RESPONSIVE
    =============================================== */
 
 @media (max-width: 720px) {

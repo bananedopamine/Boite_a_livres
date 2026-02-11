@@ -36,7 +36,7 @@
         <form method="post" action="{{ path('app_admin_settings') }}">
             <input type="hidden" name="action" value="change_pin">
 
-            <div class="form-group" style="margin-bottom: 15px;">
+            <div class="form-group settings-form-group">
                 <label for="current_pin">Code PIN actuel :</label>
                 <input 
                     type="password" 
@@ -50,7 +50,7 @@
                 >
             </div>
 
-            <div class="form-group" style="margin-bottom: 15px;">
+            <div class="form-group settings-form-group">
                 <label for="new_pin">Nouveau code PIN :</label>
                 <input 
                     type="password" 
@@ -63,10 +63,10 @@
                     title="Le PIN doit contenir au moins 4 chiffres"
                     minlength="4"
                 >
-                <small style="color: #666;">Le PIN doit contenir au moins 4 chiffres.</small>
+                <small class="settings-help-text">Le PIN doit contenir au moins 4 chiffres.</small>
             </div>
 
-            <div class="form-group" style="margin-bottom: 15px;">
+            <div class="form-group settings-form-group">
                 <label for="confirm_pin">Confirmer le nouveau PIN :</label>
                 <input 
                     type="password" 
@@ -88,7 +88,7 @@
     </div>
 
     {# Section 2 : Informations système (optionnel) #}
-    <div class="card" style="margin-bottom: 20px; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+    <div class="card settings-info-card">
         <h2>Informations système</h2>
         <table class="table table-striped table-hover">
             <thead class="table-dark">
@@ -111,9 +111,9 @@
     </div>
 
     {# Section 3 : Actions rapides #}
-    <div class="card" style="padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+    <div class="card settings-actions-card">
         <h2>Actions rapides</h2>
-        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <div class="settings-quick-actions">
             <a href="{{ path('app_livre_index') }}" class="btn btn-info">
                 Gérer les livres
             </a>
