@@ -35,7 +35,7 @@
     </div>
 
     <div class="modal-actions-between">
-        <p style="margin: 0; color: {{ estSortie ? '#d9534f' : '#5cb85c' }}; font-weight: bold;">
+        <p class="text-action-label {{ estSortie ? 'text-danger-bold' : 'text-success-bold' }}">
             Action : {{ estSortie ? 'SORTIE' : 'ENTRÉE' }}
         </p>
         <button type="submit" class="btn {{ estSortie ? 'btn-warning' : 'btn-success' }}">

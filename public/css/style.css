@@ -828,6 +828,17 @@ textarea:disabled {
     margin-bottom: 0.3rem;
 }
 
+.form-select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 1rem;
+    background-color: var(--bg);
+    color: var(--text);
+    min-height: 48px;
+}
+
 /* #endregion */
 
 /* #region 10. BOUTONS */
@@ -947,6 +958,46 @@ button.btn-outline-secondary:hover {
     background-color: var(--color-red-dark);
 }
 
+.btn-success,
+button.btn-success {
+    background-color: var(--color-green-primary);
+    border-color: var(--color-green-primary);
+    color: var(--color-white);
+}
+
+.btn-success:hover,
+button.btn-success:hover {
+    background-color: var(--color-green-dark);
+    border-color: var(--color-green-dark);
+}
+
+.btn-warning,
+button.btn-warning {
+    background-color: var(--color-yellow-primary);
+    border-color: var(--color-yellow-primary);
+    color: var(--color-gray-950);
+}
+
+.btn-warning:hover,
+button.btn-warning:hover {
+    background-color: var(--color-yellow-warning-text);
+    border-color: var(--color-yellow-warning-text);
+    color: var(--color-white);
+}
+
+.btn-danger,
+button.btn-danger {
+    background-color: var(--color-red-danger);
+    border-color: var(--color-red-danger);
+    color: var(--color-white);
+}
+
+.btn-danger:hover,
+button.btn-danger:hover {
+    background-color: var(--color-red-danger-dark);
+    border-color: var(--color-red-danger-dark);
+}
+
 /* Bouton spécifique home 404 */
 .btn-404 {
     margin-top: 2rem;
@@ -978,6 +1029,16 @@ button.btn-outline-secondary:hover {
     white-space: nowrap;
     vertical-align: baseline;
     border-radius: 0.25rem;
+}
+
+.bg-success {
+    background: linear-gradient(135deg, var(--color-green-success) 0%, var(--color-green-dark) 100%) !important;
+    color: var(--color-white) !important;
+}
+
+.bg-danger {
+    background: linear-gradient(135deg, var(--color-red-danger) 0%, var(--color-red-danger-dark) 100%) !important;
+    color: var(--color-white) !important;
 }
 
 .bg-warning {
@@ -1274,11 +1335,20 @@ hr {
 }
 
 .col-md-2,
+.col-md-3,
 .col-md-4,
 .col-md-5,
 .col-md-6 {
     flex: 1;
     min-width: 200px;
+}
+
+.col-12 {
+    width: 100%;
+}
+
+.g-3 {
+    gap: 1rem !important;
 }
 
 .d-flex {
@@ -1854,6 +1924,14 @@ dialog#modale_filtres[open] {
     align-items: center;
 }
 
+/* Modale détails mouvement */
+.modal-mouvement-details {
+    width: 50%;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    padding: 20px;
+}
+
 /* Modale détails livre */
 .modal-livre-details {
     width: clamp(600px, 80vw, 1200px);
@@ -2094,10 +2172,12 @@ dialog#modale_filtres[open] {
 }
 
 .modal-succes-icon .check-circle {
+    stroke-width: 4;
     animation: drawCircle 0.6s ease-out 0.3s backwards;
 }
 
 .modal-succes-icon .check-mark {
+    stroke-width: 6;
     animation: drawCheck 0.4s ease-out 0.6s backwards;
 }
 
@@ -2567,6 +2647,7 @@ textarea:focus {
     }
     
     .col-md-2,
+    .col-md-3,
     .col-md-4,
     .col-md-5,
     .col-md-6 {
