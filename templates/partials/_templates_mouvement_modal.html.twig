@@ -12,32 +12,29 @@
    Données dynamiques : [isbn], [typeAction]
    ======================================== #}
 <template id="modal-livre-introuvable-template">
-    <div style="text-align: center; padding: 20px;">
-        <h3 style="color: #d9534f; margin-bottom: 20px;">Livre Introuvable</h3>
-        <p style="margin-bottom: 25px;">
+    <div class="div-book-not-found">
+    <h3 class="title-book-not-found">Livre Introuvable</h3>
+        <p class="p-book-not-found">
             L'ISBN <strong data-slot="isbn"></strong> n'a pas été trouvé
             dans notre base de données ni sur l'API Google Books.
         </p>
 
-        <div style="display: flex; flex-direction: column; gap: 15px; max-width: 400px; margin: 0 auto;">
+        <div class="div-book-not-found-options">
             <button
-                class="btn btn-primary"
-                data-action="creer"
-                style="width: 100%; padding: 15px; font-size: 1rem;">
+                class="btn btn-primary btn-book-not-found-options"
+                data-action="creer">
                 Créer le livre manuellement
             </button>
 
             <button
-                class="btn btn-secondary"
-                data-action="rescanner"
-                style="width: 100%; padding: 15px; font-size: 1rem;">
+                class="btn btn-secondary btn-book-not-found-options"
+                data-action="rescanner">
                 Rescanner un autre livre
             </button>
 
             <button
-                class="btn btn-light"
-                data-action="annuler"
-                style="width: 100%; padding: 12px; font-size: 0.95rem;">
+                class="btn btn-light btn-book-not-found-options"
+                data-action="annuler">
                 ✕ Annuler
             </button>
         </div>
