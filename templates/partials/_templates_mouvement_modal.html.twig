@@ -1,19 +1,9 @@
 {# 
- # _templates_mouvement_modal.html.twig
- # Templates HTML5 pour le flux d'entrée/sortie de livres (home_mouvement_handler.js)
- # 
- # @author Dufour Marc (marc.dufour@stjosup.com)
- # @version 1.0
- # @date 09/02/2026
- # 
- #  INCLUSION : À inclure dans templates/home/index.html.twig
- #               Placer à la fin du {% block body %}, juste avant {% endblock %}
- #
- # Templates contenus :
- #   1. modal-livre-introuvable-template  → afficherOptionsCreation()
- #   2. modal-creation-rapide-template    → afficherFormulaireCreationRapide()
- #   3. modal-creation-succes-template    → soumettreCreationRapide() (message transitoire)
- #   4. modal-confirmation-template       → ouvrirConfirmation()
+ # @fileName : partials/_templates_mouvement_modal.html.twig
+ # @author : Dufour Marc (marc.dufour@stjosup.com)
+ # @version : 2.0
+ # @dateCreate : 09/02/2026
+ # @lastUpdate : 11/02/2026 (ajout des entêtes)
  #}
 
 {# ========================================
@@ -53,10 +43,3 @@
         </div>
     </div>
 </template>
-
-
-{# ========================================
-   TEMPLATE 2 : Formulaire de création rapide
-   Affiché quand l'utilisateur choisit "Créer manuellement"
-   Données dynamiques : [isbn]
-   ======================================== #}
