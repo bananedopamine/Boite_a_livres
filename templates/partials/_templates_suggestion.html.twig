@@ -18,11 +18,12 @@
         
         <div class="suggestion-livre-card">
             {# Image de couverture #}
-            <img data-slot="cover" 
-                 src="/extras/images/unknown_book.jpg" 
-                 alt="Couverture" 
-                 class="suggestion-cover" 
-                 onerror="this.src='/extras/images/unknown_book.jpg'">
+            
+                <img data-slot="cover" 
+                     src="{{ livre.lienImg }}" 
+                     alt="Couverture de {{ livre.titre }}"  
+                     class="suggestion-cover" 
+                     onerror="this.src='/extras/images/unknown_book.jpg'">
             
             <div class="suggestion-details">
                 {# Titre #}
@@ -34,8 +35,8 @@
                 </p>
                 
                 {# Genre (badge) #}
-                <p class="suggestion-genre" data-slot="genre-container" style="display: none;">
-                    <span class="badge bg-info" data-slot="genre"></span>
+                <p class="suggestion-genre"  data-slot="genre-container" style="display: none;">
+                    <strong>Genre :</strong><span data-slot="genre"></span>
                 </p>
                 
                 {# ISBN #}
