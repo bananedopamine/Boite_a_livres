@@ -15,16 +15,16 @@
         <strong>Que souhaitez-vous faire ?</strong>
     </div>
 
-    <div class="modal-actions-column" style="display: flex; flex-direction: column; gap: 10px;">
-        <button class="btn btn-primary" onclick="ouvrirCreationRapide('{{ isbn }}')" style="width: 100%;">
+    <div class="modal-actions-column">
+        <button class="btn btn-primary" onclick="ouvrirCreationRapide('{{ isbn }}')">
             Création rapide ( Titre, Auteur et Genre (optionnel) )
         </button>
         
-        <button class="btn btn-secondary" onclick="ouvrirScan('{{ typeAction }}')" style="width: 100%;">
+        <button class="btn btn-secondary" onclick="ouvrirScan('{{ typeAction }}')">
             Réessayer le scan
         </button>
         
-        <button class="btn btn-light" onclick="document.getElementById('modale_principale').close()" style="width: 100%; margin-top: 10px;">
+        <button class="btn btn-light" onclick="document.getElementById('modale_principale').close()">
             Annuler
         </button>
     </div>

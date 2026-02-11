@@ -998,6 +998,20 @@ button.btn-danger:hover {
     border-color: var(--color-red-danger-dark);
 }
 
+.btn-light,
+button.btn-light {
+    background-color: var(--accent-bg);
+    border-color: var(--border);
+    color: var(--text);
+}
+
+.btn-light:hover,
+button.btn-light:hover {
+    background-color: var(--color-gray-100);
+    border-color: var(--border);
+    color: var(--text);
+}
+
 /* Bouton spécifique home 404 */
 .btn-404 {
     margin-top: 2rem;
@@ -1242,6 +1256,10 @@ video {
 
 .logo-home {
     border: none;
+}
+
+.img-retour-fleche {
+    width: 50px;
 }
 
 /* #endregion */
@@ -2363,6 +2381,57 @@ dialog#modale_filtres[open] {
 .modal-404 {
     text-align: center;
     padding: 1.5rem;
+}
+
+/* Colonne d'actions empilées (boutons les uns en dessous des autres) */
+.modal-actions-column {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+}
+
+.modal-actions-column .btn {
+    width: 100%;
+}
+
+.modal-actions-column .btn:last-child {
+    margin-top: 0.5rem;
+}
+
+/* Détails d'un livre dans la modale */
+.livre-details-titre {
+    margin: 1rem;
+    color: var(--accent);
+}
+
+.livre-cover-container {
+    text-align: center;
+    margin: 1rem 0;
+}
+
+.livre-cover-img {
+    max-width: 150px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px var(--color-black-alpha-20);
+}
+
+/* Modale de confirmation de suppression */
+.modal-confirm-delete {
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    padding: 20px;
+    box-shadow: 0 4px 6px var(--color-black-alpha-10);
+    max-width: 500px;
+}
+
+.modal-confirm-delete-titre {
+    margin-top: 0;
+    color: var(--color-red-error);
+}
+
+.modal-confirm-delete-avertissement {
+    color: var(--color-red-error);
+    font-size: 0.9rem;
 }
 
 /* #endregion */
