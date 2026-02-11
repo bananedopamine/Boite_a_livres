@@ -1,10 +1,10 @@
 /**
- * settings_validation.js
- * Validation côté client pour les paramètres admin
- * 
- * @author Dufour Marc (marc.dufour@stjosup.com)
- * @version 1.0
- * @date 09/02/2026
+ * @fileName : settings_validation.js
+ * @author : Dufour Marc (marc.dufour@stjosup.com)
+ * @version : 1.0
+ * @dateCreate : 09/02/2026
+ * @lastUpdate : 11/02/2026 (ajout de l'entête)
+ * @description : Validation côté client pour les paramètres admin
  */
 
 // ==========================================

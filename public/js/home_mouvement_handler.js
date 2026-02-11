@@ -1,13 +1,12 @@
 /**
- * home_mouvement_handler.js
- * Gestion complète du flux d'entrée/sortie de livres depuis la page d'accueil
- * 
- * @author Dufour Marc (marc.dufour@stjosup.com)
- * @version 1.3
- * @date 10/02/2026
- * 
- * Dépendances: fonctions.js (chargerModale, fermerModale, autoFocus, escapeHtml)
-*/
+ * @fileName : home_mouvement_handler.js
+ * @author : Dufour Marc (marc.dufour@stjosup.com)
+ * @version : 1.3
+ * @dateCreate : 10/02/2026
+ * @lastUpdate : 11/02/2026 (ajout de l'entête)
+ * @description : Gestion complète du flux d'entrée/sortie de livres depuis la page d'accueil
+ * @dependencies : fonctions.js (chargerModale, fermerModale, autoFocus, escapeHtml)
+ */
 
 // ==========================================
 // VARIABLES GLOBALES

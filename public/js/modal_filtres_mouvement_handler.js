@@ -1,12 +1,10 @@
 /**
- * @author : Dufour Marc
+ * @fileName : modal_filtres_mouvement_handler.js
+ * @author : Dufour Marc (marc.dufour@stjosup.com)
  * @version : 2.0
- * @lastUpdate : 09/02/2026 (Extraction HTML dans templates)
+ * @dateCreate : 06/02/2026
+ * @lastUpdate : 11/02/2026 (ajout de l'entête)
  * @description : Gestionnaire de modale de filtres pour les MOUVEMENTS (sans filtres de stock)
- * 
- * MODIFICATIONS v2.0 :
- * - Utilisation de createFilterTagFromTemplate() au lieu de string HTML
- * - Code plus propre et maintenable
  */
 
 

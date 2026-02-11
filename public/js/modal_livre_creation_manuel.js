@@ -1,10 +1,10 @@
 /**
- * modal_livre_creation_manuel.js
- * Gestion du formulaire de création manuelle d'un livre
- * 
- * @author Dufour Marc (marc.dufour@stjosup.com)
- * @version 1.0
- * @date 06/02/2026
+ * @fileName : modal_livre_creation_manuel.js
+ * @author : Dufour Marc (marc.dufour@stjosup.com)
+ * @version : 1.0
+ * @dateCreate : 06/02/2026
+ * @lastUpdate : 11/02/2026 (ajout de l'entête)
+ * @description : Gestion du formulaire de création manuelle d'un livre
  */
 
 /**

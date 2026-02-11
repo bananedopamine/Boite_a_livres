@@ -1,7 +1,9 @@
 /**
+ * @fileName : modal_succes_handler.js
  * @author : Dufour Marc (marc.dufour@stjosup.com)
  * @version : 1.0
  * @dateCreate : 02/02/2026
+ * @lastUpdate : 11/02/2026 (ajout de l'entête)
  * @description : Gestionnaire de la modale de succès après opération d'entrée/sortie
  */
 

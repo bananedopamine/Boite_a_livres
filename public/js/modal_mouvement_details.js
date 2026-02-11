@@ -1,12 +1,11 @@
 /**
- * modal_mouvement_details.js
- * Gestion de la modale de détails des mouvements
- * 
- * @author Dufour Marc (marc.dufour@stjosup.com)
- * @version 1.0
- * @date 09/02/2026
- * 
- * Dépendances: fonctions.js (loadToMouvementModal)
+ * @fileName : modal_mouvement_details.js
+ * @author : Dufour Marc (marc.dufour@stjosup.com)
+ * @version : 1.0
+ * @dateCreate : 09/02/2026
+ * @lastUpdate : 11/02/2026 (ajout de l'entête)
+ * @description : Gestion de la modale de détails des mouvements
+ * @dependencies : fonctions.js (loadToMouvementModal)
  */
 
 // ==========================================

@@ -1,14 +1,10 @@
 /**
+ * @fileName : suggestion_livre_handler.js
  * @author : Dufour Marc (marc.dufour@stjosup.com)
  * @version : 2.0
  * @dateCreate : 06/02/2026
  * @lastUpdate : 09/02/2026
  * @description : Gestionnaire de suggestion de livres aléatoires
- * 
- * MODIFICATIONS v2.0 :
- * - Extraction de tout le HTML dans des templates HTML5
- * - Utilisation de templates au lieu de innerHTML
- * - Code plus maintenable et séparation HTML/JS
  */
 
 

@@ -1,13 +1,10 @@
 /**
+ * @fileName : mouvement_tableau_dynamique.js
  * @author : Dufour Marc (marc.dufour@stjosup.com)
  * @version : 3.0
- * @lastUpdate : 09/02/2026 (Extraction HTML dans templates)
+ * @dateCreate : 09/02/2026
+ * @lastUpdate : 11/02/2026 (ajout de l'entête)
  * @description : Gestion du tableau dynamique des mouvements avec AJAX
- * 
- * MODIFICATIONS v3.0 :
- * - Extraction de la génération HTML dans template HTML5
- * - Utilisation de createMouvementRowFromTemplate() de template_helpers.js
- * - Code plus propre et maintenable
  */
 
 // Variables globales

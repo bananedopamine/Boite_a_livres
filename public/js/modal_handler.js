@@ -1,12 +1,12 @@
-/* ===================================
-   GESTION COMPLÈTE DES MODALES
-   ================================== 
-   @author : Dufour Marc (marc.dufour@stjosup.com)
-   @version : 3.0
-   @dateCreate : 28/01/2026
-   @lastUpdate : 06/02/2026 (Ajout auto-détection boutons Modifier)
-   @description : Gestion unifiée des modales avec fix scroll et interception des boutons
-*/
+/**
+ * @fileName : modal_handler.js
+ * @author : Dufour Marc (marc.dufour@stjosup.com)
+ * @version : 3.0
+ * @dateCreate : 28/01/2026
+ * @lastUpdate : 11/02/2026 (ajout de l'entête)
+ * @description : Gestion unifiée des modales avec fix scroll et interception des boutons
+ */
+
 
 /* ===================================
    FONCTIONS PRINCIPALES

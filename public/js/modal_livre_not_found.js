@@ -1,12 +1,12 @@
 /**
- * modal_livre_not_found.js
- * Gestion de la modale "Livre introuvable"
- * Contient les fonctions pour gérer les actions de la modale 404
- * 
- * @author Dufour Marc (marc.dufour@stjosup.com)
- * @version 1.0
- * @date 06/02/2026
+ * @fileName : modal_livre_not_found.js
+ * @author : Dufour Marc (marc.dufour@stjosup.com)
+ * @version : 1.0
+ * @dateCreate : 06/02/2026
+ * @lastUpdate : 11/02/2026 (ajout de l'entête)
+ * @description : Gestion de la modale "Livre introuvable", contient les fonctions pour gérer les actions de la modale 404
  */
+
 
 /**
  * Ouvre la modale de création rapide avec l'ISBN prérempli

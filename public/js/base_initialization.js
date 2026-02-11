@@ -1,11 +1,10 @@
 /**
- * base_initialization.js
- * Scripts d'initialisation pour la page de base (base.html.twig)
- * Gère les messages flash et le menu déroulant admin
- * 
- * @author Dufour Marc (marc.dufour@stjosup.com)
- * @version 1.0
- * @date 06/02/2026
+ * @fileName : base_initialization.js
+ * @author : Dufour Marc (marc.dufour@stjosup.com)
+ * @version : 1.0
+ * @dateCreate : 06/02/2026
+ * @lastUpdate : 11/02/2026 (ajout de l'entête)
+ * @description : Scripts d'initialisation pour la page de base (base.html.twig), gère les messages flash et le menu déroulant admin
  */
 
 document.addEventListener('DOMContentLoaded', () => {

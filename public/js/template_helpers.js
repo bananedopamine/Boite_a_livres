@@ -1,15 +1,10 @@
 /**
- * template_helpers.js
- * Fonctions d'aide pour manipuler les templates HTML5
- * 
- * @author Dufour Marc (marc.dufour@stjosup.com)
- * @version 1.0
- * @date 09/02/2026
- * 
- * Intégration avec le projet existant :
- * - S'intègre avec fonctions.js (escapeHtml, debounce)
- * - Compatible avec modal_handler.js
- * - Fonctionne avec les tableaux dynamiques existants
+ * @fileName : template_helpers.js
+ * @author : Dufour Marc (marc.dufour@stjosup.com)
+ * @version : 1.0
+ * @dateCreate : 09/02/2026
+ * @lastUpdate : 11/02/2026 (ajout de l'entête)
+ * @description : Fonctions d'aide pour manipuler les templates HTML5
  */
 
 /**

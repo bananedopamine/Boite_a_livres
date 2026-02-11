@@ -1,15 +1,11 @@
 /**
- * DÉTECTION ET ADAPTATION AUTOMATIQUE DES MODALES AVEC TABLEAUX
- * @author : Solution Claude
+ * @fileName : modal_tableau_auto_resize.js
+ * @author : Dufour Marc (marc.dufour@stjosup.com)
  * @version : 1.0
- * @date : 09/02/2026
- * 
- * Ce script détecte automatiquement quand un tableau est chargé dans la modale
- * et applique les styles appropriés pour un affichage optimal
- * 
- * INSTALLATION :
- * Ajoutez cette ligne dans votre fichier base.html.twig avant la fermeture </body> :
- * <script src="{{ asset('js/modal_tableau_auto_resize.js') }}"></script>
+ * @dateCreate : 09/02/2026
+ * @lastUpdate : 11/02/2026 (ajout de l'entête)
+ * @description : Ce script détecte automatiquement quand un tableau est chargé dans la modale
+ *                et applique les styles appropriés pour un affichage optimal
  */
 
 (function() {

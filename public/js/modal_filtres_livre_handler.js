@@ -1,6 +1,9 @@
 /**
- * @author : Dufour Marc
+ * @fileName : modal_filtres_livre_handler.js
+ * @author : Dufour Marc (marc.dufour@stjosup.com)
  * @version : 1.1
+ * @dateCreate : 06/02/2026
+ * @lastUpdate : 11/02/2026 (ajout de l'entête)
  * @description : Gestionnaire de modale de filtres pour les livres
  */
 

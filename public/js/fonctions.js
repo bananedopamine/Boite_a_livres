@@ -1,10 +1,10 @@
 /**
- * fonctions.js
- * Fichier contenant toutes les fonctions JavaScript réutilisables dans l'application
- * 
- * @author Dufour Marc (marc.dufour@stjosup.com)
- * @version 3.0
- * @date 09/02/2026
+ * @fileName : fonctions.js
+ * @author : Dufour Marc (marc.dufour@stjosup.com)
+ * @version : 2.0
+ * @dateCreate : 09/02/2026
+ * @lastUpdate : 11/02/2026 (ajout de l'entête)
+ * @description : Fichier contenant toutes les fonctions JavaScript réutilisables dans l'application
  */
 
 // ==========================================

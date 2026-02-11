@@ -1,14 +1,10 @@
 /**
+ * @fileName : livre_tableau_dynamique.js
  * @author : Dufour Marc (marc.dufour@stjosup.com)
  * @version : 3.0
  * @dateCreate : 28/01/2026
  * @lastUpdate : 09/02/2026 (Extraction HTML dans templates)
  * @description : Gestion du tableau dynamique des livres avec AJAX
- * 
- * MODIFICATIONS v3.0 :
- * - Extraction de la génération HTML dans template HTML5
- * - Utilisation de createLivreRowFromTemplate() de template_helpers.js
- * - Code plus propre et maintenable
  */
 
 

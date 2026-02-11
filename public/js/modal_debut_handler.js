@@ -1,12 +1,11 @@
 /**
- * modal_debut_handler.js
- * Gestion du focus automatique sur le champ ISBN dans la modale de début
- * 
- * @author Dufour Marc (marc.dufour@stjosup.com)
- * @version 1.0
- * @date 09/02/2026
- * 
- * Dépendances: fonctions.js (autoFocus)
+ * @fileName : modal_debut_handler.js
+ * @author : Dufour Marc (marc.dufour@stjosup.com)
+ * @version : 1.0
+ * @dateCreate : 09/02/2026
+ * @lastUpdate : 11/02/2026 (ajout de l'entête)
+ * @description : Gestion complète du flux d'entrée/sortie de livres depuis la page d'accueil
+ * @dependencies : fonctions.js (autoFocus)
  */
 
 // ==========================================
