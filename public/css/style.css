@@ -350,7 +350,7 @@ nav {
 }
 
 btn {
-    text-color: var(--accent-text);
+    color: var(--accent-text);
 }
 
 nav ul,
@@ -975,7 +975,7 @@ button.btn-success:hover {
 button.btn-warning {
     background-color: var(--color-yellow-primary);
     border-color: var(--color-yellow-primary);
-    color: var(--color-gray-950);
+    color: var(--accent-text);
 }
 
 .btn-warning:hover,
