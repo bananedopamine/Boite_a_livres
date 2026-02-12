@@ -936,7 +936,6 @@ button.btn-outline-secondary:hover {
 }
 
 .btn-modal-close {
-    margin-top: 1rem;
     background-color: var(--color-gray-600);
     border-color: var(--color-gray-600);
 }
@@ -970,7 +969,6 @@ button.btn-success:hover {
     background-color: var(--color-green-dark);
     border-color: var(--color-green-dark);
 }
-
 .btn-warning,
 button.btn-warning {
     background-color: var(--color-yellow-primary);
