@@ -9,4 +9,5 @@
 /var/share
 /vendor/
 /.vscode
+/.rmv
 ###< symfony/framework-bundle ###
