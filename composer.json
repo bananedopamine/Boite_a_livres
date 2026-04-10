@@ -9,14 +9,14 @@
         "php": ">=8.2",
         "ext-ctype": "*",
         "ext-iconv": "*",
-        "doctrine/doctrine-bundle": "^3.2",
+        "doctrine/doctrine-bundle": "^3.2.2",
         "doctrine/doctrine-migrations-bundle": "^4.0",
-        "doctrine/orm": "^3.6",
-        "phpoffice/phpspreadsheet": "^5.4",
+        "doctrine/orm": "^3.6.2",
+        "phpoffice/phpspreadsheet": "^5.5",
         "symfony/asset": "7.4.*",
         "symfony/console": "7.4.*",
         "symfony/dotenv": "7.4.*",
-        "symfony/flex": "^2",
+        "symfony/flex": "^2.10",
         "symfony/form": "7.4.*",
         "symfony/framework-bundle": "7.4.*",
         "symfony/http-client": "7.4.*",
@@ -27,8 +27,8 @@
         "symfony/ux-live-component": "^2.32",
         "symfony/validator": "7.4.*",
         "symfony/yaml": "7.4.*",
-        "twig/extra-bundle": "^2.12|^3.0",
-        "twig/twig": "^2.12|^3.0"
+        "twig/extra-bundle": "^2.12|^3.23",
+        "twig/twig": "^2.12|^3.23"
     },
     "config": {
         "allow-plugins": {
@@ -81,7 +81,7 @@
         }
     },
     "require-dev": {
-        "symfony/maker-bundle": "^1.65",
+        "symfony/maker-bundle": "^1.66",
         "symfony/stopwatch": "7.4.*",
         "symfony/web-profiler-bundle": "7.4.*"
     }

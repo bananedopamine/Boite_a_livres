@@ -44,7 +44,7 @@ async function initialiserSuggestion() {
  */
 function afficherLivreSuggestion() {
     // Vérifier si on a atteint la fin AVANT d'afficher
-    if (indexLivreSuggestion >= listeLivresSuggestion.length) {
+    if (indexLivreSuggestion > listeLivresSuggestion.length) {
         afficherModaleFinListe();
         return;
     }
@@ -53,7 +53,7 @@ function afficherLivreSuggestion() {
     const modale = document.getElementById('modale_principale');
     const contenu = document.getElementById('contenu_modale');
     
-    // ✅ UTILISATION DU TEMPLATE au lieu de innerHTML
+    // UTILISATION DU TEMPLATE au lieu de innerHTML
     const template = document.getElementById('suggestion-card-template');
     
     if (!template) {
@@ -204,6 +204,7 @@ function emprunterLivreSuggestion(isbn) {
     
     // NE PAS réinitialiser complètement - garder la position pour reprendre après
     // indexLivreSuggestion et listeLivresSuggestion restent intacts
+	fermerSuggestion(); // Ferme la modale de suggestion avant d'ouvrir la modal de scan
     
     // Fermer la modale de suggestion
     const modale = document.getElementById('modale_principale');
@@ -273,7 +274,7 @@ function afficherModaleFinListe() {
     const modale = document.getElementById('modale_principale');
     const contenu = document.getElementById('contenu_modale');
     
-    // ✅ UTILISATION DU TEMPLATE au lieu de innerHTML
+    // UTILISATION DU TEMPLATE au lieu de innerHTML
     const template = document.getElementById('suggestion-fin-template');
     
     if (!template) {
@@ -413,8 +414,8 @@ document.addEventListener('DOMContentLoaded', function() {
                                        contenu.innerHTML.includes('suggestion-fin-container'))) {
                             annulerTimerResetSuggestion();
                             // FIX : Reset complet uniquement si la modale est fermée par l'utilisateur
-                            indexLivreSuggestion = 0;
-                            listeLivresSuggestion = [];
+                            // indexLivreSuggestion = 0;
+                            //listeLivresSuggestion = [];
                         }
                     }
                 }
