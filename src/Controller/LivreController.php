@@ -36,6 +36,22 @@ class LivreController extends AbstractController
     }
 
     #region défaut index, show, search, liste
+
+    /**
+     * Page principale listant tous les livres.
+     *
+     * APPELÉE PAR :
+     *   - Navigateur (GET /livre/)
+     *   - edit()   → redirectToRoute('app_livre_index') (après modification réussie, mode non-AJAX)
+     *   - delete() → redirectToRoute('app_livre_index') (après désactivation du livre)
+     *   - Liens de navigation dans les templates Twig (menu, boutons retour)
+     *
+     * APPELLE / REND :
+     *   - Twig : livre/index.html.twig
+     *     └── Ce template charge un JS qui appelle apiListe() en fetch() AJAX
+     *         pour remplir le tableau dynamiquement
+     *   - Repository : LivreRepository::findAll()
+     */
     #[Route('/', name: 'app_livre_index', methods: ['GET'])]
     public function index(Request $request, LivreRepository $livreRepository): Response
     {
@@ -46,6 +62,18 @@ class LivreController extends AbstractController
         ]);
     }
 
+    /**
+     * Affiche le détail d'un livre (page complète ou fragment AJAX).
+     *
+     * APPELÉE PAR :
+     *   - Navigateur (GET /livre/{id}) — affichage de la page complète
+     *   - JS de livre/index.html.twig  — requête AJAX (XmlHttpRequest) pour charger la modale de détail
+     *   - JS de mouvement/index.html.twig — idem, pour afficher les infos d'un livre depuis un mouvement
+     *
+     * APPELLE / REND :
+     *   - Si requête AJAX  → Twig : livre/_livre_details.html.twig  (fragment HTML)
+     *   - Si requête normale → Twig : livre/show.html.twig           (page complète)
+     */
     #[Route('/{id<\d+>}', name: 'app_livre_show', methods: ['GET'])]
     public function show(Livre $livre, Request $request): Response
     {
@@ -62,6 +90,17 @@ class LivreController extends AbstractController
         ]);
     }
 
+    /**
+     * Recherche filtrée de livres (par ISBN et/ou auteur).
+     *
+     * APPELÉE PAR :
+     *   - Navigateur (GET /livre/recherche?isbn=...&auteur=...)
+     *   - Formulaire de recherche dans livre/index.html.twig (soumission classique sans JS)
+     *
+     * APPELLE / REND :
+     *   - Twig : livre/index.html.twig (même template que index(), avec les résultats filtrés)
+     *   - Repository : LivreRepository::createQueryBuilder()
+     */
     #[Route('/recherche', name: 'app_livre_search', methods: ['GET'])]
     public function search(Request $request, LivreRepository $livreRepository): Response
     {
@@ -91,8 +130,17 @@ class LivreController extends AbstractController
     }
 
     /**
-     * API : Retourne la liste des livres en JSON pour le tableau dynamique
-     * Interagit avec : Le JavaScript de la page livre/index.html.twig
+     * API JSON : Retourne la liste des livres filtrés pour le tableau dynamique.
+     *
+     * APPELÉE PAR :
+     *   - JS de livre/index.html.twig → fetch('/livre/api/liste?isbn=...&auteur=...&titre=...&statut=...&stock_min=...&stock_max=...')
+     *     lors du chargement de la page et à chaque changement de filtre
+     *
+     * APPELLE / REND :
+     *   - Repository : LivreRepository::createQueryBuilder()
+     *   - Session : vérifie 'admin_authenticated' pour adapter les données retournées
+     *     (les non-admins ne voient que les livres avec stock > 0)
+     *   - Retourne : JsonResponse { success, livres[], total, isAdmin }
      */
     #[Route('/api/liste', name: 'app_livre_api_liste', methods: ['GET'])]
     public function apiListe(Request $request, LivreRepository $livreRepository): JsonResponse
@@ -182,8 +230,20 @@ class LivreController extends AbstractController
     #region verification verifISBN, livre404
 
     /**
-     * API : Vérifie l'existence d'un livre (BDD locale puis Google Books).
-     * Interagit avec : Le script JavaScript de la page d'accueil (index.html.twig).
+     * API JSON : Vérifie si un livre existe (BDD locale, puis Google Books en fallback).
+     *
+     * APPELÉE PAR :
+     *   - JS de home/index.html.twig → fetch('/livre/api/verif-isbn/{isbn}')
+     *     après qu'un ISBN a été scanné ou saisi manuellement
+     *
+     * APPELLE / REND :
+     *   - Repository : LivreRepository::findOneBy(['isbn' => $isbn])
+     *   - API externe : https://www.googleapis.com/books/v1/volumes?q=isbn:{isbn}
+     *     (via HttpClientInterface Symfony)
+     *   - Retourne : JsonResponse
+     *     → { statut: 'existe', id } si le livre est en BDD
+     *     → { statut: 'google', titre, auteur, description, image, genre } si trouvé sur Google Books
+     *     → { statut: 'introuvable' } si aucune source ne connaît cet ISBN
      */
     #[Route('/api/verif-isbn/{isbn}', name: 'app_livre_verif', methods: ['GET'])]
     public function verifierIsbn(string $isbn, LivreRepository $livreRepository, HttpClientInterface $clientHttp): JsonResponse
@@ -216,7 +276,7 @@ class LivreController extends AbstractController
                 // Prend la première catégorie ou joint toutes les catégories
                 $genre = implode(', ', $info['categories']);
             }
-            
+
             return $this->json([
                 'statut' => 'google',
                 'donnees' => [
@@ -224,7 +284,7 @@ class LivreController extends AbstractController
                     'titre'       => $info['title'] ?? '',
                     'auteur'      => isset($info['authors']) ? implode(', ', $info['authors']) : '',
                     'description' => $info['description'] ?? '',
-                    'image'       => $info['imageLinks']['thumbnail'] ?? '',
+                	'image'       => $info['imageLinks']['thumbnail'] ?? '',
                     'genre'       => $genre
                 ]
             ]);
@@ -257,8 +317,16 @@ class LivreController extends AbstractController
     #region création new, newManuel 
 
     /**
-     * Création rapide d'un livre avec ISBN et titre uniquement
-     * Interagit avec : _modal_livre_creation_manuel.html.twig
+     * API JSON : Crée automatiquement un livre depuis les données fournies en GET.
+     * Utilisé quand le livre vient d'être trouvé sur Google Books et doit être persisté rapidement.
+     *
+     * APPELÉE PAR :
+     *   - JS de home/index.html.twig → fetch('/livre/api/creer-depuis-google?isbn=...&titre=...&auteur=...')
+     *     après que verifierIsbn() a retourné { statut: 'google' } et que l'utilisateur a confirmé
+     *
+     * APPELLE / REND :
+     *   - Entity : new Livre() → persist + flush via EntityManagerInterface
+     *   - Retourne : JsonResponse { success: true, id } ou { success: false, message }
      */
     #[Route('/creation-rapide', name: 'app_livre_creation_manuel', methods: ['POST'])]
     public function newManuel(Request $request, EntityManagerInterface $em, LivreRepository $livreRepository): JsonResponse
@@ -314,8 +382,19 @@ class LivreController extends AbstractController
     }
 
     /**
-     * Retourne le formulaire de création de livre (fragment HTML pour modale).
-     * Interagit avec : _modal_new.html.twig et le script JS principal.
+     * Affiche le formulaire de création manuelle d'un livre (fragment HTML pour modale).
+     * Pré-remplit les champs depuis les données Google Books passées en GET.
+     *
+     * APPELÉE PAR :
+     *   - JS de home/index.html.twig → fetch('/livre/nouveau?isbn=...&titre=...&auteur=...&description=...&image=...&genre=...')
+     *     quand l'utilisateur choisit de créer le livre manuellement plutôt qu'automatiquement
+     *   - Soumission du formulaire (POST /livre/nouveau) → traitée dans cette même méthode
+     *
+     * APPELLE / REND :
+     *   - Form : LivreType (formulaire Symfony)
+     *   - Twig : livre/_modal_livre_new.html.twig  (fragment HTML injecté dans une modale)
+     *   - En cas de succès (POST) : JsonResponse { success: true, id }
+     *   - Entity : new Livre() → persist + flush via EntityManagerInterface
      */
     #[Route('/nouveau', name: 'app_livre_new', methods: ['GET', 'POST'])]
     public function new(Request $requete, EntityManagerInterface $em): Response
@@ -355,6 +434,24 @@ class LivreController extends AbstractController
 
     #region gestion edit, delete
 
+    /**
+     * Affiche et traite le formulaire d'édition d'un livre (admin requis).
+     *
+     * APPELÉE PAR :
+     *   - Navigateur (GET /livre/{id}/edit)  — chargement du formulaire (page complète)
+     *   - JS de livre/index.html.twig        — requête AJAX (GET) pour charger la modale d'édition
+     *   - JS de livre/index.html.twig        — requête AJAX (POST) pour soumettre les modifications
+     *
+     * APPELLE / REND :
+     *   - Vérifie : session 'admin_authenticated'
+     *     → Si non authentifié : redirectToRoute('app_admin_login') → AdminSecurityController::login()
+     *   - Form : LivreType
+     *   - Si POST valide + AJAX  → JsonResponse { success: true, message }
+     *   - Si POST valide + normal → redirectToRoute('app_livre_index') → LivreController::index()
+     *   - Si POST invalide + AJAX → Twig : livre/_modal_edit.html.twig (HTTP 422)
+     *   - Sinon (GET)            → Twig : livre/_modal_edit.html.twig
+     *   - EntityManagerInterface::flush()
+     */
     #[Route('/{id}/edit', name: 'app_livre_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Livre $livre, EntityManagerInterface $entityManager): Response
     {
@@ -397,7 +494,20 @@ class LivreController extends AbstractController
         ]);
     }
 
-
+    /**
+     * Désactive un livre (suppression logique : actif = false).
+     * Accessible uniquement aux admins.
+     *
+     * APPELÉE PAR :
+     *   - Navigateur (GET /livre/{id}/delete)
+     *   - Bouton "Supprimer" dans livre/_modal_edit.html.twig ou livre/show.html.twig (admin uniquement)
+     *
+     * APPELLE / REND :
+     *   - Vérifie : session 'admin_authenticated'
+     *     → Si non authentifié : redirectToRoute('app_admin_login') → AdminSecurityController::login()
+     *   - Entity : Livre::setActif(false) → persist + flush via EntityManagerInterface
+     *   - redirectToRoute('app_livre_index') → LivreController::index()
+     */
     #[Route('/{id}/delete', name: 'app_livre_delete')]
     public function delete(Request $request, Livre $livre, EntityManagerInterface $entityManager): Response
     {
@@ -409,7 +519,6 @@ class LivreController extends AbstractController
         $entityManager->persist($livre);
         $entityManager->flush();
 
-
         return $this->redirectToRoute('app_livre_index', [], Response::HTTP_SEE_OTHER);
     }
 
@@ -418,7 +527,18 @@ class LivreController extends AbstractController
     #region Excel export
 
     /**
-     * Export des livres en Excel (filtrés selon les critères de recherche)
+     * Génère et télécharge un fichier Excel des livres filtrés.
+     *
+     * APPELÉE PAR :
+     *   - Navigateur (GET /livre/export?isbn=...&auteur=...&titre=...&statut=...&stock_min=...&stock_max=...)
+     *   - Bouton "Exporter" dans livre/index.html.twig (JS construit l'URL avec les filtres actifs)
+     *
+     * APPELLE / REND :
+     *   - Repository : LivreRepository::createQueryBuilder() (même logique de filtres que apiListe())
+     *   - Service : ExportService::exportLivres($livres, $isAdmin)
+     *     → génère le fichier .xlsx et retourne son chemin
+     *   - Retourne : BinaryFileResponse (téléchargement du fichier)
+     *     → Le fichier est supprimé du serveur après envoi (deleteFileAfterSend)
      */
     #[Route('/export', name: 'app_livre_export', methods: ['GET'])]
     public function export(Request $request, LivreRepository $livreRepository, ExportService $exportService): Response
@@ -485,7 +605,6 @@ class LivreController extends AbstractController
         // Préparer la réponse de téléchargement
         $response = new BinaryFileResponse($filepath);
         $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-
 
         $response->setContentDisposition(
             ResponseHeaderBag::DISPOSITION_ATTACHMENT,

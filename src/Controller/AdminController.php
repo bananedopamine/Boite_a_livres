@@ -14,6 +14,14 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\RequestStack;
 
+/**
+ * Contrôleur gérant les pages d'administration (tableau de bord, paramètres).
+ *
+ * ATTENTION : Les méthodes login() et logout() de ce contrôleur définissent les routes
+ * 'app_admin_login' et 'app_admin_logout', qui sont également déclarées dans
+ * AdminSecurityController.php — cela provoque un conflit de routes Symfony.
+ * Seul AdminSecurityController devrait gérer ces routes.
+ */
 #[Route('/admin')]
 class AdminController extends AbstractController
 {
@@ -25,7 +33,17 @@ class AdminController extends AbstractController
     }
 
     /**
-     * Page d'accueil admin
+     * Page d'accueil du panneau d'administration.
+     *
+     * APPELÉE PAR :
+     *   - Navigateur (GET /admin/)
+     *   - login()    → redirectToRoute('app_admin_index') (après connexion réussie)
+     *   - settings() → redirectToRoute('app_admin_index') (implicitement si déjà connecté)
+     *
+     * APPELLE / REND :
+     *   - Twig : admin/index.html.twig
+     *   - Si non authentifié : redirectToRoute('app_admin_login')
+     *     → AdminSecurityController::login() (route active)
      */
     #[Route('/', name: 'app_admin_index')]
     public function index(): Response
@@ -38,7 +56,18 @@ class AdminController extends AbstractController
     }
 
     /**
-     * Page de connexion admin
+     * Formulaire de connexion admin (doublon avec AdminSecurityController::login()).
+     *
+     * Cette méthode est en conflit de route avec AdminSecurityController::login().
+     *
+     * APPELÉE PAR :
+     *   - Navigateur (GET /admin/login) — affichage du formulaire
+     *   - Navigateur (POST /admin/login) — soumission du formulaire
+     *
+     * APPELLE / REND :
+     *   - Twig : admin/login.html.twig
+     *   - En cas de succès (POST) : redirectToRoute('app_admin_index') → AdminController::index()
+     *   - Lit la variable d'environnement : $_ENV['PIN_ADMIN']
      */
     #[Route('/login', name: 'app_admin_login', methods: ['GET', 'POST'])]
     public function login(Request $request): Response
@@ -69,7 +98,17 @@ class AdminController extends AbstractController
     }
 
     /**
-     * Déconnexion admin
+     * Déconnexion admin (doublon avec AdminSecurityController::logout()).
+     *
+     * Cette méthode est en conflit de route avec AdminSecurityController::logout().
+     *
+     * APPELÉE PAR :
+     *   - Navigateur (GET /admin/logout)
+     *   - Lien de déconnexion dans les templates admin
+     *
+     * APPELLE / REND :
+     *   - redirectToRoute('home_index') → HomeController::index()
+     *   - Supprime la clé 'admin_authenticated' de la session
      */
     #[Route('/logout', name: 'app_admin_logout')]
     public function logout(): Response
@@ -80,7 +119,20 @@ class AdminController extends AbstractController
     }
 
     /**
-     * NOUVELLE PAGE : Paramètres admin
+     * Page de paramètres admin : modification du code PIN.
+     *
+     * APPELÉE PAR :
+     *   - Navigateur (GET /admin/settings)  — affichage du formulaire
+     *   - Navigateur (POST /admin/settings) — soumission du changement de PIN
+     *   - Lien "Paramètres" dans admin/index.html.twig (ou menu admin)
+     *
+     * APPELLE / REND :
+     *   - Twig : admin/settings.html.twig
+     *   - En cas de succès (POST) : updateEnvFile() → modifie .env.local (ou .env)
+     *     puis déconnecte l'admin (session 'admin_authenticated' supprimée)
+     *   - Si non authentifié : redirectToRoute('app_admin_login')
+     *     → AdminSecurityController::login() (route active)
+     *   - Lit la variable d'environnement : $_ENV['PIN_ADMIN']
      */
     #[Route('/settings', name: 'app_admin_settings', methods: ['GET', 'POST'])]
     public function settings(Request $request): Response
@@ -130,7 +182,15 @@ class AdminController extends AbstractController
     }
 
     /**
-     * Fonction helper pour modifier le fichier .env
+     * Méthode privée utilitaire : met à jour une clé dans le fichier .env.local (ou .env).
+     *
+     * APPELÉE PAR :
+     *   - settings() → lors du changement de PIN (action 'change_pin')
+     *
+     * APPELLE / REND :
+     *   - file_exists(), file_get_contents(), preg_replace(), file_put_contents()
+     *     sur : .env.local (prioritaire) ou .env (fallback)
+     *   - Retourne true si l'écriture a réussi, false sinon
      */
     private function updateEnvFile(string $key, string $value): bool
     {

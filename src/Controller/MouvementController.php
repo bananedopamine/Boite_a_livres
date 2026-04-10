@@ -29,6 +29,19 @@ class MouvementController extends AbstractController
 {
     #region Gestion_mouvement index, show, search
 
+    /**
+     * Page principale listant tous les mouvements (entrées/sorties).
+     *
+     * APPELÉE PAR :
+     *   - Navigateur (GET /mouvement/)
+     *   - Liens de navigation dans les templates Twig (menu, boutons retour)
+     *
+     * APPELLE / REND :
+     *   - Twig : mouvement/index.html.twig
+     *     └── Ce template charge un JS qui appelle apiListe() en fetch() AJAX
+     *         pour remplir le tableau dynamiquement
+     *   - Repository : MouvementRepository::findBy([], ['dateHeure' => 'DESC'])
+     */
     #[Route('/', name:'app_mouvement_index')]
     public function index(MouvementRepository $mouvements) : Response
     {
@@ -37,6 +50,17 @@ class MouvementController extends AbstractController
         ]);
     }
 
+    /**
+     * Affiche le détail d'un mouvement (page complète ou fragment AJAX).
+     *
+     * APPELÉE PAR :
+     *   - Navigateur (GET /mouvement/show/{id}) — affichage de la page complète
+     *   - JS de mouvement/index.html.twig       — requête AJAX (XmlHttpRequest) pour charger la modale de détail
+     *
+     * APPELLE / REND :
+     *   - Si requête AJAX   → Twig : mouvement/_mouvement_details.html.twig  (fragment HTML)
+     *   - Si requête normale → Twig : mouvement/show.html.twig                (page complète)
+     */
     #[Route('/show/{id<\d+>}', name: 'app_mouvement_show')]
     public function show(Mouvement $mouvement, Request $request): Response
     {
@@ -53,6 +77,17 @@ class MouvementController extends AbstractController
         ]);
     }
 
+    /**
+     * Recherche filtrée de mouvements (par ISBN, auteur et/ou utilisateur).
+     *
+     * APPELÉE PAR :
+     *   - Navigateur (GET /mouvement/recherche?isbn=...&auteur=...&user=...&sort=...)
+     *   - Formulaire de recherche dans mouvement/index.html.twig (soumission classique sans JS)
+     *
+     * APPELLE / REND :
+     *   - Twig : mouvement/index.html.twig (même template que index(), avec les résultats filtrés)
+     *   - Repository : MouvementRepository::createQueryBuilder() avec jointure sur Livre
+     */
     #[Route('/recherche', name: 'app_mouvement_search', methods: ['GET'])]
     public function search(Request $request, MouvementRepository $mouvementRepository): Response
     {
@@ -95,15 +130,25 @@ class MouvementController extends AbstractController
     }
 
     /**
-     * API : Retourne la liste des mouvements en JSON pour le tableau dynamique
-     * Interagit avec : Le JavaScript mouvement_tableau_dynamique.js
+     * API JSON : Retourne la liste des mouvements filtrés pour le tableau dynamique.
+     *
+     * APPELÉE PAR :
+     *   - JS de mouvement/index.html.twig → fetch('/mouvement/api/liste?isbn=...&auteur=...&user=...&type=...&sort=...')
+     *     lors du chargement de la page et à chaque changement de filtre
+     *
+     * APPELLE / REND :
+     *   - Repository : MouvementRepository::createQueryBuilder() avec jointure sur Livre
+     *   - Session : vérifie 'admin_authenticated' (retourné dans la réponse pour que le JS
+     *     adapte l'affichage : boutons admin, colonnes supplémentaires, etc.)
+     *   - Retourne : JsonResponse { success, mouvements[], total, isAdmin }
+     *     Chaque entrée contient : id, dateHeure, nomPrenom, type, livre{id, isbn, titre, auteur}
      */
     #[Route('/api/liste', name: 'app_mouvement_api_liste')]
     public function apiListe(Request $request, MouvementRepository $mouvementRepository): JsonResponse
     {
-
         $session = $request->getSession();
         $isAdmin = $session->get('admin_authenticated', false);
+
         // 1. On crée le constructeur de requête directement ici
         $qb = $mouvementRepository->createQueryBuilder('m')
             ->leftJoin('m.livre', 'l')
@@ -179,8 +224,19 @@ class MouvementController extends AbstractController
     #region Modal debut, confirmation, finaliser
 
     /**
-     * Retourne le formulaire de scan ISBN ( HTML pour modale).
-     * Interagit avec : _modal_debut.html.twig
+     * Retourne le formulaire de scan ISBN (fragment HTML pour modale).
+     * Point d'entrée du tunnel de création d'un mouvement.
+     *
+     * APPELÉE PAR :
+     *   - JS de home/index.html.twig ou mouvement/index.html.twig
+     *     → fetch('/mouvement/debut?action=true') (Sortie)
+     *     → fetch('/mouvement/debut?action=false') (Entrée)
+     *     Déclenché au clic sur les boutons "Entrée" / "Sortie"
+     *
+     * APPELLE / REND :
+     *   - Twig : mouvement/_modal_debut.html.twig
+     *     └── Ce fragment affiche le champ de scan ISBN
+     *         et soumet vers confirmation() via JS
      */
     #[Route('/debut', name: 'app_mouvement_debut')]
     public function debut(Request $requete): Response
@@ -194,8 +250,20 @@ class MouvementController extends AbstractController
     }
 
     /**
-     * Retourne le formulaire de confirmation (HTML pour modale).
-     * Interagit avec : _modal_confirmation.html.twig
+     * Retourne le formulaire de confirmation du mouvement (fragment HTML pour modale).
+     * Deuxième étape du tunnel : affiche le livre trouvé et demande le nom de l'utilisateur.
+     *
+     * APPELÉE PAR :
+     *   - JS de mouvement/_modal_debut.html.twig
+     *     → fetch('/mouvement/confirmation/{id}?type_action=true|false')
+     *     après qu'un ISBN a été scanné et qu'un livre a été identifié (via LivreController::verifierIsbn())
+     *
+     * APPELLE / REND :
+     *   - Repository : LivreRepository::find($id)
+     *   - Twig : mouvement/_modal_confirmation.html.twig
+     *     └── Ce fragment affiche les infos du livre et un champ "Nom / Prénom"
+     *         puis soumet vers finaliser() via AJAX POST
+     *   - Retourne JSON 404 si le livre n'existe pas
      */
     #[Route('/confirmation/{id<\d+>}', name: 'app_mouvement_confirmation')]
     public function confirmation(int $id, Request $requete, LivreRepository $livreRepo): Response
@@ -216,8 +284,22 @@ class MouvementController extends AbstractController
     }
 
     /**
-     * Enregistre le mouvement final et met à jour le stock du livre.
-     * Interagit avec : Le formulaire de confirmation en AJAX.
+     * Enregistre le mouvement en base et met à jour le stock du livre.
+     * Troisième et dernière étape du tunnel.
+     *
+     * APPELÉE PAR :
+     *   - JS de mouvement/_modal_confirmation.html.twig
+     *     → fetch POST '/mouvement/finaliser/{id}' avec body : { type_action, nomPrenom }
+     *     à la soumission du formulaire de confirmation
+     *
+     * APPELLE / REND :
+     *   - Repository : LivreRepository::find($id)
+     *   - Entity : new Mouvement() → setLivre, setNomPrenom, setDateHeure, setType
+     *   - Entity : Livre::setNbStock() — décrémente si Sortie, incrémente si Entrée
+     *   - Entity : Livre::setActif(true) — réactive automatiquement un livre inactif à l'entrée
+     *   - EntityManagerInterface::persist() + flush()
+     *   - Retourne : JsonResponse { success, livre{id, titre, auteur, isbn, stock}, type, nomPrenom }
+     *     → Le JS utilise cette réponse pour afficher le récapitulatif et rafraîchir le tableau
      */
     #[Route('/finaliser/{id<\d+>}', name: 'app_mouvement_finaliser', methods: ['POST'])]
     public function finaliser(int $id, Request $requete, LivreRepository $livreRepo, EntityManagerInterface $em): Response
@@ -234,7 +316,7 @@ class MouvementController extends AbstractController
         $mouvement->setType($typeSortie);
 
         // Mise à jour logique du stock
-        if ($typeSortie ) {
+        if ($typeSortie) {
             if ($livre->getnbStock() > 0){
                 $livre->setNbStock($livre->getNbStock() - 1);
             }
@@ -271,7 +353,18 @@ class MouvementController extends AbstractController
     #region Excel export
 
     /**
-     * Export des mouvements en Excel (filtrés selon les critères de recherche)
+     * Génère et télécharge un fichier Excel des mouvements filtrés.
+     *
+     * APPELÉE PAR :
+     *   - Navigateur (GET /mouvement/export?isbn=...&auteur=...&user=...&type=...&sort=...)
+     *   - Bouton "Exporter" dans mouvement/index.html.twig (JS construit l'URL avec les filtres actifs)
+     *
+     * APPELLE / REND :
+     *   - Repository : MouvementRepository::createQueryBuilder() (même logique de filtres que apiListe())
+     *   - Service : ExportService::exportMouvements($mouvements)
+     *     → génère le fichier .xlsx et retourne son chemin
+     *   - Retourne : BinaryFileResponse (téléchargement du fichier)
+     *     → Le fichier est supprimé du serveur après envoi (deleteFileAfterSend)
      */
     #[Route('/export', name: 'app_mouvement_export', methods: ['GET'])]
     public function export(Request $request, MouvementRepository $mouvementRepository, ExportService $exportService): Response
