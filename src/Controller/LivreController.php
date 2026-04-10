@@ -46,6 +46,7 @@ class LivreController extends AbstractController
         ]);
     }
 
+	/* bleh bleh bleh */
     #[Route('/{id<\d+>}', name: 'app_livre_show', methods: ['GET'])]
     public function show(Livre $livre, Request $request): Response
     {
